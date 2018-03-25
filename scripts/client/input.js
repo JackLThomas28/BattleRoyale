@@ -2,7 +2,8 @@ MyGame.input.Mouse = function() {
 	'use strict';
 	let that = {},
 		handler = null,
-		mouse = [];
+		mouse = [],
+	    canvas = document.getElementById('canvas-main');
 
 	that.registerHandler = function(handle) {
 		'use strict';
@@ -19,16 +20,17 @@ MyGame.input.Mouse = function() {
 	
 	that.update = function(elapsedTime) {
 		for (let event = 0; event < mouse.length; event++) {
+			let rect = canvas.getBoundingClientRect();
 			let position = {
-				x: mouse[event].clientX,
-				y: mouse[event].clientY
+				x: mouse[event].clientX - rect.left,
+				y: mouse[event].clientY - rect.top
 			};
 			handler(elapsedTime, position);
 		}
 		mouse = [];
 	}
 
-	window.addEventListener('mousemove', mouseMove);
+	canvas.addEventListener('mousemove', mouseMove);
 
 	return that;
 };

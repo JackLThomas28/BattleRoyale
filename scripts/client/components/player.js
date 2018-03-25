@@ -82,11 +82,14 @@ MyGame.components.Player = function() {
 
     that.rotate = function(elapsedTime, pos) {
         let tempPos = {
-            x: position.x - pos.x,
-            y: position.y - pos.y
+            x: (position.x - (pos.x/1000)),
+            y: position.y - (pos.y/1000)
         }
-        console.log(tempPos);
+        // console.log('position.x ' + String(position.x) + ' position.y ' + String(position.y));
+        // console.log('pos.x ' + String(pos.x/1000) + ' pos.y ' + String(pos.y/1000));
+        // console.log('temp.x ' + String(tempPos.x) + ' pos.y ' + String(tempPos.y));
         direction = Math.atan(tempPos.y/tempPos.x);
+        console.log(direction)
     }
 
     that.update = function(elapsedTime) {

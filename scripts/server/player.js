@@ -108,8 +108,8 @@ function createPlayer() {
     that.rotate = function(elapsedTime, pos) {
         reportUpdate = true;
         let tempPos = {
-            x: position.x - pos.x,
-            y: position.y - pos.y
+            x: (position.x - (pos.x/1000)),
+            y: position.y - (pos.y/1000)
         }
         direction = Math.atan(tempPos.y/tempPos.x);
     };
