@@ -107,9 +107,14 @@ function createPlayer() {
 
     that.rotate = function(elapsedTime, pos) {
         reportUpdate = true;
+        // TODO: Divide dynamically by the canvas width and height
         let tempPos = {
-            x: (position.x - (pos.x/1000)),
-            y: position.y - (pos.y/1000)
+            x: (pos.x/600.0) - position.x,
+            y: (pos.y/600.0) - position.y
+        }
+        // FIX: I have no idea why this is always true
+        if (pos.x < position.x) {
+            console.log('true');
         }
         direction = Math.atan(tempPos.y/tempPos.x);
     };

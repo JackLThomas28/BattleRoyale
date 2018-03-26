@@ -80,16 +80,17 @@ MyGame.components.Player = function() {
         direction -= (rotateRate * elapsedTime);
     };
 
-    that.rotate = function(elapsedTime, pos) {
-        let tempPos = {
-            x: (position.x - (pos.x/1000)),
-            y: position.y - (pos.y/1000)
+    that.rotate = function(elapsedTime, mousePos) {
+        // TODO: Divide dynamically by the canvas width and height
+        let pos = {
+            x: (mousePos.x/600.0) - position.x,
+            y: (mousePos.y/600.0) - position.y
         }
-        // console.log('position.x ' + String(position.x) + ' position.y ' + String(position.y));
-        // console.log('pos.x ' + String(pos.x/1000) + ' pos.y ' + String(pos.y/1000));
-        // console.log('temp.x ' + String(tempPos.x) + ' pos.y ' + String(tempPos.y));
-        direction = Math.atan(tempPos.y/tempPos.x);
-        console.log(direction)
+        // FIX: I have no idea why this is always true
+        if (mousePos.x > position.x) {
+            console.log('true');
+        }
+        direction = Math.atan(pos.y/pos.x);
     }
 
     that.update = function(elapsedTime) {
