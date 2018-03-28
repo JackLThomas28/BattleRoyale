@@ -335,24 +335,45 @@ MyGame.main = (function(graphics, renderer, input, components) {
     //------------------------------------------------------------------
     function initialize() {
         console.log('game initializing...');
-        myMouse.registerHandler((elapsedTime, mousePosition) => {
-                let message = {
-                    id: messageId++,
-                    elapsedTime: elapsedTime,
-                    type: NetworkIds.INPUT_ROTATE,
-                    position: mousePosition
-                };
-                socket.emit(NetworkIds.INPUT, message);
-                messageHistory.enqueue(message);
-                playerSelf.model.rotate(elapsedTime, mousePosition);
+        // myMouse.registerHandler('mousemove',(elapsedTime, mousePosition) => {
+        //         let message = {
+        //             id: messageId++,
+        //             elapsedTime: elapsedTime,
+        //             type: NetworkIds.INPUT_ROTATE,
+        //             position: mousePosition
+        //         };
+        //         socket.emit(NetworkIds.INPUT, message);
+        //         messageHistory.enqueue(message);
+        //         playerSelf.model.rotate(elapsedTime, mousePosition);
+        // });
+
+        myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
+			let message = {
+                id: messageId++,
+                elapsedTime: elapsedTime,
+                type: NetworkIds.INPUT_ROTATE,
+                position: mousePosition
+            };
+            socket.emit(NetworkIds.INPUT, message);
+            messageHistory.enqueue(message);
+            playerSelf.model.rotate(elapsedTime, mousePosition);
         });
+        
+        myMouse.registerHandler('mousedown', elapsedTime => {
+			let message = {
+                id: messageId++,
+                elapsedTime: elapsedTime,
+                type: NetworkIds.INPUT_FIRE
+            };
+            socket.emit(NetworkIds.INPUT, message);
+		});
         //
         // Create the keyboard input handler and register the keyboard commands
         myKeyboard.registerHandler(elapsedTime => {
                 let message = {
                     id: messageId++,
                     elapsedTime: elapsedTime,
-                    type: NetworkIds.INPUT_MOVE_FORWARD
+                    type: NetworkIds.INPUT_MOVE_FORWARD,
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
@@ -364,7 +385,7 @@ MyGame.main = (function(graphics, renderer, input, components) {
                 let message = {
                     id: messageId++,
                     elapsedTime: elapsedTime,
-                    type: NetworkIds.INPUT_MOVE_BACK
+                    type: NetworkIds.INPUT_MOVE_BACK,
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
@@ -376,7 +397,7 @@ MyGame.main = (function(graphics, renderer, input, components) {
         //         let message = {
         //             id: messageId++,
         //             elapsedTime: elapsedTime,
-        //             type: NetworkIds.INPUT_ROTATE_RIGHT
+        //             type: NetworkIds.INPUT_ROTATE_RIGHT,
         //         };
         //         socket.emit(NetworkIds.INPUT, message);
         //         messageHistory.enqueue(message);
@@ -388,7 +409,7 @@ MyGame.main = (function(graphics, renderer, input, components) {
         //         let message = {
         //             id: messageId++,
         //             elapsedTime: elapsedTime,
-        //             type: NetworkIds.INPUT_ROTATE_LEFT
+        //             type: NetworkIds.INPUT_ROTATE_LEFT,
         //         };
         //         socket.emit(NetworkIds.INPUT, message);
         //         messageHistory.enqueue(message);

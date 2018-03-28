@@ -1,37 +1,117 @@
-MyGame.input.Mouse = function() {
-	'use strict';
-	let that = {},
-		handler = null,
-		mouse = [],
-	    canvas = document.getElementById('canvas-main');
+// MyGame.input.Mouse = function() {
+// 	'use strict';
+// 	let that = {},
+// 		handler = null,
+// 		mouse = [],
+// 	    canvas = document.getElementById('canvas-main');
 
-	that.registerHandler = function(handle) {
-		'use strict';
-		handler = handle;
+// 	that.registerHandler = function(handle) {
+// 		'use strict';
+// 		handler = handle;
+// 	}
+
+// 	that.unregisterHandler = function() {
+// 		handler = null;
+// 	}
+
+// 	function mouseMove(event) {
+// 		mouse.push(event);
+// 	}
+	
+// 	that.update = function(elapsedTime) {
+// 		for (let event = 0; event < mouse.length; event++) {
+// 			let rect = canvas.getBoundingClientRect();
+// 			let position = {
+// 				x: mouse[event].clientX - rect.left,
+// 				y: mouse[event].clientY - rect.top
+// 			};
+// 			handler(elapsedTime, position);
+// 		}
+// 		mouse = [];
+// 	}
+
+// 	canvas.addEventListener('mousemove', mouseMove);
+
+// 	return that;
+// };
+
+MyGame.input.Mouse = function Mouse() {
+	let that = {
+			mouseDown : [],
+			mouseUp : [],
+			mouseMove : [],
+			handlersDown : [],
+			handlersUp : [],
+			handlersMove : []
+		};
+	canvas = document.getElementById('canvas-main');
+	function mouseDown(e) {
+		that.mouseDown.push(e);
 	}
-
-	that.unregisterHandler = function() {
-		handler = null;
+	
+	function mouseUp(e) {
+		that.mouseUp.push(e);
 	}
-
-	function mouseMove(event) {
-		mouse.push(event);
+	
+	function mouseMove(e) {
+		that.mouseMove.push(e);
 	}
 	
 	that.update = function(elapsedTime) {
-		for (let event = 0; event < mouse.length; event++) {
-			let rect = canvas.getBoundingClientRect();
-			let position = {
-				x: mouse[event].clientX - rect.left,
-				y: mouse[event].clientY - rect.top
-			};
-			handler(elapsedTime, position);
+		let event;
+		let handler;
+
+		//
+		// Process the mouse events for each of the different kinds of handlers
+		for (event = 0; event < that.mouseDown.length; event++) {
+			for (handler = 0; handler < that.handlersDown.length; handler++) {
+				that.handlersDown[handler](that.mouseDown[event], elapsedTime);
+			}
 		}
-		mouse = [];
-	}
+		
+		for (event = 0; event < that.mouseUp.length; event++) {
+			for (handler = 0; handler < that.handlersUp.length; handler++) {
+				that.handlersUp[handler](that.mouseUp[event], elapsedTime);
+			}
+		}
 
-	canvas.addEventListener('mousemove', mouseMove);
+		for (event = 0; event < that.mouseMove.length; event++) {
+			for (handler = 0; handler < that.handlersMove.length; handler++) {
+				let rect = canvas.getBoundingClientRect();
+				let position = {
+					x: that.mouseMove[event].clientX - rect.left,
+					y: that.mouseMove[event].clientY - rect.top
+				};
+				console.log(position);
 
+				that.handlersMove[handler](that.mouseMove[event], elapsedTime, position);
+			}
+		}
+		
+		//
+		// Now that we have processed all the inputs, reset everything back to the empty state
+		that.mouseDown.length = 0;
+		that.mouseUp.length = 0;
+		that.mouseMove.length = 0;
+	};
+	
+	that.registerHandler = function(type, handler) {
+		if (type === 'mousedown') {
+			that.handlersDown.push(handler);
+		}
+		else if (type === 'mouseup') {
+			that.handlersUp.push(handler);
+		}
+		else if (type === 'mousemove') {
+			that.handlersMove.push(handler);
+			console.log("here")
+		}
+	};
+	
+	window.addEventListener('mousedown', mouseDown);
+	window.addEventListener('mouseup', mouseUp);
+	window.addEventListener('mousemove', mouseMove);
+	
 	return that;
 };
 

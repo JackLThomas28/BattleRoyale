@@ -28,7 +28,7 @@ function createPlayer() {
     };
     let direction = random.nextDouble() * 2 * Math.PI;    // Angle in radians
     let rotateRate = Math.PI / 1000;    // radians per millisecond
-    let speed = 0.0002;                  // unit distance per millisecond
+    let speed = 0.0004;                  // unit distance per millisecond
     let reportUpdate = false;    // Indicates if this model was updated during the last update
 
     Object.defineProperty(that, 'direction', {
@@ -85,24 +85,32 @@ function createPlayer() {
     };
     //------------------------------------------------------------------
     //
-    // Rotates the player right based on how long it has been since the
+    // moves the player right based on how long it has been since the
     // last rotate took place.
     //
     //------------------------------------------------------------------
     that.rotateRight = function(elapsedTime) {
         reportUpdate = true;
-        direction += (rotateRate * elapsedTime);
+        let vectorX = Math.cos(direction);
+
+        position.x += (vectorX * elapsedTime * speed);
+        // position.y += (vectorY * elapsedTime * speed);
+        // direction += (rotateRate * elapsedTime);
     };
 
     //------------------------------------------------------------------
     //
-    // Rotates the player left based on how long it has been since the
+    // moves the player left based on how long it has been since the
     // last rotate took place.
     //
     //------------------------------------------------------------------
     that.rotateLeft = function(elapsedTime) {
         reportUpdate = true;
-        direction -= (rotateRate * elapsedTime);
+        let vectorX = Math.cos(direction);
+
+        position.x -= (vectorX * elapsedTime * speed);
+        // position.y -= (vectorY * elapsedTime * speed);
+        // direction -= (rotateRate * elapsedTime);
     };
 
     that.rotate = function(elapsedTime, pos) {
@@ -112,11 +120,7 @@ function createPlayer() {
             x: (pos.x/600.0) - position.x,
             y: (pos.y/600.0) - position.y
         }
-        // FIX: I have no idea why this is always true
-        if (pos.x < position.x) {
-            console.log('true');
-        }
-        direction = Math.atan(tempPos.y/tempPos.x);
+        direction = Math.atan2(tempPos.y,tempPos.x);
     };
     //------------------------------------------------------------------
     //

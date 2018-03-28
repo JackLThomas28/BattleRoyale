@@ -68,7 +68,12 @@ MyGame.components.Player = function() {
     //
     //------------------------------------------------------------------
     that.rotateRight = function(elapsedTime) {
-        direction += (rotateRate * elapsedTime);
+        let vectorX = Math.cos(direction);
+        let vectorY = Math.sin(direction);
+
+        position.x += (vectorX * elapsedTime * speed);
+        position.y += (vectorY * elapsedTime * speed);
+        // direction += (rotateRate * elapsedTime);
     };
 
     //------------------------------------------------------------------
@@ -77,7 +82,12 @@ MyGame.components.Player = function() {
     //
     //------------------------------------------------------------------
     that.rotateLeft = function(elapsedTime) {
-        direction -= (rotateRate * elapsedTime);
+        let vectorX = Math.cos(direction);
+        let vectorY = Math.sin(direction);
+
+        position.x -= (vectorX * elapsedTime * speed);
+        position.y -= (vectorY * elapsedTime * speed);
+        // direction -= (rotateRate * elapsedTime);
     };
 
     that.rotate = function(elapsedTime, mousePos) {
@@ -86,11 +96,8 @@ MyGame.components.Player = function() {
             x: (mousePos.x/600.0) - position.x,
             y: (mousePos.y/600.0) - position.y
         }
-        // FIX: I have no idea why this is always true
-        if (mousePos.x > position.x) {
-            console.log('true');
-        }
-        direction = Math.atan(pos.y/pos.x);
+        direction = Math.atan2(pos.y,pos.x);
+        
     }
 
     that.update = function(elapsedTime) {
