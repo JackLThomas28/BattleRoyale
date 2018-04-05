@@ -7,7 +7,17 @@ MyGame.graphics = (function() {
     'use strict';
 
     let canvas = document.getElementById('canvas-main');
-    let context = canvas.getContext('2d')
+    let context = canvas.getContext('2d');
+    let world = {
+        size: 0,
+		top: 0,
+		left: 0
+    };
+    let viewport = MyGame.components.Viewport({
+        left: 0,
+        top: 0,
+        buffer: 0.15	// This can't really be any larger than world.buffer, guess I could protect against that.
+    });
 
     //------------------------------------------------------------------
     //
@@ -98,8 +108,27 @@ MyGame.graphics = (function() {
         };
 
         context.drawImage(spriteSheet,
-            sprite * spriteSize.width, 0,                 // which sprite to render
+            sprite * spriteSize.width, 0,           // which sprite to render
             spriteSize.width, spriteSize.height,    // size in the spritesheet
+            localCenter.x - localSize.width / 2,
+            localCenter.y - localSize.height / 2,
+            localSize.width, localSize.height);
+    }
+
+    // TODO: adjust measurements for the value received from the JSON
+    function drawImageTileSet(tileSet, tileSize, tile, center, size) {
+        let localCenter = {
+            x: center.x * canvas.width,
+            y: center.y * canvas.width
+        };
+        let localSize = {
+            width: size.width * canvas.width,
+            height: size.height * canvas.height
+        };
+
+        context.drawImage(tileSet,
+            tile * tileSize.width, 0,           // which tile to render
+            tileSize.width, tileSize.height,    // size in the tileset
             localCenter.x - localSize.width / 2,
             localCenter.y - localSize.height / 2,
             localSize.width, localSize.height);
@@ -125,6 +154,8 @@ MyGame.graphics = (function() {
         rotateCanvas: rotateCanvas,
         drawImage: drawImage,
         drawImageSpriteSheet: drawImageSpriteSheet,
-        drawCircle: drawCircle
+        drawImageTileSet: drawImageTileSet,
+        drawCircle: drawCircle,
+        get viewport() { return viewport; }
     };
 }());

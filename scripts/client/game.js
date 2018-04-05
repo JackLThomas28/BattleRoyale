@@ -3,7 +3,7 @@
 // This function provides the "game" code.
 //
 //------------------------------------------------------------------
-MyGame.main = (function(graphics, renderer, input, components) {
+MyGame.main = (function(graphics, renderer, input, components, assets) {
     'use strict';
 
     let lastTimeStamp = performance.now(),
@@ -20,7 +20,21 @@ MyGame.main = (function(graphics, renderer, input, components) {
         nextExplosionId = 1,
         socket = io(),
         networkQueue = Queue.create(),
-        myMouse = input.Mouse();
+        myMouse = input.Mouse(),
+        background = null,
+        world = {	// The size of the world must match the world-size of the background image
+			get left() { return 0; },
+			get top() { return 0; },
+			get width() { return 4.375; },
+			get height() { return 2.5; },
+			get bufferSize() { return 0.25; }
+		},
+		worldBuffer = {
+			get left() { return world.left + world.bufferSize; },
+			get top() { return world.top + world.bufferSize; },
+			get right() { return world.width - world.bufferSize; },
+			get bottom() { return world.height - world.bufferSize; }
+		};
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
@@ -296,6 +310,9 @@ MyGame.main = (function(graphics, renderer, input, components) {
     //------------------------------------------------------------------
     function render() {
         graphics.clear();
+
+        renderer.TiledImage.render(background, graphics.viewport);
+
         renderer.Player.render(playerSelf.model, playerSelf.texture);
         for (let id in playerOthers) {
             let player = playerOthers[id];
@@ -327,6 +344,12 @@ MyGame.main = (function(graphics, renderer, input, components) {
         requestAnimationFrame(gameLoop);
     };
 
+    function constructMap() {
+        let temp = assets['background-object'];
+        // let temp = JSON.parse(assets['background-object']);
+        console.log('temp', temp);
+    };
+
     //------------------------------------------------------------------
     //
     // Public function used to get the game initialized and then up
@@ -347,6 +370,22 @@ MyGame.main = (function(graphics, renderer, input, components) {
         //         playerSelf.model.rotate(elapsedTime, mousePosition);
         // });
 
+        var backgroundKey = 'background';
+
+		//
+		// Get the intial viewport settings prepared.
+		MyGame.graphics.viewport.set(0, 0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
+
+        constructMap();
+        //
+		// Define the TiledImage model we'll be using for our background.
+		background = components.TiledImage({
+			pixel: { width: 32, height: 32 },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
+			size: { width: world.width, height: world.height },
+			tileSize: assets[backgroundKey].tileSize,
+			assetKey: backgroundKey
+        });
+        
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
                 id: messageId++,
@@ -436,4 +475,4 @@ MyGame.main = (function(graphics, renderer, input, components) {
         initialize: initialize
     };
  
-}(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components));
+}(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));
