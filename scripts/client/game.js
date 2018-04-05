@@ -335,17 +335,6 @@ MyGame.main = (function(graphics, renderer, input, components) {
     //------------------------------------------------------------------
     function initialize() {
         console.log('game initializing...');
-        // myMouse.registerHandler('mousemove',(elapsedTime, mousePosition) => {
-        //         let message = {
-        //             id: messageId++,
-        //             elapsedTime: elapsedTime,
-        //             type: NetworkIds.INPUT_ROTATE,
-        //             position: mousePosition
-        //         };
-        //         socket.emit(NetworkIds.INPUT, message);
-        //         messageHistory.enqueue(message);
-        //         playerSelf.model.rotate(elapsedTime, mousePosition);
-        // });
 
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
