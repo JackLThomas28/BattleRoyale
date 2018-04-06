@@ -25,8 +25,8 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         world = {	// The size of the world must match the world-size of the background image
 			get left() { return 0; },
 			get top() { return 0; },
-			get width() { return 4.375; },
-			get height() { return 2.5; },
+			get width() { return 3.2; },
+			get height() { return 3.2; },
 			get bufferSize() { return 0.25; }
 		},
 		worldBuffer = {
@@ -364,14 +364,14 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         //
 		// Define the TiledImage model we'll be using for our background.
 		background = components.TiledImage({
-            pixel: { width: map.width * assets[backgroundKey].tileSize, 
-                     height: map.height * assets[backgroundKey].tileSize },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
+            pixel: { width: map.width * 32,//assets[backgroundKey].tileSize, 
+                     height: map.height * 32 },//assets[backgroundKey].tileSize },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
 			size: { width: world.width, height: world.height },
-			tileSize: assets[backgroundKey].tileSize,
+			tileSize: 32,//assets[backgroundKey].tileSize,
             assetKey: backgroundKey,
             data: map.data
         });
-        
+
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
                 id: messageId++,

@@ -83,7 +83,6 @@ MyGame.renderer.TiledImage = (function(graphics) {
 				34, //tileRenderXDist * image.tileSize, tileRenderYDist * image.tileSize,
 				{ x: ((34 % (256 / 32)) * 32) - 16, y: (34 / (256 / 32)) - 16 },//renderPosX, renderPosY,
 				{ width: tileRenderWorldWidth, height: tileRenderWorldHeight });
-
 			imageWorldXPos += tileRenderWorldWidth;
 			renderPosX += tileRenderWorldWidth;
 
