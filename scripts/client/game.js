@@ -34,7 +34,8 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
 			get top() { return world.top + world.bufferSize; },
 			get right() { return world.width - world.bufferSize; },
 			get bottom() { return world.height - world.bufferSize; }
-		};
+        },
+        map = null;
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
@@ -344,12 +345,6 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         requestAnimationFrame(gameLoop);
     };
 
-    function constructMap() {
-        let temp = assets['background-object'];
-        // let temp = JSON.parse(assets['background-object']);
-        console.log('temp', temp);
-    };
-
     //------------------------------------------------------------------
     //
     // Public function used to get the game initialized and then up
@@ -376,14 +371,16 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
 		// Get the intial viewport settings prepared.
 		MyGame.graphics.viewport.set(0, 0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
 
-        constructMap();
+        map = assets['background-object'].layers[0];
         //
 		// Define the TiledImage model we'll be using for our background.
 		background = components.TiledImage({
-			pixel: { width: 32, height: 32 },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
+            pixel: { width: map.width * assets[backgroundKey].tileSize, 
+                     height: map.height * assets[backgroundKey].tileSize },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
 			size: { width: world.width, height: world.height },
 			tileSize: assets[backgroundKey].tileSize,
-			assetKey: backgroundKey
+            assetKey: backgroundKey,
+            data: map.data
         });
         
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {

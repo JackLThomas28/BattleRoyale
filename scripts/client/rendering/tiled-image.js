@@ -76,14 +76,13 @@ MyGame.renderer.TiledImage = (function(graphics) {
 				tileRenderYDist = tileRenderWorldHeight * oneOverTileSizeWorld;
 			}
 
-			// tileAssetName = image.assetKey + '-' + numberPad(tileTop * image.tilesX + tileLeft, 4);
 			tileAssetName = image.assetKey;
 			graphics.drawImageTileSet(
 				MyGame.assets[tileAssetName],
-				tileRenderXStart * image.tileSize, tileRenderYStart * image.tileSize,
-				tileRenderXDist * image.tileSize, tileRenderYDist * image.tileSize,
-				renderPosX, renderPosY,
-				tileRenderWorldWidth, tileRenderWorldHeight);
+				{ width: 32, height: 32 },//tileRenderXStart * image.tileSize, tileRenderYStart * image.tileSize,
+				34, //tileRenderXDist * image.tileSize, tileRenderYDist * image.tileSize,
+				{ x: ((34 % (256 / 32)) * 32) - 16, y: (34 / (256 / 32)) - 16 },//renderPosX, renderPosY,
+				{ width: tileRenderWorldWidth, height: tileRenderWorldHeight });
 
 			imageWorldXPos += tileRenderWorldWidth;
 			renderPosX += tileRenderWorldWidth;
