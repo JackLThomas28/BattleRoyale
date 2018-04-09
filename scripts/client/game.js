@@ -382,29 +382,29 @@ MyGame.main = (function(graphics, renderer, input, components) {
             },
             MyGame.input.KeyEvent.DOM_VK_S, true);
         
-        // myKeyboard.registerHandler(elapsedTime => {
-        //         let message = {
-        //             id: messageId++,
-        //             elapsedTime: elapsedTime,
-        //             type: NetworkIds.INPUT_ROTATE_RIGHT,
-        //         };
-        //         socket.emit(NetworkIds.INPUT, message);
-        //         messageHistory.enqueue(message);
-        //         playerSelf.model.rotateRight(elapsedTime);
-        //     },
-        //     MyGame.input.KeyEvent.DOM_VK_D, true);
+        myKeyboard.registerHandler(elapsedTime => {
+                let message = {
+                    id: messageId++,
+                    elapsedTime: elapsedTime,
+                    type: NetworkIds.INPUT_ROTATE_RIGHT,
+                };
+                socket.emit(NetworkIds.INPUT, message);
+                messageHistory.enqueue(message);
+                playerSelf.model.rotateRight(elapsedTime);
+            },
+            MyGame.input.KeyEvent.DOM_VK_D, true);
 
-        // myKeyboard.registerHandler(elapsedTime => {
-        //         let message = {
-        //             id: messageId++,
-        //             elapsedTime: elapsedTime,
-        //             type: NetworkIds.INPUT_ROTATE_LEFT,
-        //         };
-        //         socket.emit(NetworkIds.INPUT, message);
-        //         messageHistory.enqueue(message);
-        //         playerSelf.model.rotateLeft(elapsedTime);
-        //     },
-        //     MyGame.input.KeyEvent.DOM_VK_A, true);
+        myKeyboard.registerHandler(elapsedTime => {
+                let message = {
+                    id: messageId++,
+                    elapsedTime: elapsedTime,
+                    type: NetworkIds.INPUT_ROTATE_LEFT,
+                };
+                socket.emit(NetworkIds.INPUT, message);
+                messageHistory.enqueue(message);
+                playerSelf.model.rotateLeft(elapsedTime);
+            },
+            MyGame.input.KeyEvent.DOM_VK_A, true);
 
         myKeyboard.registerHandler(elapsedTime => {
                 let message = {

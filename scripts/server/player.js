@@ -91,10 +91,11 @@ function createPlayer() {
     //------------------------------------------------------------------
     that.rotateRight = function(elapsedTime) {
         reportUpdate = true;
-        let vectorX = Math.cos(direction);
+        let vectorX = Math.cos(direction-(Math.PI/2));
+        let vectorY = Math.sin(direction-(Math.PI/2));
 
         position.x += (vectorX * elapsedTime * speed);
-        // position.y += (vectorY * elapsedTime * speed);
+        position.y += (vectorY * elapsedTime * speed);
         // direction += (rotateRate * elapsedTime);
     };
 
@@ -106,11 +107,12 @@ function createPlayer() {
     //------------------------------------------------------------------
     that.rotateLeft = function(elapsedTime) {
         reportUpdate = true;
-        let vectorX = Math.cos(direction);
+        let vectorX = Math.cos(direction-(Math.PI/2));
+        let vectorY = Math.sin(direction-(Math.PI/2));
 
         position.x -= (vectorX * elapsedTime * speed);
-        // position.y -= (vectorY * elapsedTime * speed);
-        // direction -= (rotateRate * elapsedTime);
+        position.y -= (vectorY * elapsedTime * speed);
+        // direction += (rotateRate * elapsedTime);
     };
 
     that.rotate = function(elapsedTime, pos) {
