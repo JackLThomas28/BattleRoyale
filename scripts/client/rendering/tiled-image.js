@@ -10,17 +10,21 @@ MyGame.renderer.TiledImage = (function(graphics) {
 	var that = {},
 		RENDER_POS_EPISILON = 0.00001;
 
-	//------------------------------------------------------------------
-	//
-	// Zero pad a number, adapted from Stack Overflow.
-	// Source: http://stackoverflow.com/questions/1267283/how-can-i-create-a-zerofilled-value-using-javascript
-	//
-	//------------------------------------------------------------------
-	function numberPad(n, p, c) {
-		var pad_char = typeof c !== 'undefined' ? c : '0',
-			pad = new Array(1 + p).join(pad_char);
-
-		return (pad + n).slice(-pad.length);
+	function getTilePos(tileId, tileSize, width, height) {
+		let cols = width / tileSize,
+			rows = height / tileSize,
+			count = 0;
+		for (let i = 0; i < cols; i++) {
+			for (let j = 0; j < rows; j++) {
+				count += 1;
+				if (count === tileId) {
+					return {
+						x: j * tileSize,
+						y: i * tileSize
+					};
+				}
+			}
+		}
 	}
 
 	// ------------------------------------------------------------------
@@ -49,9 +53,12 @@ MyGame.renderer.TiledImage = (function(graphics) {
 			tileRenderWorldWidth,
 			tileRenderWorldHeight;
 
+			// console.log(tileSizeWorldCoords);
 		while (worldYRemain > RENDER_POS_EPISILON) {
 			tileLeft = Math.floor(imageWorldXPos * oneOverTileSizeWorld);
 			tileTop = Math.floor(imageWorldYPos * oneOverTileSizeWorld);
+			// console.log('tileLeft', tileLeft);
+			// console.log('tileTop', tileTop);
 
 			if (worldXRemain === 1.0) {
 				tileRenderXStart = imageWorldXPos * oneOverTileSizeWorld - tileLeft;
@@ -67,6 +74,7 @@ MyGame.renderer.TiledImage = (function(graphics) {
 			tileRenderYDist = 1.0 - tileRenderYStart;
 			tileRenderWorldWidth = tileRenderXDist / oneOverTileSizeWorld;
 			tileRenderWorldHeight = tileRenderYDist / oneOverTileSizeWorld;
+			// console.log('worldWidth', tileRenderWorldWidth);
 			if (renderPosX + tileRenderWorldWidth > 1.0) {
 				tileRenderWorldWidth = 1.0 - renderPosX;
 				tileRenderXDist = tileRenderWorldWidth * oneOverTileSizeWorld;
@@ -76,12 +84,16 @@ MyGame.renderer.TiledImage = (function(graphics) {
 				tileRenderYDist = tileRenderWorldHeight * oneOverTileSizeWorld;
 			}
 
-			tileAssetName = image.assetKey;
+			let tileId = 34;
+			let tilePos = getTilePos(tileId, image.tileSize, 256, 256);
+
+			// tileAssetName = image.assetKey + '-' + numberPad(tileTop * image.tilesX + tileLeft, 4);
+		
 			graphics.drawImageTileSet(
-				MyGame.assets[tileAssetName],
-				{ width: 32, height: 32 },//tileRenderXStart * image.tileSize, tileRenderYStart * image.tileSize,
-				34, //tileRenderXDist * image.tileSize, tileRenderYDist * image.tileSize,
-				{ x: ((34 % (256 / 32)) * 32) - 16, y: (34 / (256 / 32)) - 16 },//renderPosX, renderPosY,
+				MyGame.assets[image.assetKey],
+				{ width: image.tileSize, height: image.tileSize },//tileRenderXStart * image.tileSize, tileRenderYStart * image.tileSize,
+				tilePos, //tileRenderXDist * image.tileSize, tileRenderYDist * image.tileSize,
+				{ x: renderPosX, y: renderPosY },
 				{ width: tileRenderWorldWidth, height: tileRenderWorldHeight });
 			imageWorldXPos += tileRenderWorldWidth;
 			renderPosX += tileRenderWorldWidth;

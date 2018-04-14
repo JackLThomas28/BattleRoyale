@@ -39,10 +39,10 @@ MyGame.components.Viewport = function(spec) {
 		//
 		// Compute how close the model is to the visible edge in screen-space
 		// and move the viewport accordingly.
-		var diffRight = that.right - model.center.x,
-			diffLeft = Math.abs(spec.left - model.center.x),
-			diffBottom = that.bottom - model.center.y,
-			diffTop = Math.abs(spec.top - model.center.y);
+		var diffRight = that.right - model.position.x,
+			diffLeft = Math.abs(spec.left - model.position.x),
+			diffBottom = that.bottom - model.position.y,
+			diffTop = Math.abs(spec.top - model.position.y);
 
 		if (diffRight < spec.buffer) {
 			spec.left += (spec.buffer - diffRight);
@@ -59,6 +59,20 @@ MyGame.components.Viewport = function(spec) {
 		if (diffTop < spec.buffer) {
 			spec.top -= (spec.buffer - diffTop);
 		}
+	};
+
+
+	that.move = function(vector) {
+		spec.left += vector.x;
+		spec.top += vector.y;
+
+		//
+		// Make sure we don't move beyond the viewport bounds
+		spec.left = Math.max(spec.left, 0);
+		spec.top = Math.max(spec.top, 0);
+
+		spec.left = Math.min(spec.left, 3200 - 1);
+		spec.top = Math.min(spec.top, 3200 - 1);
 	};
 
 	// ------------------------------------------------------------------

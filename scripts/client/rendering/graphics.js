@@ -14,8 +14,8 @@ MyGame.graphics = (function() {
 		left: 0
     };
     let viewport = MyGame.components.Viewport({
-        left: 0,
-        top: 0,
+        left: 0.0,
+        top: 0.0,
         buffer: 0.15	// This can't really be any larger than world.buffer, guess I could protect against that.
     });
 
@@ -100,8 +100,9 @@ MyGame.graphics = (function() {
     function drawImageSpriteSheet(spriteSheet, spriteSize, sprite, center, size) {
         let localCenter = {
             x: center.x * canvas.width,
-            y: center.y * canvas.width
+            y: center.y * canvas.height
         };
+
         let localSize = {
             width: size.width * canvas.width,
             height: size.height * canvas.height
@@ -115,23 +116,43 @@ MyGame.graphics = (function() {
             localSize.width, localSize.height);
     }
 
-    // TODO: adjust measurements for the value received from the JSON
-    function drawImageTileSet(tileSet, tileSize, tile, center, size) {
+    function drawImageTileSet(tileSet, tileSize, tilePos, center, size) {
         let localCenter = {
             x: center.x * canvas.width,
-            y: center.y * canvas.width
+            y: center.y * canvas.height
         };
+        // console.log('local center', localCenter);
         let localSize = {
             width: size.width * canvas.width,
             height: size.height * canvas.height
         };
-
+        // console.log('local size', localSize);
+        // console.log('size', size);
+        // console.log('sx', tilePos.x);
+        // console.log('sy', tilePos.y);
+        // console.log('s-width', tileSize.width);
+        // console.log('s-height', tileSize.height);
+        // console.log('x', localCenter.x - localSize.width / 2);
+        // console.log('y', localCenter.y - localSize.height / 2);
+        // console.log('width', localSize.width);
+        // console.log('height', localSize.height);
         context.drawImage(tileSet,
-            tile * tileSize.width, 0,           // which tile to render
-            tileSize.width, tileSize.height,    // size in the tileset
+            tilePos.x, tilePos.y,                 // which tile to render
+            tileSize.width, tileSize.height,      // size in the tileset
             localCenter.x - localSize.width / 2,
             localCenter.y - localSize.height / 2,
             localSize.width, localSize.height);
+        saveContext();
+        context.strokeStyle = 'black';
+        context.strokeRect(localCenter.x - localSize.width/2, localCenter.y - localSize.height/2, localSize.width, localSize.height);
+        context.strokeStyle = 'yellow';
+        context.strokeRect(viewport.left * canvas.width, 
+            viewport.top * canvas.height, 
+            viewport.width * canvas.width, 
+            viewport.height * canvas.height);
+        restoreContext();
+        // console.log('viewport top', viewport.top * canvas.height);
+        // console.log('viewport left', viewport.left * canvas.width);
     }
 
     //------------------------------------------------------------------

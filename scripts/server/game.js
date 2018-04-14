@@ -67,7 +67,7 @@ function processInput(elapsedTime) {
                 client.player.moveBack(input.message.elapsedTime);
                 break;
             case NetworkIds.INPUT_ROTATE:
-                client.player.rotate(input.message.elapsedTime, input.message.position);
+                client.player.rotate(input.message.elapsedTime, input.message.position, input.message.localPos);
                 break;
             case NetworkIds.INPUT_ROTATE_LEFT:
                 client.player.rotateLeft(input.message.elapsedTime);
@@ -152,13 +152,13 @@ function update(elapsedTime, currentTime) {
 //
 //------------------------------------------------------------------
 function updateClients(elapsedTime) {
-    //
-    // For demonstration purposes, network updates run at a slower rate than
-    // the game simulation.
-    lastUpdate += elapsedTime;
-    if (lastUpdate < STATE_UPDATE_RATE_MS) {
-        return;
-    }
+    // //
+    // // For demonstration purposes, network updates run at a slower rate than
+    // // the game simulation.
+    // lastUpdate += elapsedTime;
+    // if (lastUpdate < STATE_UPDATE_RATE_MS) {
+    //     return;
+    // }
 
     //
     // Build the missile messages one time, then reuse inside the loop

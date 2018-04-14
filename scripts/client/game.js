@@ -9,7 +9,7 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
     let lastTimeStamp = performance.now(),
         myKeyboard = input.Keyboard(),
         playerSelf = {
-            model: components.Player(),
+            model: components.Player(graphics.viewport),
             texture: MyGame.assets['player-self']
         },
         playerOthers = {},
@@ -302,6 +302,8 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
                 delete explosions[id];
             }
         }
+
+        graphics.viewport.update(playerSelf.model);
     }
 
     //------------------------------------------------------------------
@@ -358,18 +360,18 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
 
 		//
 		// Get the intial viewport settings prepared.
-		MyGame.graphics.viewport.set(0, 0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
+		MyGame.graphics.viewport.set(0.0, 0.0, 0.33); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
 
         map = assets['background-object'].layers[0];
         //
 		// Define the TiledImage model we'll be using for our background.
 		background = components.TiledImage({
-            pixel: { width: map.width * 32,//assets[backgroundKey].tileSize, 
-                     height: map.height * 32 },//assets[backgroundKey].tileSize },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
-			size: { width: world.width, height: world.height },
+            pixel: { width: map.width * 32, // 3200 //assets[backgroundKey].tileSize, 
+                     height: map.height * 32 }, // 3200 //assets[backgroundKey].tileSize },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
+			size: { width: world.width, height: world.height }, // 3.2, 3.2
 			tileSize: 32,//assets[backgroundKey].tileSize,
             assetKey: backgroundKey,
-            data: map.data
+            map: map
         });
 
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
@@ -377,7 +379,8 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
                 id: messageId++,
                 elapsedTime: elapsedTime,
                 type: NetworkIds.INPUT_ROTATE,
-                position: mousePosition
+                position: mousePosition,
+                localPos: playerSelf.model.localPosition
             };
             socket.emit(NetworkIds.INPUT, message);
             messageHistory.enqueue(message);
@@ -402,7 +405,7 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.moveForward(elapsedTime);
+                playerSelf.model.moveForward(elapsedTime, MyGame.graphics.viewport);
             },
             MyGame.input.KeyEvent.DOM_VK_W, true);
 

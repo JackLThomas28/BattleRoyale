@@ -26,11 +26,7 @@
 //------------------------------------------------------------------
 MyGame.components.TiledImage = function(spec) {
 	'use strict';
-	var viewport = {
-			left: 0,
-			top: 0
-		},
-		that = {
+	var that = {
 			get viewport() { return viewport; },
 			get tileSize() { return spec.tileSize; },
 			get size() { return spec.size; },

@@ -60,6 +60,10 @@ function createPlayer() {
         get: () => size.radius
     });
 
+    Object.defineProperty(that, 'localPosition', {
+        set: value => localPosition = value
+    });
+
     //------------------------------------------------------------------
     //
     // Moves the player forward based on how long it has been since the
@@ -68,8 +72,8 @@ function createPlayer() {
     //------------------------------------------------------------------
     that.moveForward = function(elapsedTime) {
         reportUpdate = true;
-        let vectorX = Math.cos(direction);
-        let vectorY = Math.sin(direction);
+        let vectorX = Math.cos(direction),
+            vectorY = Math.sin(direction);
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
@@ -77,8 +81,8 @@ function createPlayer() {
 
     that.moveBack = function(elapsedTime) {
         reportUpdate = true;
-        let vectorX = Math.cos(direction);
-        let vectorY = Math.sin(direction);
+        let vectorX = Math.cos(direction),
+            vectorY = Math.sin(direction);
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
@@ -113,14 +117,14 @@ function createPlayer() {
         // direction -= (rotateRate * elapsedTime);
     };
 
-    that.rotate = function(elapsedTime, pos) {
+    that.rotate = function(elapsedTime, mousePos, localPosition) {
         reportUpdate = true;
         // TODO: Divide dynamically by the canvas width and height
-        let tempPos = {
-            x: (pos.x/600.0) - position.x,
-            y: (pos.y/600.0) - position.y
+        let pos = {
+            x: (mousePos.x/600.0) - localPosition.x,
+            y: (mousePos.y/600.0) - localPosition.y
         }
-        direction = Math.atan2(tempPos.y,tempPos.x);
+        direction = Math.atan2(pos.y,pos.x);
     };
     //------------------------------------------------------------------
     //
