@@ -61,20 +61,6 @@ MyGame.components.Viewport = function(spec) {
 		}
 	};
 
-
-	that.move = function(vector) {
-		spec.left += vector.x;
-		spec.top += vector.y;
-
-		//
-		// Make sure we don't move beyond the viewport bounds
-		spec.left = Math.max(spec.left, 0);
-		spec.top = Math.max(spec.top, 0);
-
-		spec.left = Math.min(spec.left, 3200 - 1);
-		spec.top = Math.min(spec.top, 3200 - 1);
-	};
-
 	// ------------------------------------------------------------------
 	//
 	// Use to specify new properties for the viewport.

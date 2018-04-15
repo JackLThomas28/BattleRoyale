@@ -10,10 +10,6 @@ MyGame.components.Player = function(viewport) {
         x: 0,
         y: 0
     };
-    let localPosition = {
-        x: viewport.width / 2,
-        y: viewport.height / 2
-    };
     let size = {
         width: 0.05,
         height: 0.05
@@ -47,10 +43,6 @@ MyGame.components.Player = function(viewport) {
         get: () => size
     });
 
-    Object.defineProperty(that, 'localPosition', {
-        get: () => localPosition
-    });
-
     //------------------------------------------------------------------
     //
     // Public function that moves the player in the current direction.
@@ -58,38 +50,20 @@ MyGame.components.Player = function(viewport) {
     //------------------------------------------------------------------
     that.moveForward = function(elapsedTime) {
         let vectorX = Math.cos(direction),
-            vectorY = Math.sin(direction),
-            proposedCenter = {
-                x: localPosition.x + (vectorX * elapsedTime * speed),
-                y: localPosition.y + (vectorY * elapsedTime * speed)
-            };
+            vectorY = Math.sin(direction);
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
-        
-        let pos = proposedCenter;
-        pos = moveViewport(proposedCenter, elapsedTime, pos);
 
-        localPosition.x = pos.x;
-        localPosition.y = pos.y;
     };
 
     that.moveBack = function(elapsedTime) {
         let vectorX = Math.cos(direction),
-            vectorY = Math.sin(direction),
-            proposedCenter = {
-                x: localPosition.x - (vectorX * elapsedTime * speed),
-                y: localPosition.y - (vectorY * elapsedTime * speed)
-            };
+            vectorY = Math.sin(direction);
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
-        
-        let pos = proposedCenter;
-        pos = moveViewport(proposedCenter, elapsedTime, pos);
 
-        localPosition.x = pos.x;
-        localPosition.y = pos.y;
     };
 
     //------------------------------------------------------------------
@@ -99,20 +73,11 @@ MyGame.components.Player = function(viewport) {
     //------------------------------------------------------------------
     that.rotateRight = function(elapsedTime) {
         let vectorX = Math.cos(direction),
-            vectorY = Math.sin(direction),
-            proposedCenter = {
-                x: localPosition.x + (vectorX * elapsedTime * speed),
-                y: localPosition.y + (vectorY * elapsedTime * speed)
-            };
+            vectorY = Math.sin(direction);
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
-        // direction += (rotateRate * elapsedTime);
-        let pos = proposedCenter;
-        pos = moveViewport(proposedCenter, elapsedTime, pos);
 
-        localPosition.x = pos.x;
-        localPosition.y = pos.y;
     };
 
     //------------------------------------------------------------------
@@ -122,27 +87,16 @@ MyGame.components.Player = function(viewport) {
     //------------------------------------------------------------------
     that.rotateLeft = function(elapsedTime) {
         let vectorX = Math.cos(direction),
-            vectorY = Math.sin(direction),
-            proposedCenter = {
-                x: localPosition.x - (vectorX * elapsedTime * speed),
-                y: localPosition.y - (vectorY * elapsedTime * speed)
-            };
+            vectorY = Math.sin(direction);
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
-        // direction -= (rotateRate * elapsedTime);
-        let pos = proposedCenter;
-        pos = moveViewport(proposedCenter, elapsedTime, pos);
-
-        localPosition.x = pos.x;
-        localPosition.y = pos.y;
     };
 
-    that.rotate = function(elapsedTime, mousePos) {
-        // TODO: Divide dynamically by the canvas width and height
+    that.rotate = function(elapsedTime, mousePos, canvas) {
         let pos = {
-            x: (mousePos.x/600.0) - localPosition.x,
-            y: (mousePos.y/600.0) - localPosition.y
+            x: (mousePos.x/canvas.width) - position.x,
+            y: (mousePos.y/canvas.height) - position.y
         }
         direction = Math.atan2(pos.y,pos.x);
         

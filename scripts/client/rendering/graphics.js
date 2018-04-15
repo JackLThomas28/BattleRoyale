@@ -18,7 +18,79 @@ MyGame.graphics = (function() {
         top: 0.0,
         buffer: 0.15	// This can't really be any larger than world.buffer, guess I could protect against that.
     });
+    let resizeHandlers = [];
+    
+    //------------------------------------------------------------------
+	//
+	// Used to set the size of the canvas to match the size of the browser
+	// window so that the rendering stays pixel perfect.
+	//
+	//------------------------------------------------------------------
+	function resizeCanvas() {
+		var smallestSize = 0,
+			handler = null;
 
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		//
+		// Have to figure out where the upper left corner of the unit world is
+		// based on whether the width or height is the largest dimension.
+		if (canvas.width < canvas.height) {
+			smallestSize = canvas.width;
+			world.size = smallestSize * 0.9;
+			world.left = Math.floor(canvas.width * 0.05);
+			world.top = (canvas.height - world.size) / 2;
+		} else {
+			smallestSize = canvas.height;
+			world.size = smallestSize * 0.9;
+			world.top = Math.floor(canvas.height * 0.05);
+			world.left = (canvas.width - world.size) / 2;
+		}
+
+		//
+		// Notify interested parties of the canvas resize event.
+		for (handler in resizeHandlers) {
+			resizeHandlers[handler](true);
+		}
+	}
+
+	//------------------------------------------------------------------
+	//
+	// Quick to allow other code to be notified when a resize event occurs.
+	//
+	//------------------------------------------------------------------
+	function notifyResize(handler) {
+		resizeHandlers.push(handler);
+	}
+
+	//------------------------------------------------------------------
+	//
+	// Toggles the full-screen mode.  If not in full-screen, it enters
+	// full-screen.  If in full screen, it exits full-screen.
+	//
+	//------------------------------------------------------------------
+	function toggleFullScreen(element) {
+		var	fullScreenElement = document.fullscreenElement ||
+								document.webkitFullscreenElement ||
+								document.mozFullScreenElement ||
+								document.msFullscreenElement;
+
+		element.requestFullScreen = element.requestFullScreen ||
+									element.webkitRequestFullscreen ||
+									element.mozRequestFullScreen ||
+									element.msRequestFullscreen;
+		document.exitFullscreen =	document.exitFullscreen ||
+									document.webkitExitFullscreen ||
+									document.mozCancelFullScreen ||
+									document.msExitFullscreen;
+
+		if (!fullScreenElement && element.requestFullScreen) {
+			element.requestFullScreen();
+		} else if (fullScreenElement) {
+			document.exitFullscreen();
+		}
+	}
     //------------------------------------------------------------------
     //
     // Place a 'clear' function on the Canvas prototype, this makes it a part
@@ -31,7 +103,26 @@ MyGame.graphics = (function() {
         this.clearRect(0, 0, canvas.width, canvas.height);
         this.restore();
     };
+    
+    function initialize() {
+		canvas = document.getElementById('canvas-main');
+		context = canvas.getContext('2d');
 
+		window.addEventListener('resize', function() {
+			resizeCanvas();
+		}, false);
+		window.addEventListener('orientationchange', function() {
+			resizeCanvas();
+		}, false);
+		window.addEventListener('deviceorientation', function() {
+			resizeCanvas();
+		}, false);
+
+		//
+		// Force the canvas to resize to the window first time in, otherwise
+		// the canvas is a default we don't want.
+		resizeCanvas();
+	}
     //------------------------------------------------------------------
     //
     // Public function that allows the client code to clear the canvas.
@@ -116,43 +207,50 @@ MyGame.graphics = (function() {
             localSize.width, localSize.height);
     }
 
-    function drawImageTileSet(tileSet, tileSize, tilePos, center, size) {
-        let localCenter = {
-            x: center.x * canvas.width,
-            y: center.y * canvas.height
-        };
-        // console.log('local center', localCenter);
-        let localSize = {
-            width: size.width * canvas.width,
-            height: size.height * canvas.height
-        };
-        // console.log('local size', localSize);
-        // console.log('size', size);
-        // console.log('sx', tilePos.x);
-        // console.log('sy', tilePos.y);
-        // console.log('s-width', tileSize.width);
-        // console.log('s-height', tileSize.height);
-        // console.log('x', localCenter.x - localSize.width / 2);
-        // console.log('y', localCenter.y - localSize.height / 2);
-        // console.log('width', localSize.width);
-        // console.log('height', localSize.height);
-        context.drawImage(tileSet,
-            tilePos.x, tilePos.y,                 // which tile to render
-            tileSize.width, tileSize.height,      // size in the tileset
-            localCenter.x - localSize.width / 2,
-            localCenter.y - localSize.height / 2,
-            localSize.width, localSize.height);
-        saveContext();
-        context.strokeStyle = 'black';
-        context.strokeRect(localCenter.x - localSize.width/2, localCenter.y - localSize.height/2, localSize.width, localSize.height);
-        context.strokeStyle = 'yellow';
-        context.strokeRect(viewport.left * canvas.width, 
-            viewport.top * canvas.height, 
-            viewport.width * canvas.width, 
-            viewport.height * canvas.height);
-        restoreContext();
-        // console.log('viewport top', viewport.top * canvas.height);
-        // console.log('viewport left', viewport.left * canvas.width);
+    function drawImageTileSet() {
+        var image = arguments[0],
+        sx, sy,
+        sWidth, sHeight,
+        dx, dy,
+        dWidth, dHeight,
+        useViewport;
+
+        if (arguments.length === 5 || arguments.length === 6) {
+            sx = 0;
+            sy = 0;
+            sWidth = image.width;
+            sHeight = image.height;
+            dx = arguments[1];
+            dy = arguments[2];
+            dWidth = arguments[3];
+            dHeight = arguments[4];
+            useViewport = arguments[5];
+        } else if (arguments.length === 9 || arguments.length === 10) {
+            sx = arguments[1];
+            sy = arguments[2];
+            sWidth = arguments[3];
+            sHeight = arguments[4];
+            dx = arguments[5];
+            dy = arguments[6];
+            dWidth = arguments[7];
+            dHeight = arguments[8];
+            useViewport = arguments[9];
+        }
+
+        if (useViewport) {
+            dx -= viewport.left;
+            dy -= viewport.top;
+        }
+
+        //
+        // Convert from world to pixel coordinates on a few items.  Using
+        // floor and ceil to prevent pixel boundary rendering issues.
+        context.drawImage(
+            image,
+            sx, sy,
+            sWidth, sHeight,
+            Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
+            Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
     }
 
     //------------------------------------------------------------------
@@ -169,6 +267,7 @@ MyGame.graphics = (function() {
     }
 
     return {
+        initialize: initialize,
         clear: clear,
         saveContext: saveContext,
         restoreContext: restoreContext,

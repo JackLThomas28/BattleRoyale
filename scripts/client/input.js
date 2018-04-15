@@ -46,9 +46,8 @@ MyGame.input.Mouse = function Mouse() {
 					x: that.mouseMove[event].clientX - rect.left,
 					y: that.mouseMove[event].clientY - rect.top
 				};
-				// console.log(position);
 
-				that.handlersMove[handler](elapsedTime, position);
+				that.handlersMove[handler](elapsedTime, position, {width: canvas.width, height: canvas.height});
 			}
 		}
 		

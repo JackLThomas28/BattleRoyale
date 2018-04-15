@@ -60,9 +60,9 @@ function createPlayer() {
         get: () => size.radius
     });
 
-    Object.defineProperty(that, 'localPosition', {
-        set: value => localPosition = value
-    });
+    // Object.defineProperty(that, 'localPosition', {
+    //     set: value => localPosition = value
+    // });
 
     //------------------------------------------------------------------
     //
@@ -117,12 +117,12 @@ function createPlayer() {
         // direction -= (rotateRate * elapsedTime);
     };
 
-    that.rotate = function(elapsedTime, mousePos, localPosition) {
+    that.rotate = function(elapsedTime, mousePos, canvas) {//, localPosition) {
         reportUpdate = true;
         // TODO: Divide dynamically by the canvas width and height
         let pos = {
-            x: (mousePos.x/600.0) - localPosition.x,
-            y: (mousePos.y/600.0) - localPosition.y
+            x: (mousePos.x/canvas.width) - position.x,
+            y: (mousePos.y/canvas.height) - position.y
         }
         direction = Math.atan2(pos.y,pos.x);
     };

@@ -168,6 +168,17 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         let memory = Queue.create();
         while (!messageHistory.empty) {
             let message = messageHistory.dequeue();
+            switch (message.type) {
+                case 'move':
+                    playerSelf.model.move(message.elapsedTime);
+                    break;
+                case 'rotate-right':
+                    playerSelf.model.rotateRight(message.elapsedTime);
+                    break;
+                case 'rotate-left':
+                    playerSelf.model.rotateLeft(message.elapsedTime);
+                    break;
+            }
             memory.enqueue(message);
         }
         messageHistory = memory;
@@ -358,33 +369,35 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
 
         var backgroundKey = 'background';
 
+        MyGame.graphics.initialize();
+
 		//
 		// Get the intial viewport settings prepared.
-		MyGame.graphics.viewport.set(0.0, 0.0, 0.33); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
+		MyGame.graphics.viewport.set(0.0, 0.0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
 
         map = assets['background-object'].layers[0];
         //
 		// Define the TiledImage model we'll be using for our background.
 		background = components.TiledImage({
-            pixel: { width: map.width * 32, // 3200 //assets[backgroundKey].tileSize, 
-                     height: map.height * 32 }, // 3200 //assets[backgroundKey].tileSize },//width: assets[backgroundKey].width, height: assets[backgroundKey].height },
-			size: { width: world.width, height: world.height }, // 3.2, 3.2
-			tileSize: 32,//assets[backgroundKey].tileSize,
+            pixel: { width: map.width * 32,
+                     height: map.height * 32 },
+			size: { width: world.width, height: world.height },
+			tileSize: 32,
             assetKey: backgroundKey,
             map: map
         });
 
-        myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
+        myMouse.registerHandler('mousemove', (elapsedTime, mousePosition, canvas) => {
 			let message = {
                 id: messageId++,
                 elapsedTime: elapsedTime,
                 type: NetworkIds.INPUT_ROTATE,
                 position: mousePosition,
-                localPos: playerSelf.model.localPosition
+                canvas: canvas
             };
             socket.emit(NetworkIds.INPUT, message);
             messageHistory.enqueue(message);
-            playerSelf.model.rotate(elapsedTime, mousePosition);
+            playerSelf.model.rotate(elapsedTime, mousePosition, canvas);
         });
         
         myMouse.registerHandler('mousedown', elapsedTime => {
@@ -420,30 +433,6 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
                 playerSelf.model.moveBack(elapsedTime);
             },
             MyGame.input.KeyEvent.DOM_VK_S, true);
-        
-        // myKeyboard.registerHandler(elapsedTime => {
-        //         let message = {
-        //             id: messageId++,
-        //             elapsedTime: elapsedTime,
-        //             type: NetworkIds.INPUT_ROTATE_RIGHT,
-        //         };
-        //         socket.emit(NetworkIds.INPUT, message);
-        //         messageHistory.enqueue(message);
-        //         playerSelf.model.rotateRight(elapsedTime);
-        //     },
-        //     MyGame.input.KeyEvent.DOM_VK_D, true);
-
-        // myKeyboard.registerHandler(elapsedTime => {
-        //         let message = {
-        //             id: messageId++,
-        //             elapsedTime: elapsedTime,
-        //             type: NetworkIds.INPUT_ROTATE_LEFT,
-        //         };
-        //         socket.emit(NetworkIds.INPUT, message);
-        //         messageHistory.enqueue(message);
-        //         playerSelf.model.rotateLeft(elapsedTime);
-        //     },
-        //     MyGame.input.KeyEvent.DOM_VK_A, true);
 
         myKeyboard.registerHandler(elapsedTime => {
                 let message = {
