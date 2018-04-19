@@ -54,7 +54,6 @@ MyGame.components.Player = function(viewport) {
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
-
     };
 
     that.moveBack = function(elapsedTime) {
@@ -63,7 +62,6 @@ MyGame.components.Player = function(viewport) {
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
-
     };
 
     //------------------------------------------------------------------
@@ -77,7 +75,6 @@ MyGame.components.Player = function(viewport) {
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
-
     };
 
     //------------------------------------------------------------------
@@ -93,13 +90,12 @@ MyGame.components.Player = function(viewport) {
         position.y -= (vectorY * elapsedTime * speed);
     };
 
-    that.rotate = function(elapsedTime, mousePos, canvas) {
+    that.rotate = function(elapsedTime, mousePos, worldSize) {
         let pos = {
-            x: (mousePos.x/canvas.width) - position.x,
-            y: (mousePos.y/canvas.height) - position.y
+            x: (mousePos.x/worldSize) - position.x,
+            y: (mousePos.y/worldSize) - position.y
         }
         direction = Math.atan2(pos.y,pos.x);
-        
     }
 
     that.update = function(elapsedTime) {

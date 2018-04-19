@@ -34,7 +34,7 @@ MyGame.components.TiledImage = function(spec) {
 			get assetKey() { return spec.assetKey; },
 			get tilesX() { return spec.pixel.width / spec.tileSize; },
 			get tilesY() { return spec.pixel.height / spec.tileSize; },
-			get data() {return spec.data}
+			get map() {return spec.map}
 		};
 
 	return that;

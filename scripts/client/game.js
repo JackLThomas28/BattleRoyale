@@ -358,6 +358,25 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         requestAnimationFrame(gameLoop);
     };
 
+    // function used to sort the map into separate arrays for each row 
+    // of the map
+    function parseMap(map) {
+        let newMap = {
+            height: map.height,
+            width: map.width,
+            data: []
+        };
+        let row = [];
+        for (let i = 0; i < map.data.length; i++) {
+            if (i % map.width === 0 && i !== 0) {
+                newMap.data.push(row);
+                row = [];
+            }
+            row.push(map.data[i]);
+        }
+        return newMap;
+    }
+
     //------------------------------------------------------------------
     //
     // Public function used to get the game initialized and then up
@@ -376,6 +395,7 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
 		MyGame.graphics.viewport.set(0.0, 0.0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
 
         map = assets['background-object'].layers[0];
+        map = parseMap(map);
         //
 		// Define the TiledImage model we'll be using for our background.
 		background = components.TiledImage({
@@ -387,17 +407,17 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
             map: map
         });
 
-        myMouse.registerHandler('mousemove', (elapsedTime, mousePosition, canvas) => {
+        myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
                 id: messageId++,
                 elapsedTime: elapsedTime,
                 type: NetworkIds.INPUT_ROTATE,
                 position: mousePosition,
-                canvas: canvas
+                worldSize: graphics.world.size
             };
             socket.emit(NetworkIds.INPUT, message);
             messageHistory.enqueue(message);
-            playerSelf.model.rotate(elapsedTime, mousePosition, canvas);
+            playerSelf.model.rotate(elapsedTime, mousePosition, graphics.world.size);
         });
         
         myMouse.registerHandler('mousedown', elapsedTime => {

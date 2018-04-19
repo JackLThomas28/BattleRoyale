@@ -6,21 +6,20 @@
 MyGame.graphics = (function() {
     'use strict';
 
-    let canvas = document.getElementById('canvas-main');
-    let context = canvas.getContext('2d');
-    let world = {
-        size: 0,
-		top: 0,
-		left: 0
-    };
-    let viewport = MyGame.components.Viewport({
-        left: 0.0,
-        top: 0.0,
-        buffer: 0.15	// This can't really be any larger than world.buffer, guess I could protect against that.
-    });
-    let resizeHandlers = [];
-    
-    //------------------------------------------------------------------
+	var canvas = null,
+		context = null,
+		world = {
+			size: 0,
+			top: 0,
+			left: 0
+		},
+		viewport = MyGame.components.Viewport({
+			left: 0,
+			top: 0,
+			buffer: 0.15	// This can't really be any larger than world.buffer, guess I could protect against that.
+		}),
+		resizeHandlers = [];
+	//------------------------------------------------------------------
 	//
 	// Used to set the size of the canvas to match the size of the browser
 	// window so that the rendering stays pixel perfect.
@@ -90,21 +89,16 @@ MyGame.graphics = (function() {
 		} else if (fullScreenElement) {
 			document.exitFullscreen();
 		}
-	}
-    //------------------------------------------------------------------
-    //
-    // Place a 'clear' function on the Canvas prototype, this makes it a part
-    // of the canvas, rather than making a function that calls and does it.
-    //
-    //------------------------------------------------------------------
-    CanvasRenderingContext2D.prototype.clear = function() {
-        this.save();
-        this.setTransform(1, 0, 0, 1, 0, 0);
-        this.clearRect(0, 0, canvas.width, canvas.height);
-        this.restore();
-    };
-    
-    function initialize() {
+    }
+
+   	//------------------------------------------------------------------
+	//
+	// This provides initialization of the canvas.  From here the various
+	// event listeners we care about are prepared, along with setting up
+	// the canvas for rendering.
+	//
+	//------------------------------------------------------------------
+	function initialize() {
 		canvas = document.getElementById('canvas-main');
 		context = canvas.getContext('2d');
 
@@ -122,7 +116,21 @@ MyGame.graphics = (function() {
 		// Force the canvas to resize to the window first time in, otherwise
 		// the canvas is a default we don't want.
 		resizeCanvas();
-	}
+    }
+
+    //------------------------------------------------------------------
+    //
+    // Place a 'clear' function on the Canvas prototype, this makes it a part
+    // of the canvas, rather than making a function that calls and does it.
+    //
+    //------------------------------------------------------------------
+    CanvasRenderingContext2D.prototype.clear = function() {
+        this.save();
+        this.setTransform(1, 0, 0, 1, 0, 0);
+        this.clearRect(0, 0, canvas.width, canvas.height);
+        this.restore();
+    };
+
     //------------------------------------------------------------------
     //
     // Public function that allows the client code to clear the canvas.
@@ -166,21 +174,75 @@ MyGame.graphics = (function() {
     // Draw an image into the local canvas coordinate system.
     //
     //------------------------------------------------------------------
-    function drawImage(texture, center, size) {
-        let localCenter = {
-            x: center.x * canvas.width,
-            y: center.y * canvas.width
-        };
-        let localSize = {
-            width: size.width * canvas.width,
-            height: size.height * canvas.height
-        };
+    function drawImage() {
+		var image = arguments[0],
+			sx, sy,
+			sWidth, sHeight,
+			dx, dy,
+			dWidth, dHeight,
+			useViewport;
 
-        context.drawImage(texture,
-            localCenter.x - localSize.width / 2,
-            localCenter.y - localSize.height / 2,
-            localSize.width,
-            localSize.height);
+		//
+        // Figure out which version of drawImage was called and extrac the correct values
+        let t = false;
+		if (arguments.length === 5 || arguments.length === 6) {
+			sx = 0;
+			sy = 0;
+			sWidth = image.width;
+			sHeight = image.height;
+			dx = arguments[1];
+			dy = arguments[2];
+			dWidth = arguments[3];
+			dHeight = arguments[4];
+            useViewport = arguments[5];
+            t = true;
+		} else if (arguments.length === 9 || arguments.length === 10) {
+			sx = arguments[1];
+			sy = arguments[2];
+			sWidth = arguments[3];
+			sHeight = arguments[4];
+			dx = arguments[5];
+			dy = arguments[6];
+			dWidth = arguments[7];
+			dHeight = arguments[8];
+			useViewport = arguments[9];
+		}
+
+		if (useViewport) {
+			dx -= viewport.left;
+			dy -= viewport.top;
+		}
+
+        let x = Math.floor(dx * world.size) - Math.ceil(dWidth * world.size) / 2;
+        let y = Math.floor(dy * world.size) - Math.ceil(dHeight * world.size) / 2;
+        if (t) {
+            console.log('graphics x', x);
+        }
+		//
+		// Convert from world to pixel coordinates on a few items.  Using
+		// floor and ceil to prevent pixel boundary rendering issues.
+		context.drawImage(
+			image,
+			sx, sy,
+            sWidth, sHeight,
+            x, y,
+            Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
+			// Math.floor(dx * world.size) - , Math.floor(dy * world.size),
+			// Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
+        // let localCenter = {
+        //     x: center.x * canvas.width,
+        //     y: center.y * canvas.width
+        // };
+        // let localSize = {
+        //     width: size.width * canvas.width,
+        //     height: size.height * canvas.height
+        // };
+
+        // context.drawImage(texture,
+        //     localCenter.x - localSize.width / 2,
+        //     localCenter.y - localSize.height / 2,
+        //     localSize.width,
+        //     localSize.height);
     }
 
     //------------------------------------------------------------------
@@ -191,68 +253,68 @@ MyGame.graphics = (function() {
     function drawImageSpriteSheet(spriteSheet, spriteSize, sprite, center, size) {
         let localCenter = {
             x: center.x * canvas.width,
-            y: center.y * canvas.height
+            y: center.y * canvas.width
         };
-
         let localSize = {
             width: size.width * canvas.width,
             height: size.height * canvas.height
         };
 
         context.drawImage(spriteSheet,
-            sprite * spriteSize.width, 0,           // which sprite to render
+            sprite * spriteSize.width, 0,                 // which sprite to render
             spriteSize.width, spriteSize.height,    // size in the spritesheet
             localCenter.x - localSize.width / 2,
             localCenter.y - localSize.height / 2,
             localSize.width, localSize.height);
     }
 
-    function drawImageTileSet() {
-        var image = arguments[0],
-        sx, sy,
-        sWidth, sHeight,
-        dx, dy,
-        dWidth, dHeight,
-        useViewport;
+	// function drawImageTileSet() {
+	// 	var image = arguments[0],
+	// 		sx, sy,
+	// 		sWidth, sHeight,
+	// 		dx, dy,
+	// 		dWidth, dHeight,
+	// 		useViewport;
 
-        if (arguments.length === 5 || arguments.length === 6) {
-            sx = 0;
-            sy = 0;
-            sWidth = image.width;
-            sHeight = image.height;
-            dx = arguments[1];
-            dy = arguments[2];
-            dWidth = arguments[3];
-            dHeight = arguments[4];
-            useViewport = arguments[5];
-        } else if (arguments.length === 9 || arguments.length === 10) {
-            sx = arguments[1];
-            sy = arguments[2];
-            sWidth = arguments[3];
-            sHeight = arguments[4];
-            dx = arguments[5];
-            dy = arguments[6];
-            dWidth = arguments[7];
-            dHeight = arguments[8];
-            useViewport = arguments[9];
-        }
+	// 	//
+	// 	// Figure out which version of drawImage was called and extrac the correct values
+	// 	if (arguments.length === 5 || arguments.length === 6) {
+	// 		sx = 0;
+	// 		sy = 0;
+	// 		sWidth = image.width;
+	// 		sHeight = image.height;
+	// 		dx = arguments[1];
+	// 		dy = arguments[2];
+	// 		dWidth = arguments[3];
+	// 		dHeight = arguments[4];
+	// 		useViewport = arguments[5];
+	// 	} else if (arguments.length === 9 || arguments.length === 10) {
+	// 		sx = arguments[1];
+	// 		sy = arguments[2];
+	// 		sWidth = arguments[3];
+	// 		sHeight = arguments[4];
+	// 		dx = arguments[5];
+	// 		dy = arguments[6];
+	// 		dWidth = arguments[7];
+	// 		dHeight = arguments[8];
+	// 		useViewport = arguments[9];
+	// 	}
 
-        if (useViewport) {
-            dx -= viewport.left;
-            dy -= viewport.top;
-        }
+	// 	if (useViewport) {
+	// 		dx -= viewport.left;
+	// 		dy -= viewport.top;
+	// 	}
 
-        //
-        // Convert from world to pixel coordinates on a few items.  Using
-        // floor and ceil to prevent pixel boundary rendering issues.
-        context.drawImage(
-            image,
-            sx, sy,
-            sWidth, sHeight,
-            Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
-            Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
-    }
-
+	// 	//
+	// 	// Convert from world to pixel coordinates on a few items.  Using
+	// 	// floor and ceil to prevent pixel boundary rendering issues.
+	// 	context.drawImage(
+	// 		image,
+	// 		sx, sy,
+	// 		sWidth, sHeight,
+	// 		Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
+	// 		Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
+	// }
     //------------------------------------------------------------------
     //
     // Draw a circle into the local canvas coordinate system.
@@ -274,8 +336,8 @@ MyGame.graphics = (function() {
         rotateCanvas: rotateCanvas,
         drawImage: drawImage,
         drawImageSpriteSheet: drawImageSpriteSheet,
-        drawImageTileSet: drawImageTileSet,
         drawCircle: drawCircle,
-        get viewport() { return viewport; }
+        get viewport() { return viewport; },
+        world: world
     };
 }());

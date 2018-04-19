@@ -54,9 +54,16 @@ MyGame.renderer.TiledImage = (function(graphics) {
 			tileRenderWorldHeight;
 
 		while (worldYRemain > RENDER_POS_EPISILON) {
-			tileLeft = Math.floor(imageWorldXPos * oneOverTileSizeWorld);
-			tileTop = Math.floor(imageWorldYPos * oneOverTileSizeWorld);
+			tileLeft = Math.max(Math.floor(imageWorldXPos * oneOverTileSizeWorld), 0);
+			tileTop = Math.max(Math.floor(imageWorldYPos * oneOverTileSizeWorld), 0);
 
+			// console.log(tileTop);
+			// let arrPos = (tileTop * image.map.height) + (tileLeft);
+			// console.log(arrPos);
+			let tileId = image.map.data[tileTop][tileLeft];
+			// console.log(tileId);
+			let tilePos = getTilePos(tileId, image.tileSize, 256, 256);
+			
 			if (worldXRemain === 1.0) {
 				tileRenderXStart = imageWorldXPos * oneOverTileSizeWorld - tileLeft;
 			} else {
@@ -81,17 +88,12 @@ MyGame.renderer.TiledImage = (function(graphics) {
 				tileRenderYDist = tileRenderWorldHeight * oneOverTileSizeWorld;
 			}
 
-			let tileId = 34;
-			let tilePos = getTilePos(tileId, image.tileSize, 256, 256);
-
 			// tileAssetName = image.assetKey + '-' + numberPad(tileTop * image.tilesX + tileLeft, 4);
-		
-			graphics.drawImageTileSet(MyGame.assets[image.assetKey],
+			graphics.drawImage(MyGame.assets[image.assetKey],
 				tilePos.x, tilePos.y,           // sx, sy
 				image.tileSize, image.tileSize, // swidth, sheight
 				renderPosX, renderPosY,
-				tileRenderWorldWidth, tileRenderWorldHeight,
-				true);
+				tileRenderWorldWidth, tileRenderWorldHeight);
 			imageWorldXPos += tileRenderWorldWidth;
 			renderPosX += tileRenderWorldWidth;
 
