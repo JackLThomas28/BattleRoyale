@@ -3,7 +3,8 @@ MyGame = {
     components: {},
     renderer: {},
     utilities: {},
-    assets: {}
+    assets: {},
+    screens: {}
 };
 
 //------------------------------------------------------------------
@@ -17,6 +18,33 @@ MyGame = {
 MyGame.loader = (function() {
     'use strict';
     let scriptOrder = [
+        {
+            scripts: ['menu'],
+            message: 'Menu loaded',
+            onComplete: null,
+        }, {
+            scripts: ['newPlayer'],
+            message: 'New Player loaded',
+            onComplete: null,
+        }, {
+            scripts: ['options'],
+            message: 'Options loaded',
+            onComplete: null
+        }, {
+            scripts: ['highscores'],
+            message: 'High Scores loaded',
+            onComplete: null
+        },{
+            scripts: ['about'],
+            message: 'About loaded',
+            onComplete: null
+        },{
+            scripts: ['gameplay'],
+            message: 'Game Play loaded',
+            onComplete: null
+        },
+
+
         {
             scripts: ['../shared/network-ids'],
             message: 'Network Ids loaded',

@@ -2,11 +2,64 @@
 <html lang = "en-US">
 <head>
 	<meta charset = "UTF-8">
+	<!-- Need to Change this to out game name  -->
 	<title>Multiplayer - Complete</title>
+	<link rel = "stylesheet" type = "text/css" href = "main.css">
 	<script src = "/node_modules/socket.io-client/dist/socket.io.slim.js"></script>
 </head>
 <body>
-	<canvas id = "canvas-main" width = "600" height = "600" style = "background-color: rgb(0, 0, 0)"></canvas>
+	<!-- <canvas id = "canvas-main" width = "600" height = "600" style = "background-color: rgb(0, 0, 0)"></canvas> -->
+
+	<div id = "game">
+		<div id = "main-menu" class = "screen">
+			<ul class = "menu">
+				<li><button id = "id-new-game">New&nbsp;Game</button></li>
+				<li><button id = "id-new-player">Create&nbsp;Player</button></li>
+				<li><button id = "id-options">Options</button></li>
+				<li><button id = "id-high-scores">High&nbsp;Scores</button></li>
+				<li><button id = "id-about">About</button></li>
+			</ul>
+		</div>
+		<div id = "game-play" class = "screen">
+			<table>
+				<canvas id = "canvas-main" width = "600" height = "600" style = "background-color: rgb(0, 0, 0)"></canvas>
+
+			</table>
+		</div>
+		<div id = "new-player" class = "screen">
+			<h1>Create Player</h1>
+			
+			<ul class = "menu">
+				<li>User Name:<br><input type="text" name="username"></li>
+				<li>Password:<br><input type="text" name="pasword"></li>
+				<li><button id = "id-create-player">Create</button> <button id = "id-new-player-back">Back</button></li>
+			</ul>
+		</div>
+
+		<div id = "options" class = "screen">
+			<h1>Options</h1>
+			<ul class = "menu">
+				<li><button id = "id-options-back">Back</button></li>
+			</ul>
+		</div>
+
+		<div id = "high-scores" class = "screen">
+			<h1>High Scores</h1>
+			<div id="scores"></div>
+			<ul class = "menu">
+				<li><button id = "id-high-scores-back">Back</button></li>
+			</ul>
+		</div>
+	
+		<div id = "about" class = "screen">
+			<h1>About</h1>
+			<p>Developed by</p>
+			<p>Bobby Handley</p>
+			<ul class = "menu">
+				<li><button id = "id-about-back">Back</button></li>
+			</ul>
+		</div>
+	</div>
 
 	<script data-main = "scripts/client/loader" src = "scripts/client/require.js"></script>
 </body>
