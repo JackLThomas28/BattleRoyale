@@ -64,7 +64,7 @@ MyGame.renderer.DeploymentMap = (function(graphics) {
 
     function renderTimer(time) {
         let message = {
-            font: 'Arial',
+            font: '15px Arial',
             fill: 'white',
             text: 'Click in the grid where you would like to deploy',
             position: {
@@ -75,7 +75,7 @@ MyGame.renderer.DeploymentMap = (function(graphics) {
         graphics.drawText(message);
 
         let text = {
-            font: 'Arial',
+            font: '30px Arial',
             fill: 'white',
             text: 'You have ' + String(time) + ' seconds remaining',
             position: {

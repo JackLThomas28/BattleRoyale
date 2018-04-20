@@ -37,6 +37,7 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         },
         map = null,
         exitDeploymentScreen = null,
+        miniMap = null,
         deploymentMap = null;
 
     
@@ -364,6 +365,7 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
             for (let id in explosions) {
                 renderer.AnimatedSprite.render(explosions[id]);
             }
+            renderer.MiniMap.render(miniMap, playerSelf.model.position);
         }
     }
 
@@ -414,33 +416,29 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         var backgroundKey = 'background';
 
         MyGame.graphics.initialize();
-        exitDeploymentScreen = true;
+        exitDeploymentScreen = false;
 		//
 		// Get the intial viewport settings prepared.
 		MyGame.graphics.viewport.set(0.0, 0.0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
 
         map = assets['background-object'].layers[0];
         map = parseMap(map);
-        //
-		// Define the TiledImage model we'll be using for our background.
-		background = components.TiledImage({
+
+        let imageData = {
             pixel: { width: map.width * 32,
                      height: map.height * 32 },
 			size: { width: world.width, height: world.height },
 			tileSize: 32,
             assetKey: backgroundKey,
             map: map
-        });
+        };
+        //
+		// Define the TiledImage model we'll be using for our background.
+		background = components.TiledImage(imageData);
 
-        deploymentMap = components.DeploymentMap({
-            pixel: { width: map.width * 32,
-                     height: map.height * 32 },
-			size: { width: world.width, height: world.height },
-			tileSize: 32,
-            assetKey: backgroundKey,
-            map: map,
-            remainingTime: 10
-        });
+        deploymentMap = components.DeploymentMap(imageData);
+
+        miniMap = components.MiniMap(imageData);
 
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
