@@ -60,6 +60,10 @@
             value: 'update-other',
             writable: false
         },
+        'UPDATE_DEPLOY_TIMER': {
+            value: 'update-timer',
+            writable: false
+        },
         'MISSILE_NEW': {
             value: 'missile-new',
             writable: false

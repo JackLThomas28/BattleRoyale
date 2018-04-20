@@ -34,7 +34,9 @@ MyGame.loader = (function() {
             message: 'Game viewport loaded',
             onComplete: null
         },{
-            scripts: ['components/player', 'components/player-remote', 'components/missile', 'components/animated-sprite', 'components/tiled-image'],
+            scripts: ['components/player', 'components/player-remote', 
+                'components/missile', 'components/animated-sprite', 
+                'components/tiled-image', 'components/deploy-map'],
             message: 'Game Components loaded',
             onComplete: null
         }, {
@@ -42,7 +44,9 @@ MyGame.loader = (function() {
             message: 'Graphics loaded',
             onComplete: null
         }, {
-            scripts: ['rendering/player', 'rendering/player-remote', 'rendering/missile', 'rendering/animated-sprite', 'rendering/tiled-image'],
+            scripts: ['rendering/player', 'rendering/player-remote', 
+                'rendering/missile', 'rendering/animated-sprite', 
+                'rendering/tiled-image', 'rendering/deploy-map'],
             message: 'Renderers loaded',
             onComplete: null
         }, {

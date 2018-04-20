@@ -184,7 +184,6 @@ MyGame.graphics = (function() {
 
 		//
         // Figure out which version of drawImage was called and extrac the correct values
-        let t = false;
 		if (arguments.length === 5 || arguments.length === 6) {
 			sx = 0;
 			sy = 0;
@@ -195,7 +194,6 @@ MyGame.graphics = (function() {
 			dWidth = arguments[3];
 			dHeight = arguments[4];
             useViewport = arguments[5];
-            t = true;
 		} else if (arguments.length === 9 || arguments.length === 10) {
 			sx = arguments[1];
 			sy = arguments[2];
@@ -213,11 +211,8 @@ MyGame.graphics = (function() {
 			dy -= viewport.top;
 		}
 
-        let x = Math.floor(dx * world.size) - Math.ceil(dWidth * world.size) / 2;
-        let y = Math.floor(dy * world.size) - Math.ceil(dHeight * world.size) / 2;
-        if (t) {
-            console.log('graphics x', x);
-        }
+        // let x = Math.floor(dx * world.size) - Math.ceil(dWidth * world.size) / 2;
+        // let y = Math.floor(dy * world.size) - Math.ceil(dHeight * world.size) / 2;
 		//
 		// Convert from world to pixel coordinates on a few items.  Using
 		// floor and ceil to prevent pixel boundary rendering issues.
@@ -225,8 +220,8 @@ MyGame.graphics = (function() {
 			image,
 			sx, sy,
             sWidth, sHeight,
-            x, y,
-            Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
+			Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
+			Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
 			// Math.floor(dx * world.size) - , Math.floor(dy * world.size),
 			// Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
         // let localCenter = {
@@ -315,6 +310,65 @@ MyGame.graphics = (function() {
 	// 		Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
 	// 		Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
 	// }
+	
+	//------------------------------------------------------------------
+	//
+	// This returns the height of the specified font, in world units.
+	//
+	//------------------------------------------------------------------
+	function measureTextHeight(spec) {
+		var height = 0;
+		context.save();
+
+		context.font = spec.font;
+		context.fillStyle = spec.fill;
+
+		height = context.measureText('m').width / world.size;
+
+		context.restore();
+
+		return height;
+	}
+
+	//------------------------------------------------------------------
+	//
+	// This returns the width of the specified font, in world units.
+	//
+	//------------------------------------------------------------------
+	function measureTextWidth(spec) {
+		var width = 0;
+		context.save();
+
+		context.font = spec.font;
+		context.fillStyle = spec.fill;
+
+		width = context.measureText(spec.text).width / world.size;
+
+		context.restore();
+
+		return width;
+	}
+
+	//------------------------------------------------------------------
+	//
+	// Renders the text based on the provided spec.
+	//
+	//------------------------------------------------------------------
+	function drawText(spec) {
+		context.font = spec.font;
+		context.fillStyle = spec.fill;
+		context.textBaseline = 'top';
+		context.strokeStyle = 'black';
+
+		context.fillText(
+			spec.text,
+			world.left + spec.position.x * world.size,
+			world.top + spec.position.y * world.size);
+		// context.strokeText(
+		// 	spec.text,
+		// 	world.left + spec.position.x * world.size,
+		// 	world.top + spec.position.y * world.size);
+	}
     //------------------------------------------------------------------
     //
     // Draw a circle into the local canvas coordinate system.
@@ -327,16 +381,37 @@ MyGame.graphics = (function() {
         context.fillStyle = color;
         context.fill();
     }
+	
+	//------------------------------------------------------------------
+	//
+	// Draws a rectangle relative to the 'unit world'.
+	//
+	//------------------------------------------------------------------
+	function drawRectangle(style, left, top, width, height, useViewport) {
+		var adjustLeft = (useViewport === true) ? viewport.left : 0,
+			adjustTop = (useViewport === true) ? viewport.top : 0;
 
-    return {
+		//
+		// 0.5, 0.5 is to ensure an actual 1 pixel line is drawn.
+		context.strokeStyle = style;
+		context.strokeRect(
+			0.5 + world.left + ((left - adjustLeft) * world.size),
+			0.5 + world.top + ((top - adjustTop) * world.size),
+			width * world.size,
+			height * world.size);
+	}
+	
+	return {
         initialize: initialize,
         clear: clear,
         saveContext: saveContext,
         restoreContext: restoreContext,
         rotateCanvas: rotateCanvas,
         drawImage: drawImage,
-        drawImageSpriteSheet: drawImageSpriteSheet,
-        drawCircle: drawCircle,
+		drawImageSpriteSheet: drawImageSpriteSheet,
+		drawText: drawText,
+		drawCircle: drawCircle,
+		drawRectangle: drawRectangle,
         get viewport() { return viewport; },
         world: world
     };

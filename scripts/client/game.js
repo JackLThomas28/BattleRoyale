@@ -35,7 +35,9 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
 			get right() { return world.width - world.bufferSize; },
 			get bottom() { return world.height - world.bufferSize; }
         },
-        map = null;
+        map = null,
+        exitDeploymentScreen = null,
+        deploymentMap = null;
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
@@ -69,6 +71,13 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
     socket.on(NetworkIds.UPDATE_OTHER, data => {
         networkQueue.enqueue({
             type: NetworkIds.UPDATE_OTHER,
+            data: data
+        });
+    });
+
+    socket.on(NetworkIds.UPDATE_DEPLOY_TIMER, data => {
+        networkQueue.enqueue({
+            type: NetworkIds.UPDATE_DEPLOY_TIMER,
             data: data
         });
     });
@@ -200,6 +209,15 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         }
     }
 
+    function updateDeploymentTimer(data) {
+        deploymentMap.remainingTime = data;
+        if (deploymentMap.remainingTime > 0) {
+            exitDeploymentScreen = false;
+        } else {
+            exitDeploymentScreen = true;
+        }
+    }
+
     //------------------------------------------------------------------
     //
     // Handler for receiving notice of a new missile in the environment.
@@ -276,6 +294,9 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
                 case NetworkIds.UPDATE_OTHER:
                     updatePlayerOther(message.data);
                     break;
+                case NetworkIds.UPDATE_DEPLOY_TIMER:
+                    updateDeploymentTimer(message.data);
+                    break;
                 case NetworkIds.MISSILE_NEW:
                     missileNew(message.data);
                     break;
@@ -325,20 +346,24 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
     function render() {
         graphics.clear();
 
-        renderer.TiledImage.render(background, graphics.viewport);
+        if (!exitDeploymentScreen) {
+            renderer.DeploymentMap.render(deploymentMap);
+        } else {
+            renderer.TiledImage.render(background, graphics.viewport);
+            renderer.Player.render(playerSelf.model, playerSelf.texture);
 
-        renderer.Player.render(playerSelf.model, playerSelf.texture);
-        for (let id in playerOthers) {
-            let player = playerOthers[id];
-            renderer.PlayerRemote.render(player.model, player.texture);
-        }
+            for (let id in playerOthers) {
+                let player = playerOthers[id];
+                renderer.PlayerRemote.render(player.model, player.texture);
+            }
 
-        for (let missile in missiles) {
-            renderer.Missile.render(missiles[missile]);
-        }
+            for (let missile in missiles) {
+                renderer.Missile.render(missiles[missile]);
+            }
 
-        for (let id in explosions) {
-            renderer.AnimatedSprite.render(explosions[id]);
+            for (let id in explosions) {
+                renderer.AnimatedSprite.render(explosions[id]);
+            }
         }
     }
 
@@ -389,7 +414,7 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
         var backgroundKey = 'background';
 
         MyGame.graphics.initialize();
-
+        exitDeploymentScreen = true;
 		//
 		// Get the intial viewport settings prepared.
 		MyGame.graphics.viewport.set(0.0, 0.0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
@@ -407,6 +432,16 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
             map: map
         });
 
+        deploymentMap = components.DeploymentMap({
+            pixel: { width: map.width * 32,
+                     height: map.height * 32 },
+			size: { width: world.width, height: world.height },
+			tileSize: 32,
+            assetKey: backgroundKey,
+            map: map,
+            remainingTime: 10
+        });
+
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
                 id: messageId++,
@@ -420,11 +455,12 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
             playerSelf.model.rotate(elapsedTime, mousePosition, graphics.world.size);
         });
         
-        myMouse.registerHandler('mousedown', elapsedTime => {
+        myMouse.registerHandler('mousedown', (elapsedTime, mousePosition) => {
 			let message = {
                 id: messageId++,
                 elapsedTime: elapsedTime,
-                type: NetworkIds.INPUT_FIRE
+                type: NetworkIds.INPUT_FIRE,
+                position: mousePosition
             };
             socket.emit(NetworkIds.INPUT, message);
 		});

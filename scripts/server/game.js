@@ -21,6 +21,9 @@ let activeMissiles = [];
 let hits = [];
 let inputQueue = Queue.create();
 let nextMissileId = 1;
+let deploymentTimer = 10;
+let updateTimer = false;
+let currTime = 0;
 
 //------------------------------------------------------------------
 //
@@ -78,6 +81,7 @@ function processInput(elapsedTime) {
                 break;
             case NetworkIds.INPUT_FIRE:
                 createMissile(input.clientId, client.player);
+                console.log(input.message.position);
                 break;
         }
     }
@@ -186,6 +190,13 @@ function updateClients(elapsedTime) {
     }
     newMissiles.length = 0;
 
+    currTime += elapsedTime;
+    if (currTime >= 1000 && deploymentTimer > 0) {
+        updateTimer = true;
+        deploymentTimer--;
+        currTime = 0;
+    }
+
     for (let clientId in activeClients) {
         let client = activeClients[clientId];
         let update = {
@@ -195,6 +206,11 @@ function updateClients(elapsedTime) {
             position: client.player.position,
             updateWindow: lastUpdate
         };
+        
+        if (updateTimer) {
+            client.socket.emit(NetworkIds.UPDATE_DEPLOY_TIMER, deploymentTimer);
+        }
+        
         if (client.player.reportUpdate) {
             client.socket.emit(NetworkIds.UPDATE_SELF, update);
 
@@ -220,6 +236,7 @@ function updateClients(elapsedTime) {
             client.socket.emit(NetworkIds.MISSILE_HIT, hits[hit]);
         }
     }
+    updateTimer = false;
 
     for (let clientId in activeClients) {
         activeClients[clientId].player.reportUpdate = false;
@@ -228,10 +245,6 @@ function updateClients(elapsedTime) {
     //
     // Don't need these anymore, clean up
     hits.length = 0;
-    //
-    // Reset the elapsedt time since last update so we can know
-    // when to put out the next update.
-    lastUpdate = 0;
 }
 
 //------------------------------------------------------------------
