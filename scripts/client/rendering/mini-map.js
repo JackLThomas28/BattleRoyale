@@ -3,8 +3,7 @@ MyGame.renderer.MiniMap = (function(graphics) {
     var that = {};
 
     function drawMiniMap(image, left, top, scale) {
-        let tilePos = {};
-        graphics.drawImage(image.image,
+        graphics.drawImage(image,
             left, top, 
             scale, scale, 
             false, false);
@@ -35,20 +34,22 @@ MyGame.renderer.MiniMap = (function(graphics) {
         graphics.drawText(text);
     }
 
-    that.render = function(image, position, world) {
+    that.render = function(map, position, world) {
         let scale = 0.3,
             left = 1 - scale,
-            top = 0.0;
-        
+            top = 0.0,
+            playerWidth = 0.008,
+            playerHeight = 0.008;
+
         // Draw a border around the mini map
         drawBorder(left, top, scale, scale);
 
         // Draw the actual mini map
-        drawMiniMap(image, left, top, scale);//, mapWidth, mapHeight);
+        drawMiniMap(map.image, left, top, scale);//, mapWidth, mapHeight);
 
         // Draw the player's position on the mini map
         drawPlayerPosition(position, scale, left, 
-            0.008, 0.008, world);
+            playerWidth, playerHeight, world);
         
         // Draw the number of remaining players
         drawPlayersLeft(0, left, top, scale, scale);

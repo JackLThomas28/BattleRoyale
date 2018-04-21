@@ -19,46 +19,45 @@ MyGame.renderer.DeploymentMap = (function(graphics) {
 		}
     }
 
-    function renderMap(image) {
-        let tilePos = {},
-            tileRenderWorldWidth = (image.tileSize / image.pixel.width),
-            tileRenderWorldHeight = (image.tileSize / image.pixel.height),
-            renderPosY = 0.0;
+    function renderMap(image, left, top, width, height) {
+        graphics.drawImage(image,
+            left, top, 
+            width, height, 
+            false, false);
 
-        // Double For loop to render each map square
-        for (let i = 0; i < image.map.data.length; i++) {
-            let renderPosX = 0.0;
-            for (let j = 0; j < image.map.data[i].length; j++) {
-                tilePos = getTilePosition(image.map.data[i][j], 
-                    image.tileSize, 256, 256);
+        // // Double For loop to render each map square
+        // for (let i = 0; i < image.map.data.length; i++) {
+        //     let renderPosX = 0.0;
+        //     for (let j = 0; j < image.map.data[i].length; j++) {
+        //         tilePos = getTilePosition(image.map.data[i][j], 
+        //             image.tileSize, 256, 256);
 
-                renderPosX += tileRenderWorldWidth;
+        //         renderPosX += tileRenderWorldWidth;
 
-                graphics.drawImage(MyGame.assets[image.assetKey],
-                    tilePos.x, tilePos.y,
-                    image.tileSize, image.tileSize,
-                    renderPosX, renderPosY,
-                    tileRenderWorldWidth, tileRenderWorldHeight);
-            }
-            renderPosY += tileRenderWorldHeight;
-        }
+        //         graphics.drawImage(MyGame.assets[image.assetKey],
+        //             tilePos.x, tilePos.y,
+        //             image.tileSize, image.tileSize,
+        //             renderPosX, renderPosY,
+        //             tileRenderWorldWidth, tileRenderWorldHeight);
+        //     }
+        //     renderPosY += tileRenderWorldHeight;
+        // }
     }
 
-    function renderGrid(image) {
-        let tileRenderWorldWidth = (image.tileSize / image.pixel.width),
-            tileRenderWorldHeight = (image.tileSize / image.pixel.height),
-            renderPosY = 0.0,
-            cellSize = 0.1;
+    function renderGrid(left, top, width, height) {
+        let cellSize = 0.1,
+            wIterations = width / cellSize,
+            hIterations = height / cellSize;
 
         // Double For loop to render each map square
-        for (let i = 0; i < image.map.data.length; i+=10) {
-            let renderPosX = 0.0;
-            for (let j = 0; j < image.map.data[i].length; j+=10) { 
-                graphics.drawRectangle('white', renderPosX, renderPosY, 
+        for (let i = 0; i < wIterations; i++) {
+            left = 0.0;
+            for (let j = 0; j < hIterations; j++) { 
+                graphics.drawRectangle('white', left, top, 
                     cellSize, cellSize);
-                renderPosX += cellSize;
+                left += cellSize;
             }
-            renderPosY += cellSize;
+            top += cellSize;
         }
     }
 
@@ -86,10 +85,15 @@ MyGame.renderer.DeploymentMap = (function(graphics) {
         graphics.drawText(text);
     }
 
-    that.render = function(image) {
-        renderMap(image);
-        renderGrid(image);
-        renderTimer(image.remainingTime);
+    that.render = function(map) {
+        let left = 0,
+            top = 0,
+            width = 1,
+            height = 1;
+
+        renderMap(map.image, left, top, width, height);
+        renderGrid(left, top, width, height);
+        renderTimer(map.remainingTime);
     };
 
     return that;

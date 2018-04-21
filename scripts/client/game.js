@@ -365,7 +365,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             for (let id in explosions) {
                 renderer.AnimatedSprite.render(explosions[id]);
             }
-            renderer.MiniMap.render(miniMap, playerSelf.model.position, world);
+            renderer.MiniMap.render(miniMap, 
+                playerSelf.model.position, world);
         }
     }
 
@@ -434,10 +435,10 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         //
 		// Define the TiledImage model we'll be using for our background.
 		background = components.TiledImage(imageData);
-
-        deploymentMap = components.DeploymentMap(imageData);
-
-        miniMap = components.MiniMap({image: assets['background-image']});
+        deploymentMap = components.DeploymentMap({
+            image: assets['background-image'],
+            remainingTime: null});
+        miniMap = components.DeploymentMap({image: assets['background-image']});
 
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
