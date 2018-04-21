@@ -524,7 +524,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 };
                 socket.emit(NetworkIds.INPUT, message);
             },
-            MyGame.input.KeyEvent.DOM_VK_SPACE, false);
+            MyGame.input.KeyEvent.DOM_VK_SPACE, true);
     }
 
     function run(){
