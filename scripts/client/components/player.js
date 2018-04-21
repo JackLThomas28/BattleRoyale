@@ -3,7 +3,7 @@
 // Model for each player in the game.
 //
 //------------------------------------------------------------------
-MyGame.components.Player = function() {
+MyGame.components.Player = function(viewport) {
     'use strict';
     let that = {};
     let position = {
@@ -46,20 +46,32 @@ MyGame.components.Player = function() {
     // Public function that moves the player in the current direction.
     //
     //------------------------------------------------------------------
-    that.moveForward = function(elapsedTime) {
-        let vectorX = Math.cos(direction);
-        let vectorY = Math.sin(direction);
+    that.moveForward = function(elapsedTime, worldBuffer) {
+        let vectorX = Math.cos(direction),
+            vectorY = Math.sin(direction);
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
+
+        position.x = Math.max(position.x, worldBuffer.left);
+        position.y = Math.max(position.y, worldBuffer.top);
+        
+        position.x = Math.min(position.x, worldBuffer.right);
+        position.y = Math.min(position.y, worldBuffer.bottom);
     };
 
     that.moveBack = function(elapsedTime) {
-        let vectorX = Math.cos(direction);
-        let vectorY = Math.sin(direction);
+        let vectorX = Math.cos(direction),
+            vectorY = Math.sin(direction);
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, world.size * world.buffer);
+        position.y = Math.max(position.y, world.size * world.buffer);
+        
+        position.x = Math.min(position.x, world.width - (world.size * world.buffer));
+        position.y = Math.min(position.y, world.height - (world.size * world.buffer));
     };
 
     //------------------------------------------------------------------
@@ -73,7 +85,12 @@ MyGame.components.Player = function() {
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
-        // direction += (rotateRate * elapsedTime);
+        
+        position.x = Math.max(position.x, world.size * world.buffer);
+        position.y = Math.max(position.y, world.size * world.buffer);
+        
+        position.x = Math.min(position.x, world.width - (world.size * world.buffer));
+        position.y = Math.min(position.y, world.height - (world.size * world.buffer));
     };
 
     //------------------------------------------------------------------
@@ -87,18 +104,21 @@ MyGame.components.Player = function() {
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
-        // direction -= (rotateRate * elapsedTime);
+        
+        position.x = Math.max(position.x, world.size * world.buffer);
+        position.y = Math.max(position.y, world.size * world.buffer);
+        
+        position.x = Math.min(position.x, world.width - (world.size * world.buffer));
+        position.y = Math.min(position.y, world.height - (world.size * world.buffer));
     };
 
-    that.rotate = function(elapsedTime, mousePos) {
-        // TODO: Divide dynamically by the canvas width and height
+    that.rotate = function(elapsedTime, mousePos, world) {
         let pos = {
-            x: (mousePos.x/600.0) - position.x,
-            y: (mousePos.y/600.0) - position.y
+            x: ((mousePos.x - world.left)/world.size) - (position.x - viewport.left),
+            y: ((mousePos.y - world.top)/world.size) - (position.y - viewport.top)
         }
         direction = Math.atan2(pos.y,pos.x);
-        
-    }
+    };
 
     that.update = function(elapsedTime) {
     };

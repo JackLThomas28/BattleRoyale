@@ -3,12 +3,12 @@
 // This function provides the "game" code.
 //
 //------------------------------------------------------------------
-MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
+MyGame.screens['game-play'] = (function(graphics, renderer, input, components, assets) {
     'use strict';
     let lastTimeStamp = performance.now(),
         myKeyboard = input.Keyboard(),
         playerSelf = {
-            model: components.Player(),
+            model: components.Player(graphics.viewport),
             texture: MyGame.assets['player-self']
         },
         playerOthers = {},
@@ -19,7 +19,25 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
         nextExplosionId = 1,
         socket = io(),
         networkQueue = Queue.create(),
-        myMouse = input.Mouse();
+        myMouse = input.Mouse(),
+        background = null,
+        world = {	// The size of the world must match the world-size of the background image
+			get left() { return 0; },
+			get top() { return 0; },
+			get width() { return 3.2; },
+			get height() { return 3.2; },
+			get bufferSize() { return 0.1; }
+		},
+		worldBuffer = {
+			get left() { return world.left + world.bufferSize; },
+			get top() { return world.top + world.bufferSize; },
+			get right() { return world.width - world.bufferSize; },
+			get bottom() { return world.height - world.bufferSize; }
+        },
+        map = null,
+        exitDeploymentScreen = null,
+        miniMap = null,
+        deploymentMap = null;
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
@@ -53,6 +71,13 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
     socket.on(NetworkIds.UPDATE_OTHER, data => {
         networkQueue.enqueue({
             type: NetworkIds.UPDATE_OTHER,
+            data: data
+        });
+    });
+
+    socket.on(NetworkIds.UPDATE_DEPLOY_TIMER, data => {
+        networkQueue.enqueue({
+            type: NetworkIds.UPDATE_DEPLOY_TIMER,
             data: data
         });
     });
@@ -152,6 +177,17 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
         let memory = Queue.create();
         while (!messageHistory.empty) {
             let message = messageHistory.dequeue();
+            switch (message.type) {
+                case 'move':
+                    playerSelf.model.move(message.elapsedTime);
+                    break;
+                case 'rotate-right':
+                    playerSelf.model.rotateRight(message.elapsedTime);
+                    break;
+                case 'rotate-left':
+                    playerSelf.model.rotateLeft(message.elapsedTime);
+                    break;
+            }
             memory.enqueue(message);
         }
         messageHistory = memory;
@@ -170,6 +206,15 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
             model.goal.position.x = data.position.x;
             model.goal.position.y = data.position.y
             model.goal.direction = data.direction;
+        }
+    }
+
+    function updateDeploymentTimer(data) {
+        deploymentMap.remainingTime = data;
+        if (deploymentMap.remainingTime > 0) {
+            exitDeploymentScreen = false;
+        } else {
+            exitDeploymentScreen = true;
         }
     }
 
@@ -249,6 +294,9 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
                 case NetworkIds.UPDATE_OTHER:
                     updatePlayerOther(message.data);
                     break;
+                case NetworkIds.UPDATE_DEPLOY_TIMER:
+                    updateDeploymentTimer(message.data);
+                    break;
                 case NetworkIds.MISSILE_NEW:
                     missileNew(message.data);
                     break;
@@ -286,6 +334,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
                 delete explosions[id];
             }
         }
+
+        graphics.viewport.update(playerSelf.model);
     }
 
     //------------------------------------------------------------------
@@ -295,18 +345,27 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
     //------------------------------------------------------------------
     function render() {
         graphics.clear();
-        renderer.Player.render(playerSelf.model, playerSelf.texture);
-        for (let id in playerOthers) {
-            let player = playerOthers[id];
-            renderer.PlayerRemote.render(player.model, player.texture);
-        }
 
-        for (let missile in missiles) {
-            renderer.Missile.render(missiles[missile]);
-        }
+        if (!exitDeploymentScreen) {
+            renderer.DeploymentMap.render(deploymentMap);
+        } else {
+            renderer.TiledImage.render(background, graphics.viewport);
+            renderer.Player.render(playerSelf.model, playerSelf.texture);
 
-        for (let id in explosions) {
-            renderer.AnimatedSprite.render(explosions[id]);
+            for (let id in playerOthers) {
+                let player = playerOthers[id];
+                renderer.PlayerRemote.render(player.model, player.texture);
+            }
+
+            for (let missile in missiles) {
+                renderer.Missile.render(missiles[missile]);
+            }
+
+            for (let id in explosions) {
+                renderer.AnimatedSprite.render(explosions[id]);
+            }
+            renderer.MiniMap.render(miniMap, 
+                playerSelf.model.position, world);
         }
     }
 
@@ -326,6 +385,25 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
         requestAnimationFrame(gameLoop);
     };
 
+    // function used to sort the map into separate arrays for each row 
+    // of the map
+    function parseMap(map) {
+        let newMap = {
+            height: map.height,
+            width: map.width,
+            data: []
+        };
+        let row = [];
+        for (let i = 0; i < map.data.length; i++) {
+            if (i % map.width === 0 && i !== 0) {
+                newMap.data.push(row);
+                row = [];
+            }
+            row.push(map.data[i]);
+        }
+        return newMap;
+    }
+
     //------------------------------------------------------------------
     //
     // Public function used to get the game initialized and then up
@@ -335,23 +413,52 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
     function initialize() {
         console.log('game initializing...');
 
+        var backgroundKey = 'background';
+
+        exitDeploymentScreen = false;
+		//
+		// Get the intial viewport settings prepared.
+		MyGame.graphics.viewport.set(0.0, 0.0, 0.3); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
+
+        map = assets['background-object'].layers[0];
+        map = parseMap(map);
+
+        let imageData = {
+            pixel: { width: map.width * 32,
+                     height: map.height * 32 },
+			size: { width: world.width, height: world.height },
+			tileSize: 32,
+            assetKey: backgroundKey,
+            map: map
+        };
+        //
+		// Define the TiledImage model we'll be using for our background.
+		background = components.TiledImage(imageData);
+        deploymentMap = components.DeploymentMap({
+            image: assets['background-image'],
+            remainingTime: null});
+        miniMap = components.DeploymentMap({image: assets['background-image']});
+
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
                 id: messageId++,
                 elapsedTime: elapsedTime,
                 type: NetworkIds.INPUT_ROTATE,
-                position: mousePosition
+                position: mousePosition,
+                world: graphics.world,
+                viewport: graphics.viewport
             };
             socket.emit(NetworkIds.INPUT, message);
             messageHistory.enqueue(message);
-            playerSelf.model.rotate(elapsedTime, mousePosition);
+            playerSelf.model.rotate(elapsedTime, mousePosition, graphics.world);
         });
         
-        myMouse.registerHandler('mousedown', elapsedTime => {
+        myMouse.registerHandler('mousedown', (elapsedTime, mousePosition) => {
 			let message = {
                 id: messageId++,
                 elapsedTime: elapsedTime,
-                type: NetworkIds.INPUT_FIRE
+                type: NetworkIds.INPUT_FIRE,
+                position: mousePosition
             };
             socket.emit(NetworkIds.INPUT, message);
 		});
@@ -362,10 +469,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_MOVE_FORWARD,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.moveForward(elapsedTime);
+                playerSelf.model.moveForward(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_W, true);
 
@@ -374,22 +482,24 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_MOVE_BACK,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.moveBack(elapsedTime);
+                playerSelf.model.moveBack(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_S, true);
-        
-        myKeyboard.registerHandler(elapsedTime => {
+
+            myKeyboard.registerHandler(elapsedTime => {
                 let message = {
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_ROTATE_RIGHT,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.rotateRight(elapsedTime);
+                playerSelf.model.rotateRight(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_D, true);
 
@@ -398,10 +508,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_ROTATE_LEFT,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.rotateLeft(elapsedTime);
+                playerSelf.model.rotateLeft(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_A, true);
 
@@ -413,12 +524,12 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
                 };
                 socket.emit(NetworkIds.INPUT, message);
             },
-            MyGame.input.KeyEvent.DOM_VK_SPACE, true);
-
+            MyGame.input.KeyEvent.DOM_VK_SPACE, false);
     }
 
     function run(){
         // Get the game loop started
+        MyGame.graphics.initialize();
         requestAnimationFrame(gameLoop);
     }
     function updateKeyboard(keyCode, oldKey, inputType){
@@ -444,4 +555,4 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
         updateKeyboard : updateKeyboard
     };
  
-}(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components));
+}(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));

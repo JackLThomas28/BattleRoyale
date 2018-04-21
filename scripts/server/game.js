@@ -21,6 +21,9 @@ let activeMissiles = [];
 let hits = [];
 let inputQueue = Queue.create();
 let nextMissileId = 1;
+let deploymentTimer = 10;
+let updateTimer = false;
+let currTime = 0;
 
 //------------------------------------------------------------------
 //
@@ -61,19 +64,25 @@ function processInput(elapsedTime) {
         client.lastMessageId = input.message.id;
         switch (input.message.type) {
             case NetworkIds.INPUT_MOVE_FORWARD:
-                client.player.moveForward(input.message.elapsedTime);
+                client.player.moveForward(input.message.elapsedTime,
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_MOVE_BACK:
-                client.player.moveBack(input.message.elapsedTime);
+                client.player.moveBack(input.message.elapsedTime,
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_ROTATE:
-                client.player.rotate(input.message.elapsedTime, input.message.position);
+                client.player.rotate(input.message.elapsedTime, 
+                    input.message.position, input.message.world, 
+                    input.message.viewport);
                 break;
             case NetworkIds.INPUT_ROTATE_LEFT:
-                client.player.rotateLeft(input.message.elapsedTime);
+                client.player.rotateLeft(input.message.elapsedTime, 
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_ROTATE_RIGHT:
-                client.player.rotateRight(input.message.elapsedTime);
+                client.player.rotateRight(input.message.elapsedTime,
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_FIRE:
                 createMissile(input.clientId, client.player);
@@ -152,13 +161,13 @@ function update(elapsedTime, currentTime) {
 //
 //------------------------------------------------------------------
 function updateClients(elapsedTime) {
-    //
-    // For demonstration purposes, network updates run at a slower rate than
-    // the game simulation.
-    lastUpdate += elapsedTime;
-    if (lastUpdate < STATE_UPDATE_RATE_MS) {
-        return;
-    }
+    // //
+    // // For demonstration purposes, network updates run at a slower rate than
+    // // the game simulation.
+    // lastUpdate += elapsedTime;
+    // if (lastUpdate < STATE_UPDATE_RATE_MS) {
+    //     return;
+    // }
 
     //
     // Build the missile messages one time, then reuse inside the loop
@@ -185,6 +194,13 @@ function updateClients(elapsedTime) {
     }
     newMissiles.length = 0;
 
+    currTime += elapsedTime;
+    if (currTime >= 1000 && deploymentTimer > 0) {
+        updateTimer = true;
+        deploymentTimer--;
+        currTime = 0;
+    }
+
     for (let clientId in activeClients) {
         let client = activeClients[clientId];
         let update = {
@@ -194,9 +210,13 @@ function updateClients(elapsedTime) {
             position: client.player.position,
             updateWindow: lastUpdate
         };
+        
+        if (updateTimer) {
+            client.socket.emit(NetworkIds.UPDATE_DEPLOY_TIMER, deploymentTimer);
+        }
+        
         if (client.player.reportUpdate) {
             client.socket.emit(NetworkIds.UPDATE_SELF, update);
-
             //
             // Notify all other connected clients about every
             // other connected client status...but only if they are updated.
@@ -219,6 +239,7 @@ function updateClients(elapsedTime) {
             client.socket.emit(NetworkIds.MISSILE_HIT, hits[hit]);
         }
     }
+    updateTimer = false;
 
     for (let clientId in activeClients) {
         activeClients[clientId].player.reportUpdate = false;
@@ -227,10 +248,6 @@ function updateClients(elapsedTime) {
     //
     // Don't need these anymore, clean up
     hits.length = 0;
-    //
-    // Reset the elapsedt time since last update so we can know
-    // when to put out the next update.
-    lastUpdate = 0;
 }
 
 //------------------------------------------------------------------

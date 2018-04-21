@@ -58,15 +58,25 @@ MyGame.loader = (function() {
             message: 'Input loaded',
             onComplete: null
         }, {
-            scripts: ['components/player', 'components/player-remote', 'components/missile', 'components/animated-sprite'],
-            message: 'Player models loaded',
+            scripts: ['components/viewport'],
+            message: 'Game viewport loaded',
+            onComplete: null
+        },{
+            scripts: ['components/player', 'components/player-remote', 
+                'components/missile', 'components/animated-sprite', 
+                'components/tiled-image', 'components/deploy-map',
+                'components/mini-map'],
+            message: 'Game Components loaded',
             onComplete: null
         }, {
             scripts: ['rendering/graphics'],
             message: 'Graphics loaded',
             onComplete: null
         }, {
-            scripts: ['rendering/player', 'rendering/player-remote', 'rendering/missile', 'rendering/animated-sprite'],
+            scripts: ['rendering/player', 'rendering/player-remote', 
+                'rendering/missile', 'rendering/animated-sprite', 
+                'rendering/tiled-image', 'rendering/deploy-map', 
+                'rendering/mini-map'],
             message: 'Renderers loaded',
             onComplete: null
         }, {
@@ -75,6 +85,15 @@ MyGame.loader = (function() {
             onComplete: null
         }],
         assetOrder = [{
+            key: 'background',
+            source: 'assets/background/terrain_tiles24.png'
+        },{
+            key: 'background-object',
+            source: 'assets/background/map.json'
+        },{
+            key: 'background-image',
+            source: 'assets/background/map.png'
+        },{
             key: 'player-self',
             source: 'assets/playerShip1_blue.png'
         }, {
@@ -84,7 +103,55 @@ MyGame.loader = (function() {
             key: 'explosion',
             source: 'assets/explosion.png'
         }];
+    
+    //------------------------------------------------------------------
+	//
+	// Zero pad a number, adapted from Stack Overflow.
+	// Source: http://stackoverflow.com/questions/1267283/how-can-i-create-a-zerofilled-value-using-javascript
+	//
+	//------------------------------------------------------------------
+	function numberPad(n, p, c) {
+		var padChar = typeof c !== 'undefined' ? c : '0',
+			pad = new Array(1 + p).join(padChar);
 
+		return (pad + n).slice(-pad.length);
+    }
+    
+    //------------------------------------------------------------------
+	//
+	// Helper function used to generate the asset entries necessary to
+	// load a tiled image into memory.
+	//
+	//------------------------------------------------------------------
+	function prepareTiledImage(assetArray, rootName, rootKey, tileSize) {
+		var numberX = sizeX / tileSize,
+			numberY = sizeY / tileSize,
+			tileFile = '',
+			tileSource = '',
+			tileKey = '',
+			tileX = 0,
+			tileY = 0;
+
+		//
+		// Create an entry in the assets that holds the properties of the tiled image
+		MyGame.assets[rootKey] = {
+			width: sizeX,
+			height: sizeY,
+			tileSize: tileSize
+		};
+
+		for (tileY = 0; tileY < numberY; tileY += 1) {
+			for (tileX = 0; tileX < numberX; tileX += 1) {
+				tileFile = numberPad((tileY * numberX + tileX), 4);
+				tileSource = rootName + tileFile + '.jpg';
+				tileKey = rootKey + '-' + tileFile;
+				assetArray.push({
+					key: tileKey,
+					source: tileSource
+				});
+			}
+		}
+	}
     //------------------------------------------------------------------
     //
     // Helper function used to load scripts in the order specified by the
@@ -165,22 +232,31 @@ MyGame.loader = (function() {
 
         if (fileExtension) {
             xhr.open('GET', source, true);
-            xhr.responseType = 'blob';
+            if (fileExtension === 'json') {
+                xhr.responseType = '';
+            } else {
+                xhr.responseType = 'blob';
+            }
 
             xhr.onload = function() {
                 if (xhr.status === 200) {
-                    if (fileExtension === 'png' || fileExtension === 'jpg') {
-                        asset = new Image();
-                    } else if (fileExtension === 'mp3') {
-                        asset = new Audio();
+                    if (fileExtension === 'json') {
+                        asset = JSON.parse(xhr.responseText);
+                        if (onSuccess) { onSuccess(asset); }
                     } else {
-                        if (onError) { onError('Unknown file extension: ' + fileExtension); }
+                        if (fileExtension === 'png' || fileExtension === 'jpg') {
+                            asset = new Image();
+                        } else if (fileExtension === 'mp3') {
+                            asset = new Audio();
+                        } else {
+                            if (onError) { onError('Unknown file extension: ' + fileExtension); }
+                        }
+                        asset.onload = function() {
+                            window.URL.revokeObjectURL(asset.src);
+                        };
+                        asset.src = window.URL.createObjectURL(xhr.response);
+                        if (onSuccess) { onSuccess(asset); }
                     }
-                    asset.onload = function() {
-                        window.URL.revokeObjectURL(asset.src);
-                    };
-                    asset.src = window.URL.createObjectURL(xhr.response);
-                    if (onSuccess) { onSuccess(asset); }
                 } else {
                     if (onError) { onError('Failed to retrieve: ' + source); }
                 }
@@ -205,6 +281,7 @@ MyGame.loader = (function() {
     //
     // Start with loading the assets, then the scripts.
     console.log('Starting to dynamically load project assets');
+    // prepareTiledImage(assetOrder, '/assets/background/', 'background', 32);
     loadAssets(assetOrder,
         function(source, asset) {    // Store it on success
             MyGame.assets[source.key] = asset;

@@ -15,7 +15,6 @@ MyGame.main = (function(screens, input) {
 	function initialize() {
 
 		let screen = null;
-		console.log(screens)
 		for (screen in screens) {
 			if (screens.hasOwnProperty(screen)) {
 				screens[screen].initialize();

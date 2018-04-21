@@ -29,7 +29,12 @@ MyGame.input.Mouse = function Mouse() {
 		// Process the mouse events for each of the different kinds of handlers
 		for (event = 0; event < that.mouseDown.length; event++) {
 			for (handler = 0; handler < that.handlersDown.length; handler++) {
-				that.handlersDown[handler](that.mouseDown[event], elapsedTime);
+				let rect = canvas.getBoundingClientRect();
+				let position = {
+					x: that.mouseDown[event].clientX - rect.left,
+					y: that.mouseDown[event].clientY - rect.top
+				};
+				that.handlersDown[handler](elapsedTime, position);
 			}
 		}
 		
