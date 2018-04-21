@@ -64,10 +64,12 @@ function processInput(elapsedTime) {
         client.lastMessageId = input.message.id;
         switch (input.message.type) {
             case NetworkIds.INPUT_MOVE_FORWARD:
-                client.player.moveForward(input.message.elapsedTime);
+                client.player.moveForward(input.message.elapsedTime,
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_MOVE_BACK:
-                client.player.moveBack(input.message.elapsedTime);
+                client.player.moveBack(input.message.elapsedTime,
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_ROTATE:
                 client.player.rotate(input.message.elapsedTime, 
@@ -75,10 +77,12 @@ function processInput(elapsedTime) {
                     input.message.viewport);
                 break;
             case NetworkIds.INPUT_ROTATE_LEFT:
-                client.player.rotateLeft(input.message.elapsedTime);
+                client.player.rotateLeft(input.message.elapsedTime, 
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_ROTATE_RIGHT:
-                client.player.rotateRight(input.message.elapsedTime);
+                client.player.rotateRight(input.message.elapsedTime,
+                    input.message.worldBuffer);
                 break;
             case NetworkIds.INPUT_FIRE:
                 createMissile(input.clientId, client.player);

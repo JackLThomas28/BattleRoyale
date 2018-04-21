@@ -46,12 +46,18 @@ MyGame.components.Player = function(viewport) {
     // Public function that moves the player in the current direction.
     //
     //------------------------------------------------------------------
-    that.moveForward = function(elapsedTime) {
+    that.moveForward = function(elapsedTime, worldBuffer) {
         let vectorX = Math.cos(direction),
             vectorY = Math.sin(direction);
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
+
+        position.x = Math.max(position.x, worldBuffer.left);
+        position.y = Math.max(position.y, worldBuffer.top);
+        
+        position.x = Math.min(position.x, worldBuffer.right);
+        position.y = Math.min(position.y, worldBuffer.bottom);
     };
 
     that.moveBack = function(elapsedTime) {
@@ -60,6 +66,12 @@ MyGame.components.Player = function(viewport) {
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, world.size * world.buffer);
+        position.y = Math.max(position.y, world.size * world.buffer);
+        
+        position.x = Math.min(position.x, world.width - (world.size * world.buffer));
+        position.y = Math.min(position.y, world.height - (world.size * world.buffer));
     };
 
     //------------------------------------------------------------------
@@ -73,6 +85,12 @@ MyGame.components.Player = function(viewport) {
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, world.size * world.buffer);
+        position.y = Math.max(position.y, world.size * world.buffer);
+        
+        position.x = Math.min(position.x, world.width - (world.size * world.buffer));
+        position.y = Math.min(position.y, world.height - (world.size * world.buffer));
     };
 
     //------------------------------------------------------------------
@@ -86,6 +104,12 @@ MyGame.components.Player = function(viewport) {
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, world.size * world.buffer);
+        position.y = Math.max(position.y, world.size * world.buffer);
+        
+        position.x = Math.min(position.x, world.width - (world.size * world.buffer));
+        position.y = Math.min(position.y, world.height - (world.size * world.buffer));
     };
 
     that.rotate = function(elapsedTime, mousePos, world) {

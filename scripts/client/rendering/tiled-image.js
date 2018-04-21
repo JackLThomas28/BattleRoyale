@@ -8,7 +8,7 @@
 MyGame.renderer.TiledImage = (function(graphics) {
 	'use strict';
 	var that = {},
-		RENDER_POS_EPISILON = 0.00001;
+		RENDER_POS_EPISILON = 0.001;
 
 	function getTilePos(tileId, tileSize, width, height) {
 		let cols = width / tileSize,
@@ -54,11 +54,8 @@ MyGame.renderer.TiledImage = (function(graphics) {
 			tileRenderWorldHeight;
 
 		while (worldYRemain > RENDER_POS_EPISILON) {
-			tileLeft = Math.max(Math.floor(imageWorldXPos * oneOverTileSizeWorld), 0);
-			tileTop = Math.max(Math.floor(imageWorldYPos * oneOverTileSizeWorld), 0);
-
-			let tileId = image.map.data[tileTop][tileLeft];
-			let tilePos = getTilePos(tileId, image.tileSize, 256, 256);
+			tileLeft = Math.floor(imageWorldXPos * oneOverTileSizeWorld);
+			tileTop = Math.floor(imageWorldYPos * oneOverTileSizeWorld);
 			
 			if (worldXRemain === 1.0) {
 				tileRenderXStart = imageWorldXPos * oneOverTileSizeWorld - tileLeft;
@@ -75,6 +72,8 @@ MyGame.renderer.TiledImage = (function(graphics) {
 			tileRenderWorldWidth = tileRenderXDist / oneOverTileSizeWorld;
 			tileRenderWorldHeight = tileRenderYDist / oneOverTileSizeWorld;
 
+			let tileId = image.map.data[tileTop][tileLeft];
+			let tilePos = getTilePos(tileId, image.tileSize, 256, 256);
 			if (renderPosX + tileRenderWorldWidth > 1.0) {
 				tileRenderWorldWidth = 1.0 - renderPosX;
 				tileRenderXDist = tileRenderWorldWidth * oneOverTileSizeWorld;
@@ -89,6 +88,7 @@ MyGame.renderer.TiledImage = (function(graphics) {
 				image.tileSize, image.tileSize, // swidth, sheight
 				renderPosX, renderPosY,
 				tileRenderWorldWidth, tileRenderWorldHeight);
+			
 			imageWorldXPos += tileRenderWorldWidth;
 			renderPosX += tileRenderWorldWidth;
 

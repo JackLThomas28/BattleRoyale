@@ -68,22 +68,34 @@ function createPlayer() {
     // last move took place.
     //
     //------------------------------------------------------------------
-    that.moveForward = function(elapsedTime) {
+    that.moveForward = function(elapsedTime, worldBuffer) {
         reportUpdate = true;
         let vectorX = Math.cos(direction),
             vectorY = Math.sin(direction);
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, worldBuffer.left);
+        position.y = Math.max(position.y, worldBuffer.top);
+        
+        position.x = Math.min(position.x, worldBuffer.right);
+        position.y = Math.min(position.y, worldBuffer.bottom);
     };
 
-    that.moveBack = function(elapsedTime) {
+    that.moveBack = function(elapsedTime, worldBuffer) {
         reportUpdate = true;
         let vectorX = Math.cos(direction),
             vectorY = Math.sin(direction);
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, worldBuffer.left);
+        position.y = Math.max(position.y, worldBuffer.top);
+        
+        position.x = Math.min(position.x, worldBuffer.right);
+        position.y = Math.min(position.y, worldBuffer.bottom);
     };
     //------------------------------------------------------------------
     //
@@ -91,13 +103,19 @@ function createPlayer() {
     // last rotate took place.
     //
     //------------------------------------------------------------------
-    that.rotateRight = function(elapsedTime) {
+    that.rotateRight = function(elapsedTime, worldBuffer) {
         reportUpdate = true;
         let vectorX = Math.cos(direction-(Math.PI/2));
         let vectorY = Math.sin(direction-(Math.PI/2));
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, worldBuffer.left);
+        position.y = Math.max(position.y, worldBuffer.top);
+        
+        position.x = Math.min(position.x, worldBuffer.right);
+        position.y = Math.min(position.y, worldBuffer.bottom);
     };
 
     //------------------------------------------------------------------
@@ -106,13 +124,19 @@ function createPlayer() {
     // last rotate took place.
     //
     //------------------------------------------------------------------
-    that.rotateLeft = function(elapsedTime) {
+    that.rotateLeft = function(elapsedTime, worldBuffer) {
         reportUpdate = true;
         let vectorX = Math.cos(direction-(Math.PI/2));
         let vectorY = Math.sin(direction-(Math.PI/2));
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
+        
+        position.x = Math.max(position.x, worldBuffer.left);
+        position.y = Math.max(position.y, worldBuffer.top);
+        
+        position.x = Math.min(position.x, worldBuffer.right);
+        position.y = Math.min(position.y, worldBuffer.bottom);
     };
 
     that.rotate = function(elapsedTime, mousePos, world, viewport) {

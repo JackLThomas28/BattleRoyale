@@ -59,7 +59,13 @@ MyGame.components.Viewport = function(spec) {
 		if (diffTop < spec.buffer) {
 			spec.top -= (spec.buffer - diffTop);
 		}
-	};
+
+		spec.left = Math.max(spec.left, 0);
+		spec.top = Math.max(spec.top, 0);
+		// TODO make dynamic
+		spec.left = Math.min(spec.left, 3.2 - 1);
+		spec.top = Math.min(spec.top, 3.2 - 1);
+	}
 
 	// ------------------------------------------------------------------
 	//

@@ -27,7 +27,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 			get top() { return 0; },
 			get width() { return 3.2; },
 			get height() { return 3.2; },
-			get bufferSize() { return 0.25; }
+			get bufferSize() { return 0.1; }
 		},
 		worldBuffer = {
 			get left() { return world.left + world.bufferSize; },
@@ -470,10 +470,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_MOVE_FORWARD,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.moveForward(elapsedTime, MyGame.graphics.viewport);
+                playerSelf.model.moveForward(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_W, true);
 
@@ -482,10 +483,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_MOVE_BACK,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.moveBack(elapsedTime);
+                playerSelf.model.moveBack(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_S, true);
 
@@ -494,10 +496,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_ROTATE_RIGHT,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.rotateRight(elapsedTime);
+                playerSelf.model.rotateRight(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_D, true);
 
@@ -506,10 +509,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     id: messageId++,
                     elapsedTime: elapsedTime,
                     type: NetworkIds.INPUT_ROTATE_LEFT,
+                    worldBuffer: worldBuffer
                 };
                 socket.emit(NetworkIds.INPUT, message);
                 messageHistory.enqueue(message);
-                playerSelf.model.rotateLeft(elapsedTime);
+                playerSelf.model.rotateLeft(elapsedTime, worldBuffer);
             },
             MyGame.input.KeyEvent.DOM_VK_A, true);
 
