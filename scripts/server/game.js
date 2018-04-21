@@ -71,7 +71,7 @@ function processInput(elapsedTime) {
                 break;
             case NetworkIds.INPUT_ROTATE:
                 client.player.rotate(input.message.elapsedTime, 
-                    input.message.position, input.message.worldSize);
+                    input.message.position, input.message.world);
                 break;
             case NetworkIds.INPUT_ROTATE_LEFT:
                 client.player.rotateLeft(input.message.elapsedTime);

@@ -90,43 +90,43 @@ MyGame.components.Player = function(viewport) {
         position.y -= (vectorY * elapsedTime * speed);
     };
 
-    that.rotate = function(elapsedTime, mousePos, worldSize) {
-        // let pos = {
-        //     x: (mousePos.x/worldSize) - position.x,
-        //     y: (mousePos.y/worldSize) - position.y
-        // }
-        // direction = Math.atan2(pos.y,pos.x);
+    that.rotate = function(elapsedTime, mousePos, world) {
+        let pos = {
+            x: ((mousePos.x - world.left)/world.size) - position.x,
+            y: ((mousePos.y - world.top)/world.size) - position.y
+        }
+        direction = Math.atan2(pos.y,pos.x);
     };
 
     that.update = function(elapsedTime) {
     };
 
     // The player in terms of their position within the canvas
-    function moveViewport(proposedCenter, elapsedTime, pos) {
-        let vector = null;
-        let maxBoundX = myViewport.width - myViewport.buffer,
-            minBoundX = myViewport.buffer,
-            maxBoundY = myViewport.height - myViewport.buffer,
-            minBoundY = myViewport.buffer;
+    // function moveViewport(proposedCenter, elapsedTime, pos) {
+    //     let vector = null;
+    //     let maxBoundX = myViewport.width - myViewport.buffer,
+    //         minBoundX = myViewport.buffer,
+    //         maxBoundY = myViewport.height - myViewport.buffer,
+    //         minBoundY = myViewport.buffer;
 
-        if (proposedCenter.x >= maxBoundX || proposedCenter.x <= minBoundX) {
-			vector = {
-				x: Math.cos(direction) * speed * elapsedTime,
-				y: 0
-			};
-            myViewport.move(vector);
-			pos.x = (proposedCenter.x >= maxBoundX ? maxBoundX : minBoundX);
-		}
-		if (proposedCenter.y >= maxBoundY || proposedCenter.y <= minBoundY) {
-			vector = {
-				x: 0,
-				y: Math.sin(direction) * speed * elapsedTime,
-			};
-			myViewport.move(vector);
-			pos.y = (proposedCenter.y >= maxBoundY ? maxBoundY : minBoundY);
-        }
-        return pos;
-    }
+    //     if (proposedCenter.x >= maxBoundX || proposedCenter.x <= minBoundX) {
+	// 		vector = {
+	// 			x: Math.cos(direction) * speed * elapsedTime,
+	// 			y: 0
+	// 		};
+    //         myViewport.move(vector);
+	// 		pos.x = (proposedCenter.x >= maxBoundX ? maxBoundX : minBoundX);
+	// 	}
+	// 	if (proposedCenter.y >= maxBoundY || proposedCenter.y <= minBoundY) {
+	// 		vector = {
+	// 			x: 0,
+	// 			y: Math.sin(direction) * speed * elapsedTime,
+	// 		};
+	// 		myViewport.move(vector);
+	// 		pos.y = (proposedCenter.y >= maxBoundY ? maxBoundY : minBoundY);
+    //     }
+    //     return pos;
+    // }
 
     return that;
 };

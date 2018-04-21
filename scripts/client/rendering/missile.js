@@ -13,7 +13,7 @@ MyGame.renderer.Missile = (function(graphics) {
     //
     // ------------------------------------------------------------------
     that.render = function(model, texture) {
-        graphics.drawCircle('#FFFFFF', model.position, model.radius);
+        graphics.drawFilledCircle('#FFFFFF', model.position, model.radius, true);
     };
 
     return that;

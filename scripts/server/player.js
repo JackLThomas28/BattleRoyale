@@ -17,8 +17,10 @@ function createPlayer() {
     let that = {};
 
     let position = {
-        x: random.nextDouble(),
-        y: random.nextDouble()
+        x: 0.5,
+        y: 0.5
+        // x: random.nextDouble(),
+        // y: random.nextDouble()
     };
 
     let size = {
@@ -26,7 +28,7 @@ function createPlayer() {
         height: 0.01,
         radius: 0.02
     };
-    let direction = random.nextDouble() * 2 * Math.PI;    // Angle in radians
+    let direction = 2 * Math.PI;    // Angle in radians
     let rotateRate = Math.PI / 1000;    // radians per millisecond
     let speed = 0.0004;                  // unit distance per millisecond
     let reportUpdate = false;    // Indicates if this model was updated during the last update
@@ -113,13 +115,13 @@ function createPlayer() {
         position.y -= (vectorY * elapsedTime * speed);
     };
 
-    that.rotate = function(elapsedTime, mousePos, worldSize) {
-        // reportUpdate = true;
-        // let pos = {
-        //     x: (mousePos.x/worldSize) - position.x,
-        //     y: (mousePos.y/worldSize) - position.y
-        // }
-        // direction = Math.atan2(pos.y,pos.x);
+    that.rotate = function(elapsedTime, mousePos, world) {
+        reportUpdate = true;
+        let pos = {
+            x: ((mousePos.x - world.left)/world.size) - position.x,
+            y: ((mousePos.y - world.top)/world.size) - position.y
+        }
+        direction = Math.atan2(pos.y,pos.x);
     };
     //------------------------------------------------------------------
     //

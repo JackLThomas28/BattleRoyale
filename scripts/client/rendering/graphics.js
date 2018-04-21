@@ -164,9 +164,11 @@ MyGame.graphics = (function() {
     //
     //------------------------------------------------------------------
     function rotateCanvas(center, rotation) {
-        context.translate(center.x * canvas.width, center.y * canvas.width);
+		context.translate(center.x * world.size + world.left, 
+			center.y * world.size + world.top);
         context.rotate(rotation);
-        context.translate(-center.x * canvas.width, -center.y * canvas.width);
+		context.translate(-center.x * world.size - world.left, 
+			-center.y * world.size - world.top);
     }
 
     //------------------------------------------------------------------
@@ -182,6 +184,7 @@ MyGame.graphics = (function() {
 			dWidth, dHeight,
 			useViewport;
 
+		let model = false;
 		//
         // Figure out which version of drawImage was called and extract the correct values
 		if (arguments.length === 5 || arguments.length === 6) {
@@ -193,7 +196,9 @@ MyGame.graphics = (function() {
 			dy = arguments[2];
 			dWidth = arguments[3];
 			dHeight = arguments[4];
-            useViewport = arguments[5];
+			useViewport = arguments[5];
+			model = true;
+			
 		} else if (arguments.length === 9 || arguments.length === 10) {
 			sx = arguments[1];
 			sy = arguments[2];
@@ -211,6 +216,12 @@ MyGame.graphics = (function() {
 			dy -= viewport.top;
 		}
 
+		let x = Math.floor(dx * world.size + world.left),
+			y = Math.floor(dy * world.size + world.top),
+			width = dWidth * world.size,
+			height = dHeight * world.size;
+		x = (model ? x - width / 2 : x);
+		y = (model ? y - height / 2 : y);
 		//
 		// Convert from world to pixel coordinates on a few items.  Using
 		// floor and ceil to prevent pixel boundary rendering issues.
@@ -218,9 +229,9 @@ MyGame.graphics = (function() {
 			image,
 			sx, sy,
             sWidth, sHeight,
-			Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
-			Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
-    }
+			x, y,
+			width, height);
+	}
 
     //------------------------------------------------------------------
     //
@@ -320,7 +331,28 @@ MyGame.graphics = (function() {
 			0, 2 * Math.PI);
 		context.stroke();
 	}
-	
+
+	//------------------------------------------------------------------
+	//
+	// Draw a filled circle within the unit world.
+	//
+	//------------------------------------------------------------------
+	function drawFilledCircle(style, center, radius, useViewport) {
+		var adjustLeft = (useViewport === true) ? viewport.left : 0,
+			adjustTop = (useViewport === true) ? viewport.top : 0;
+
+		//
+		// 0.5, 0.5 is to ensure an actual 1 pixel line is drawn.
+		context.fillStyle = style;
+		context.beginPath();
+		context.arc(
+			0.5 + world.left + ((center.x - adjustLeft) * world.size),
+			0.5 + world.top + ((center.y - adjustTop) * world.size),
+			radius * world.size,
+			0, 2 * Math.PI);
+		context.fill();
+	}	
+
 	//------------------------------------------------------------------
 	//
 	// Draws a rectangle relative to the 'unit world'.
@@ -369,8 +401,10 @@ MyGame.graphics = (function() {
 		drawImageSpriteSheet: drawImageSpriteSheet,
 		drawText: drawText,
 		drawCircle: drawCircle,
+		drawFilledCircle: drawFilledCircle,
 		drawRectangle: drawRectangle,
 		drawFilledRectangle: drawFilledRectangle,
+		notifyResize: notifyResize,
         get viewport() { return viewport; },
         world: world
     };

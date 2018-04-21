@@ -415,7 +415,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 
         var backgroundKey = 'background';
 
-        MyGame.graphics.initialize();
         exitDeploymentScreen = false;
 		//
 		// Get the intial viewport settings prepared.
@@ -446,11 +445,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 elapsedTime: elapsedTime,
                 type: NetworkIds.INPUT_ROTATE,
                 position: mousePosition,
-                worldSize: graphics.world.size
+                world: graphics.world
             };
             socket.emit(NetworkIds.INPUT, message);
             messageHistory.enqueue(message);
-            playerSelf.model.rotate(elapsedTime, mousePosition, graphics.world.size);
+            playerSelf.model.rotate(elapsedTime, mousePosition, graphics.world);
         });
         
         myMouse.registerHandler('mousedown', (elapsedTime, mousePosition) => {
@@ -521,11 +520,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 socket.emit(NetworkIds.INPUT, message);
             },
             MyGame.input.KeyEvent.DOM_VK_SPACE, false);
-
     }
 
     function run(){
         // Get the game loop started
+        MyGame.graphics.initialize();
         requestAnimationFrame(gameLoop);
     }
 
