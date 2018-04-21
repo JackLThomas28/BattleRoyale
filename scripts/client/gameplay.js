@@ -1,5 +1,6 @@
-MyGame.main = (function(screens) {
+MyGame.main = (function(screens, input) {
 	'use strict';
+
 	function showScreen(id) {
 		let screen = 0;
 		let active = null;
@@ -12,6 +13,7 @@ MyGame.main = (function(screens) {
 	}
 
 	function initialize() {
+
 		let screen = null;
 		console.log(screens)
 		for (screen in screens) {

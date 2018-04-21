@@ -5,7 +5,6 @@
 //------------------------------------------------------------------
 MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
     'use strict';
-
     let lastTimeStamp = performance.now(),
         myKeyboard = input.Keyboard(),
         playerSelf = {
@@ -414,7 +413,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
                 };
                 socket.emit(NetworkIds.INPUT, message);
             },
-            MyGame.input.KeyEvent.DOM_VK_SPACE, false);
+            MyGame.input.KeyEvent.DOM_VK_SPACE, true);
 
     }
 
@@ -422,10 +421,27 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components) {
         // Get the game loop started
         requestAnimationFrame(gameLoop);
     }
+    function updateKeyboard(keyCode, oldKey, inputType){
+        let keys = myKeyboard.getKeys();
+        console.log(keys.oldKey)
+        myKeyboard.unregisterHandler(oldKey, keys[oldKey][0].id)
+        myKeyboard.registerHandler(elapsedTime => {
+            let message = {
+                id: messageId++,
+                elapsedTime: elapsedTime,
+                type: inputType,
+            };
+            socket.emit(NetworkIds.INPUT, message);
+            messageHistory.enqueue(message);
+            playerSelf.model.moveForward(elapsedTime);
+        },
+        keyCode, true);
+    }
 
     return {
         initialize : initialize,
-        run: run
+        run: run,
+        updateKeyboard : updateKeyboard
     };
  
 }(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components));

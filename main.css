@@ -16,7 +16,7 @@ body {
 	top: 200;
 	width: 700px;
 	height: 700px;
-	background : url("bg.svg");
+	/* background : url("bg.svg"); */
 	font-size: 40px;
 }
 

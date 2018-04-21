@@ -89,11 +89,20 @@ MyGame.input.Keyboard = function() {
 		nextHandlerId = 0,
 		that = {};
 
+
+	that.getKeys = function(){
+		return handlers;
+	}
 	// ------------------------------------------------------------------
 	//
 	// Allows the client code to register a keyboard handler.
 	//
 	// ------------------------------------------------------------------
+
+	// ------------------------------------------------------------------
+	// Rate can be updated to handle shooting rate(faster with powerups, etc...)
+	// ------------------------------------------------------------------
+
 	that.registerHandler = function(handler, key, repeat, rate) {
 		//
 		// If no repeat rate was passed in, use a value of 0 so that no delay between
@@ -130,10 +139,12 @@ MyGame.input.Keyboard = function() {
 	//
 	// ------------------------------------------------------------------
 	that.unregisterHandler = function(key, id) {
+		console.log("Key: ", key, " id: ", id)
 		if (handlers.hasOwnProperty(key)) {
 			for (let entry = 0; entry < handlers[key].length; entry += 1) {
 				if (handlers[key][entry].id === id) {
 					handlers[key].splice(entry, 1);
+					console.log("Successfull")
 					break;
 				}
 			}
