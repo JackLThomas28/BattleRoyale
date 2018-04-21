@@ -16,11 +16,8 @@ MyGame.renderer.Player = (function(graphics) {
         graphics.saveContext();
         graphics.rotateCanvas(model.position, model.direction);
         graphics.drawImage(texture, model.position.x, model.position.y, 
-            model.size.width, model.size.height, true);
+            model.size.width, model.size.height, true, true);
         graphics.restoreContext();
-        // graphics.saveContext();
-        // graphics.drawFilledCircle('white', {x: 0.5, y: 0.5}, 0.01);
-        // graphics.restoreContext();
     };
 
     return that;

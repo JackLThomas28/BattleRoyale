@@ -158,18 +158,19 @@ MyGame.graphics = (function() {
         context.restore();
     }
 
-    //------------------------------------------------------------------
-    //
-    // Rotate the canvas to prepare it for rendering of a rotated object.
-    //
-    //------------------------------------------------------------------
-    function rotateCanvas(center, rotation) {
-		context.translate(center.x * world.size + world.left, 
-			center.y * world.size + world.top);
-        context.rotate(rotation);
-		context.translate(-center.x * world.size - world.left, 
-			-center.y * world.size - world.top);
-    }
+	//------------------------------------------------------------------
+	//
+	// Perform a rotation of the canvas so that the next things rendered
+	// will appear as rotated (after the canvas rotation is undone).
+	//
+	//------------------------------------------------------------------
+	function rotateCanvas(center, rotation) {
+		context.translate((center.x - viewport.left) * world.size + world.left,
+			(center.y - viewport.top) * world.size + world.top);
+		context.rotate(rotation);
+		context.translate(-((center.x - viewport.left) * world.size + world.left), 
+			-((center.y - viewport.top) * world.size + world.top));
+	}
 
     //------------------------------------------------------------------
     //
@@ -182,12 +183,12 @@ MyGame.graphics = (function() {
 			sWidth, sHeight,
 			dx, dy,
 			dWidth, dHeight,
-			useViewport;
+			useViewport,
+			model;
 
-		let model = false;
 		//
         // Figure out which version of drawImage was called and extract the correct values
-		if (arguments.length === 5 || arguments.length === 6) {
+		if (arguments.length === 6 || arguments.length === 7) {
 			sx = 0;
 			sy = 0;
 			sWidth = image.width;
@@ -196,9 +197,9 @@ MyGame.graphics = (function() {
 			dy = arguments[2];
 			dWidth = arguments[3];
 			dHeight = arguments[4];
-			useViewport = arguments[5];
-			model = true;
-			
+			model = arguments[5];
+			useViewport = arguments[6];
+
 		} else if (arguments.length === 9 || arguments.length === 10) {
 			sx = arguments[1];
 			sy = arguments[2];
@@ -406,6 +407,6 @@ MyGame.graphics = (function() {
 		drawFilledRectangle: drawFilledRectangle,
 		notifyResize: notifyResize,
         get viewport() { return viewport; },
-        world: world
+        get world() { return world; }
     };
 }());

@@ -115,11 +115,11 @@ function createPlayer() {
         position.y -= (vectorY * elapsedTime * speed);
     };
 
-    that.rotate = function(elapsedTime, mousePos, world) {
+    that.rotate = function(elapsedTime, mousePos, world, viewport) {
         reportUpdate = true;
         let pos = {
-            x: ((mousePos.x - world.left)/world.size) - position.x,
-            y: ((mousePos.y - world.top)/world.size) - position.y
+            x: ((mousePos.x - world.left)/world.size) - (position.x - viewport.left),
+            y: ((mousePos.y - world.top)/world.size) - (position.y - viewport.top)
         }
         direction = Math.atan2(pos.y,pos.x);
     };

@@ -365,7 +365,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             for (let id in explosions) {
                 renderer.AnimatedSprite.render(explosions[id]);
             }
-            renderer.MiniMap.render(miniMap, playerSelf.model.position);
+            renderer.MiniMap.render(miniMap, playerSelf.model.position, world);
         }
     }
 
@@ -418,7 +418,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         exitDeploymentScreen = false;
 		//
 		// Get the intial viewport settings prepared.
-		MyGame.graphics.viewport.set(0.0, 0.0, 0.25); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
+		MyGame.graphics.viewport.set(0.0, 0.0, 0.3); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
 
         map = assets['background-object'].layers[0];
         map = parseMap(map);
@@ -437,7 +437,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 
         deploymentMap = components.DeploymentMap(imageData);
 
-        miniMap = components.MiniMap(imageData);
+        miniMap = components.MiniMap({image: assets['background-image']});
 
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
 			let message = {
@@ -445,7 +445,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 elapsedTime: elapsedTime,
                 type: NetworkIds.INPUT_ROTATE,
                 position: mousePosition,
-                world: graphics.world
+                world: graphics.world,
+                viewport: graphics.viewport
             };
             socket.emit(NetworkIds.INPUT, message);
             messageHistory.enqueue(message);

@@ -91,6 +91,9 @@ MyGame.loader = (function() {
             key: 'background-object',
             source: 'assets/background/map.json'
         },{
+            key: 'background-image',
+            source: 'assets/background/map.png'
+        },{
             key: 'player-self',
             source: 'assets/playerShip1_blue.png'
         }, {
