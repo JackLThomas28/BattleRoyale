@@ -110,12 +110,12 @@ function createPlayer() {
     };
 
     that.rotate = function(elapsedTime, mousePos, worldSize) {
-        reportUpdate = true;
-        let pos = {
-            x: (mousePos.x/worldSize) - position.x,
-            y: (mousePos.y/worldSize) - position.y
-        }
-        direction = Math.atan2(pos.y,pos.x);
+        // reportUpdate = true;
+        // let pos = {
+        //     x: (mousePos.x/worldSize) - position.x,
+        //     y: (mousePos.y/worldSize) - position.y
+        // }
+        // direction = Math.atan2(pos.y,pos.x);
     };
     //------------------------------------------------------------------
     //

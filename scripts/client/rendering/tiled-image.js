@@ -57,11 +57,7 @@ MyGame.renderer.TiledImage = (function(graphics) {
 			tileLeft = Math.max(Math.floor(imageWorldXPos * oneOverTileSizeWorld), 0);
 			tileTop = Math.max(Math.floor(imageWorldYPos * oneOverTileSizeWorld), 0);
 
-			// console.log(tileTop);
-			// let arrPos = (tileTop * image.map.height) + (tileLeft);
-			// console.log(arrPos);
 			let tileId = image.map.data[tileTop][tileLeft];
-			// console.log(tileId);
 			let tilePos = getTilePos(tileId, image.tileSize, 256, 256);
 			
 			if (worldXRemain === 1.0) {
@@ -88,7 +84,6 @@ MyGame.renderer.TiledImage = (function(graphics) {
 				tileRenderYDist = tileRenderWorldHeight * oneOverTileSizeWorld;
 			}
 
-			// tileAssetName = image.assetKey + '-' + numberPad(tileTop * image.tilesX + tileLeft, 4);
 			graphics.drawImage(MyGame.assets[image.assetKey],
 				tilePos.x, tilePos.y,           // sx, sy
 				image.tileSize, image.tileSize, // swidth, sheight

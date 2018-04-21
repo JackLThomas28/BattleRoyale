@@ -183,7 +183,7 @@ MyGame.graphics = (function() {
 			useViewport;
 
 		//
-        // Figure out which version of drawImage was called and extrac the correct values
+        // Figure out which version of drawImage was called and extract the correct values
 		if (arguments.length === 5 || arguments.length === 6) {
 			sx = 0;
 			sy = 0;
@@ -211,8 +211,6 @@ MyGame.graphics = (function() {
 			dy -= viewport.top;
 		}
 
-        // let x = Math.floor(dx * world.size) - Math.ceil(dWidth * world.size) / 2;
-        // let y = Math.floor(dy * world.size) - Math.ceil(dHeight * world.size) / 2;
 		//
 		// Convert from world to pixel coordinates on a few items.  Using
 		// floor and ceil to prevent pixel boundary rendering issues.
@@ -222,22 +220,6 @@ MyGame.graphics = (function() {
             sWidth, sHeight,
 			Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
 			Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
-			// Math.floor(dx * world.size) - , Math.floor(dy * world.size),
-			// Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
-        // let localCenter = {
-        //     x: center.x * canvas.width,
-        //     y: center.y * canvas.width
-        // };
-        // let localSize = {
-        //     width: size.width * canvas.width,
-        //     height: size.height * canvas.height
-        // };
-
-        // context.drawImage(texture,
-        //     localCenter.x - localSize.width / 2,
-        //     localCenter.y - localSize.height / 2,
-        //     localSize.width,
-        //     localSize.height);
     }
 
     //------------------------------------------------------------------
@@ -256,61 +238,13 @@ MyGame.graphics = (function() {
         };
 
         context.drawImage(spriteSheet,
-            sprite * spriteSize.width, 0,                 // which sprite to render
+            sprite * spriteSize.width, 0,           // which sprite to render
             spriteSize.width, spriteSize.height,    // size in the spritesheet
             localCenter.x - localSize.width / 2,
             localCenter.y - localSize.height / 2,
             localSize.width, localSize.height);
     }
 
-	// function drawImageTileSet() {
-	// 	var image = arguments[0],
-	// 		sx, sy,
-	// 		sWidth, sHeight,
-	// 		dx, dy,
-	// 		dWidth, dHeight,
-	// 		useViewport;
-
-	// 	//
-	// 	// Figure out which version of drawImage was called and extrac the correct values
-	// 	if (arguments.length === 5 || arguments.length === 6) {
-	// 		sx = 0;
-	// 		sy = 0;
-	// 		sWidth = image.width;
-	// 		sHeight = image.height;
-	// 		dx = arguments[1];
-	// 		dy = arguments[2];
-	// 		dWidth = arguments[3];
-	// 		dHeight = arguments[4];
-	// 		useViewport = arguments[5];
-	// 	} else if (arguments.length === 9 || arguments.length === 10) {
-	// 		sx = arguments[1];
-	// 		sy = arguments[2];
-	// 		sWidth = arguments[3];
-	// 		sHeight = arguments[4];
-	// 		dx = arguments[5];
-	// 		dy = arguments[6];
-	// 		dWidth = arguments[7];
-	// 		dHeight = arguments[8];
-	// 		useViewport = arguments[9];
-	// 	}
-
-	// 	if (useViewport) {
-	// 		dx -= viewport.left;
-	// 		dy -= viewport.top;
-	// 	}
-
-	// 	//
-	// 	// Convert from world to pixel coordinates on a few items.  Using
-	// 	// floor and ceil to prevent pixel boundary rendering issues.
-	// 	context.drawImage(
-	// 		image,
-	// 		sx, sy,
-	// 		sWidth, sHeight,
-	// 		Math.floor(dx * world.size + world.left), Math.floor(dy * world.size + world.top),
-	// 		Math.ceil(dWidth * world.size), Math.ceil(dHeight * world.size));
-	// }
-	
 	//------------------------------------------------------------------
 	//
 	// This returns the height of the specified font, in world units.
@@ -364,23 +298,28 @@ MyGame.graphics = (function() {
 			spec.text,
 			world.left + spec.position.x * world.size,
 			world.top + spec.position.y * world.size);
-		// context.strokeText(
-		// 	spec.text,
-		// 	world.left + spec.position.x * world.size,
-		// 	world.top + spec.position.y * world.size);
 	}
-    //------------------------------------------------------------------
-    //
-    // Draw a circle into the local canvas coordinate system.
-    //
-    //------------------------------------------------------------------
-    function drawCircle(center, radius, color) {
-        context.beginPath();
-        context.arc(center.x * canvas.width, center.y * canvas.width, 2 * radius * canvas.width, 2 * Math.PI, false);
-        context.closePath();
-        context.fillStyle = color;
-        context.fill();
-    }
+	
+	//------------------------------------------------------------------
+	//
+	// Draw a circle within the unit world.
+	//
+	//------------------------------------------------------------------
+	function drawCircle(style, center, radius, useViewport) {
+		var adjustLeft = (useViewport === true) ? viewport.left : 0,
+			adjustTop = (useViewport === true) ? viewport.top : 0;
+
+		//
+		// 0.5, 0.5 is to ensure an actual 1 pixel line is drawn.
+		context.strokeStyle = style;
+		context.beginPath();
+		context.arc(
+			0.5 + world.left + ((center.x - adjustLeft) * world.size),
+			0.5 + world.top + ((center.y - adjustTop) * world.size),
+			radius * world.size,
+			0, 2 * Math.PI);
+		context.stroke();
+	}
 	
 	//------------------------------------------------------------------
 	//

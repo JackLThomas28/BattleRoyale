@@ -91,12 +91,12 @@ MyGame.components.Player = function(viewport) {
     };
 
     that.rotate = function(elapsedTime, mousePos, worldSize) {
-        let pos = {
-            x: (mousePos.x/worldSize) - position.x,
-            y: (mousePos.y/worldSize) - position.y
-        }
-        direction = Math.atan2(pos.y,pos.x);
-    }
+        // let pos = {
+        //     x: (mousePos.x/worldSize) - position.x,
+        //     y: (mousePos.y/worldSize) - position.y
+        // }
+        // direction = Math.atan2(pos.y,pos.x);
+    };
 
     that.update = function(elapsedTime) {
     };

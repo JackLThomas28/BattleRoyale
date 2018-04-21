@@ -81,7 +81,6 @@ function processInput(elapsedTime) {
                 break;
             case NetworkIds.INPUT_FIRE:
                 createMissile(input.clientId, client.player);
-                console.log(input.message.position);
                 break;
         }
     }
@@ -213,7 +212,6 @@ function updateClients(elapsedTime) {
         
         if (client.player.reportUpdate) {
             client.socket.emit(NetworkIds.UPDATE_SELF, update);
-
             //
             // Notify all other connected clients about every
             // other connected client status...but only if they are updated.

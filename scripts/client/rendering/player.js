@@ -18,7 +18,6 @@ MyGame.renderer.Player = (function(graphics) {
         graphics.drawImage(texture, model.position.x, model.position.y, 
             model.size.width, model.size.height, true);
         graphics.restoreContext();
-        // console.log('model x', model.position.x);
     };
 
     return that;
