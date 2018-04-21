@@ -3,7 +3,7 @@
 // This function provides the "game" code.
 //
 //------------------------------------------------------------------
-MyGame.main = (function(graphics, renderer, input, components, assets) {
+MyGame.screens['game-play'] = (function(graphics, renderer, input, components, assets) {
     'use strict';
 
     let lastTimeStamp = performance.now(),
@@ -488,6 +488,30 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
             },
             MyGame.input.KeyEvent.DOM_VK_S, true);
 
+            myKeyboard.registerHandler(elapsedTime => {
+                let message = {
+                    id: messageId++,
+                    elapsedTime: elapsedTime,
+                    type: NetworkIds.INPUT_ROTATE_RIGHT,
+                };
+                socket.emit(NetworkIds.INPUT, message);
+                messageHistory.enqueue(message);
+                playerSelf.model.rotateRight(elapsedTime);
+            },
+            MyGame.input.KeyEvent.DOM_VK_D, true);
+
+        myKeyboard.registerHandler(elapsedTime => {
+                let message = {
+                    id: messageId++,
+                    elapsedTime: elapsedTime,
+                    type: NetworkIds.INPUT_ROTATE_LEFT,
+                };
+                socket.emit(NetworkIds.INPUT, message);
+                messageHistory.enqueue(message);
+                playerSelf.model.rotateLeft(elapsedTime);
+            },
+            MyGame.input.KeyEvent.DOM_VK_A, true);
+
         myKeyboard.registerHandler(elapsedTime => {
                 let message = {
                     id: messageId++,
@@ -498,13 +522,16 @@ MyGame.main = (function(graphics, renderer, input, components, assets) {
             },
             MyGame.input.KeyEvent.DOM_VK_SPACE, false);
 
-        //
+    }
+
+    function run(){
         // Get the game loop started
         requestAnimationFrame(gameLoop);
     }
 
     return {
-        initialize: initialize
+        initialize : initialize,
+        run: run
     };
  
 }(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));

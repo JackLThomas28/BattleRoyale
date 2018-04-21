@@ -70,8 +70,8 @@ MyGame.components.Player = function(viewport) {
     //
     //------------------------------------------------------------------
     that.rotateRight = function(elapsedTime) {
-        let vectorX = Math.cos(direction),
-            vectorY = Math.sin(direction);
+        let vectorX = Math.cos(direction-(Math.PI/2));
+        let vectorY = Math.sin(direction-(Math.PI/2));
 
         position.x += (vectorX * elapsedTime * speed);
         position.y += (vectorY * elapsedTime * speed);
@@ -83,8 +83,8 @@ MyGame.components.Player = function(viewport) {
     //
     //------------------------------------------------------------------
     that.rotateLeft = function(elapsedTime) {
-        let vectorX = Math.cos(direction),
-            vectorY = Math.sin(direction);
+        let vectorX = Math.cos(direction-(Math.PI/2));
+        let vectorY = Math.sin(direction-(Math.PI/2));
 
         position.x -= (vectorX * elapsedTime * speed);
         position.y -= (vectorY * elapsedTime * speed);
