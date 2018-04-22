@@ -39,12 +39,12 @@ MyGame.screens['options'] = (function(game, keyboard, input) {
 		fireInput.onkeyup = updateFire;
 		boostInput.onkeyup = updateBoost;
 
-		// document.getElementById('moveForwardInput').innerHTML = "W";
-		// document.getElementById('moveBackwardInput').innerHTML = "S";
-		// document.getElementById('moveRightInput').innerHTML = "D";
-		// document.getElementById('moveLeftInput').innerHTML = "A";
-		// document.getElementById('fireInput').innerHTML = "Space";
-		// document.getElementById('boostInput').innerHTML = "Shift";
+		document.getElementById('moveForwardInput').innerHTML = "W";
+		document.getElementById('moveBackwardInput').innerHTML = "S";
+		document.getElementById('moveRightInput').innerHTML = "D";
+		document.getElementById('moveLeftInput').innerHTML = "A";
+		document.getElementById('fireInput').innerHTML = "Space";
+		document.getElementById('boostInput').innerHTML = "Shift";
 	}
 
 	function mapKeys(){
@@ -78,7 +78,7 @@ MyGame.screens['options'] = (function(game, keyboard, input) {
 	}
 
 
-	function updateForward(e, ){
+	function updateForward(e){
 		newUp = e.keyCode;
 	}
 	function updateBack(e){
