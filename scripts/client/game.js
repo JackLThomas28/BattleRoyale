@@ -5,6 +5,7 @@
 //------------------------------------------------------------------
 MyGame.screens['game-play'] = (function(graphics, renderer, input, components, assets) {
     'use strict';
+    let keyMap = {}, previousOptions = localStorage.getItem('Game.H');
     let lastTimeStamp = performance.now(),
         myKeyboard = input.Keyboard(),
         playerSelf = {
@@ -438,9 +439,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             image: assets['background-image'],
             remainingTime: null});
         miniMap = components.DeploymentMap({image: assets['background-image']});
-
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
-			let message = {
+            let message = {
                 id: messageId++,
                 elapsedTime: elapsedTime,
                 type: NetworkIds.INPUT_ROTATE,
@@ -452,30 +452,29 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             messageHistory.enqueue(message);
             playerSelf.model.rotate(elapsedTime, mousePosition, graphics.world);
         });
-        
-        myMouse.registerHandler('mousedown', (elapsedTime, mousePosition) => {
-			let message = {
+        if(previousOptions === null){
+            add('forward', MyGame.input.KeyEvent.DOM_VK_W);
+            add('back', MyGame.input.KeyEvent.DOM_VK_S);
+            add('right', MyGame.input.KeyEvent.DOM_VK_D);
+            add('left', MyGame.input.KeyEvent.DOM_VK_A);
+            add('fire', MyGame.input.KeyEvent.DOM_VK_SPACE);
+            add('boost', MyGame.input.KeyEvent.DOM_VK_SHIFT);
+        }
+        if (previousOptions !== null) {
+            keyMap = JSON.parse(previousOptions);
+        }
+        myKeyboard.registerHandler(elapsedTime => {
+            let message = {
                 id: messageId++,
                 elapsedTime: elapsedTime,
-                type: NetworkIds.INPUT_FIRE,
-                position: mousePosition
+                type: NetworkIds.INPUT_MOVE_FORWARD,
+                worldBuffer: worldBuffer
             };
             socket.emit(NetworkIds.INPUT, message);
-		});
-        //
-        // Create the keyboard input handler and register the keyboard commands
-        myKeyboard.registerHandler(elapsedTime => {
-                let message = {
-                    id: messageId++,
-                    elapsedTime: elapsedTime,
-                    type: NetworkIds.INPUT_MOVE_FORWARD,
-                    worldBuffer: worldBuffer
-                };
-                socket.emit(NetworkIds.INPUT, message);
-                messageHistory.enqueue(message);
-                playerSelf.model.moveForward(elapsedTime, worldBuffer);
-            },
-            MyGame.input.KeyEvent.DOM_VK_W, true);
+            messageHistory.enqueue(message);
+            playerSelf.model.moveForward(elapsedTime, worldBuffer);
+        },
+        keyMap['forward'], true);
 
         myKeyboard.registerHandler(elapsedTime => {
                 let message = {
@@ -488,7 +487,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 messageHistory.enqueue(message);
                 playerSelf.model.moveBack(elapsedTime, worldBuffer);
             },
-            MyGame.input.KeyEvent.DOM_VK_S, true);
+            keyMap['back'], true);
 
             myKeyboard.registerHandler(elapsedTime => {
                 let message = {
@@ -501,7 +500,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 messageHistory.enqueue(message);
                 playerSelf.model.rotateRight(elapsedTime, worldBuffer);
             },
-            MyGame.input.KeyEvent.DOM_VK_D, true);
+            keyMap['right'], true);
 
         myKeyboard.registerHandler(elapsedTime => {
                 let message = {
@@ -514,17 +513,20 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 messageHistory.enqueue(message);
                 playerSelf.model.rotateLeft(elapsedTime, worldBuffer);
             },
-            MyGame.input.KeyEvent.DOM_VK_A, true);
+            keyMap['left'], true);
 
         myKeyboard.registerHandler(elapsedTime => {
-                let message = {
-                    id: messageId++,
-                    elapsedTime: elapsedTime,
-                    type: NetworkIds.INPUT_FIRE
-                };
-                socket.emit(NetworkIds.INPUT, message);
-            },
-            MyGame.input.KeyEvent.DOM_VK_SPACE, true);
+            let message = {
+                id: messageId++,
+                elapsedTime: elapsedTime,
+                type: NetworkIds.INPUT_FIRE
+            };
+            socket.emit(NetworkIds.INPUT, message);
+        },
+        keyMap['fire'], true);
+
+    
+    
     }
 
     function run(){
@@ -532,28 +534,60 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         MyGame.graphics.initialize();
         requestAnimationFrame(gameLoop);
     }
-    function updateKeyboard(keyCode, oldKey, inputType){
+    function updateKeyboard(keyCode, oldKey, inputType, moveType){
         let keys = myKeyboard.getKeys();
-        console.log(keys.oldKey)
+        console.log('Old Key',keys, "Old key code ",oldKey, "New Key ", keyCode)
         myKeyboard.unregisterHandler(oldKey, keys[oldKey][0].id)
-        myKeyboard.registerHandler(elapsedTime => {
-            let message = {
-                id: messageId++,
-                elapsedTime: elapsedTime,
-                type: inputType,
-                worldBuffer: worldBuffer
-            };
-            socket.emit(NetworkIds.INPUT, message);
-            messageHistory.enqueue(message);
-            playerSelf.model.moveForward(elapsedTime, worldBuffer);
-        },
-        keyCode, true);
+
+        if(moveType === "fire"){
+            console.log("here")
+            myKeyboard.registerHandler(elapsedTime => {
+                let message = {
+                    id: messageId++,
+                    elapsedTime: elapsedTime,
+                    type: NetworkIds.INPUT_FIRE
+                };
+                socket.emit(NetworkIds.INPUT, message);
+            },
+            keyCode, true);
+            add(moveType, keyCode);
+        }
+        else{
+            myKeyboard.registerHandler(elapsedTime => {
+                let message = {
+                    id: messageId++,
+                    elapsedTime: elapsedTime,
+                    type: inputType,
+                    worldBuffer: worldBuffer
+                };
+                socket.emit(NetworkIds.INPUT, message);
+                messageHistory.enqueue(message);
+                playerSelf.model.moveForward(elapsedTime, worldBuffer);
+            },
+            keyCode, true);
+            add(moveType, keyCode);
+        }
     }
 
+    function add(key, value) {
+		keyMap[key] = value;
+		localStorage['Game.H'] = JSON.stringify(keyMap);
+    }
+    function remove(key) {
+        delete keyMap.key
+        console.log(keyMap);
+		// localStorage['Game.H'] = JSON.stringify(keyMap);
+    }
+
+    function getKeyMap(){
+        return keyMap;
+    }
+    
     return {
         initialize : initialize,
         run: run,
-        updateKeyboard : updateKeyboard
+        updateKeyboard : updateKeyboard,
+        getKeyMap : getKeyMap
     };
  
 }(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));
