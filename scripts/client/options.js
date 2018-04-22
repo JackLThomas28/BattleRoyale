@@ -4,7 +4,7 @@ MyGame.screens['options'] = (function(game, keyboard, input) {
 	down = null,
 	right = null,
 	left = null,
-	shoot = null,
+	fire = null,
 	boost = null,
 	newUp = null,
 	newDown = null,
@@ -19,56 +19,57 @@ MyGame.screens['options'] = (function(game, keyboard, input) {
 			function() { MyGame.main.showScreen('main-menu'); });
 
 		document.getElementById('map-keys').addEventListener('click', mapKeys);
-
-		up = MyGame.input.KeyEvent.DOM_VK_W,
-		down = MyGame.input.KeyEvent.DOM_VK_S,
-		right = MyGame.input.KeyEvent.DOM_VK_D,
-		left = MyGame.input.KeyEvent.DOM_VK_A,
-		shoot = MyGame.input.KeyEvent.DOM_VK_SPACE,
-		boost = MyGame.input.KeyEvent.DOM_VK_SHIFT;
-		
+	
 	}
 	
 	function run() {
-		moveForwardInput.onkeyup = updateForward;
-		// moveBackwardInput.onkeyup = updateBack; 
-		// moveRightInput.onkeyup = updateRight;
-		// moveLeftInput.onkeyup = updateLeft;
-		// fireInput.onkeyup = updateFire;
-		// boostInput.onkeyup = updateboost;
-		console.log(MyGame.input.KeyEvent);
+		let map = MyGame.screens['game-play'].getKeyMap();
+		console.log("init map: ",map);
+		up = map['forward'];
+		down = map['down'];
+		left = map['left'];
+		right = map['right'];
+		fire = map['fire'];
+		boost = map['boost'];
 
-		// document.getElementById('moveForwardInput').innerHTML = "W";
-		// document.getElementById('moveBackwardInput').innerHTML = "S";
-		// document.getElementById('moveRightInput').innerHTML = "D";
-		// document.getElementById('moveLeftInput').innerHTML = "A";
-		// document.getElementById('fireInput').innerHTML = "Space";
-		// document.getElementById('boostInput').innerHTML = "Shift";
+		moveForwardInput.onkeyup = updateForward;
+		moveBackwardInput.onkeyup = updateBack; 
+		moveRightInput.onkeyup = updateRight;
+		moveLeftInput.onkeyup = updateLeft;
+		fireInput.onkeyup = updateFire;
+		boostInput.onkeyup = updateBoost;
+
+		document.getElementById('moveForwardInput').innerHTML = "W";
+		document.getElementById('moveBackwardInput').innerHTML = "S";
+		document.getElementById('moveRightInput').innerHTML = "D";
+		document.getElementById('moveLeftInput').innerHTML = "A";
+		document.getElementById('fireInput').innerHTML = "Space";
+		document.getElementById('boostInput').innerHTML = "Shift";
 	}
 
 	function mapKeys(){
 		if(newUp !== null){
-			MyGame.screens['game-play'].updateKeyboard(newUp, up, NetworkIds.INPUT_MOVE_FORWARD);
+			MyGame.screens['game-play'].updateKeyboard(newUp, up, NetworkIds.INPUT_MOVE_FORWARD, "forward");
 			up = newUp;
 			newUp = null;
 		}
 		if(newDown !== null){
-			MyGame.screens['game-play'].updateKeyboard(newBack, back, NetworkIds.INPUT_MOVE_BACK);		
+			MyGame.screens['game-play'].updateKeyboard(newBack, back, NetworkIds.INPUT_MOVE_BACK, "back");		
 			down = newDown;
 			newDown = null;
 		}
 		if(newLeft !== null){
-			MyGame.screens['game-play'].updateKeyboard(newLeft, left, NetworkIds.INPUT_MOVE_LEFT);
+			MyGame.screens['game-play'].updateKeyboard(newLeft, left, NetworkIds.INPUT_MOVE_LEFT, "left");
 			left = newLeft;
 			newLeft = null;
 		}
 		if(newRight !== null){
-			MyGame.screens['game-play'].updateKeyboard(newRight, right, NetworkIds.INPUT_MOVE_RIGHT);
+			MyGame.screens['game-play'].updateKeyboard(newRight, right, NetworkIds.INPUT_MOVE_RIGHT, "right");
 			right = newRight;
 			newRight = null;
 		}
 		if(newFire !== null){
-			MyGame.screens['game-play'].updateKeyboard(newFire, fire, NetworkIds.INPUT_FIRE);
+			MyGame.screens['game-play'].updateKeyboard(newFire, fire, NetworkIds.INPUT_FIRE, "fire");
 			fire = newFire;
 			newFire = null;
 		}
@@ -77,10 +78,10 @@ MyGame.screens['options'] = (function(game, keyboard, input) {
 	}
 
 
-	function updateForward(e, ){
+	function updateForward(e){
 		newUp = e.keyCode;
 	}
-	function updateBackward(e){
+	function updateBack(e){
 		newDown = e.keyCode;
 	}
 	function updateLeft(e){

@@ -108,8 +108,8 @@ function createPlayer() {
         let vectorX = Math.cos(direction-(Math.PI/2));
         let vectorY = Math.sin(direction-(Math.PI/2));
 
-        position.x += (vectorX * elapsedTime * speed);
-        position.y += (vectorY * elapsedTime * speed);
+        position.x -= (vectorX * elapsedTime * speed);
+        position.y -= (vectorY * elapsedTime * speed);
         
         position.x = Math.max(position.x, worldBuffer.left);
         position.y = Math.max(position.y, worldBuffer.top);
@@ -129,8 +129,8 @@ function createPlayer() {
         let vectorX = Math.cos(direction-(Math.PI/2));
         let vectorY = Math.sin(direction-(Math.PI/2));
 
-        position.x -= (vectorX * elapsedTime * speed);
-        position.y -= (vectorY * elapsedTime * speed);
+        position.x += (vectorX * elapsedTime * speed);
+        position.y += (vectorY * elapsedTime * speed);
         
         position.x = Math.max(position.x, worldBuffer.left);
         position.y = Math.max(position.y, worldBuffer.top);
