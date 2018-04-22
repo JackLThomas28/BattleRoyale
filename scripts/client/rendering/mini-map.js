@@ -1,12 +1,25 @@
 MyGame.renderer.MiniMap = (function(graphics) {
     'use strict';
     var that = {};
+    
+    //------------------------------------------------------------------
+	//
+	// Zero pad a number, adapted from Stack Overflow.
+	// Source: http://stackoverflow.com/questions/1267283/how-can-i-create-a-zerofilled-value-using-javascript
+	//
+	//------------------------------------------------------------------
+	function numberPad(n, p, c) {
+		var padChar = typeof c !== 'undefined' ? c : '0',
+			pad = new Array(1 + p).join(padChar);
+
+		return (pad + n).slice(-pad.length);
+    }
 
     function drawMiniMap(image, left, top, scale) {
         graphics.drawImage(image,
             left, top, 
             scale, scale, 
-            false, false);
+            false);
     }
    
     function drawPlayerPosition(position, scale, x, width, height, world) {
@@ -18,7 +31,7 @@ MyGame.renderer.MiniMap = (function(graphics) {
     }
 
     function drawBorder(left, top, width, height) {
-        graphics.drawRectangle('white', left, top, width, height);
+        graphics.drawRectangle('white', left - 0.005, top - 0.005, width + 0.005, height + 0.005);
     }
 
     function drawPlayersLeft(playersLeft, left, top, mapWidth, mapHeight) {
@@ -28,6 +41,21 @@ MyGame.renderer.MiniMap = (function(graphics) {
             text: 'Alive: ' + String(playersLeft),
             position: {
                 x: left,
+                y: top + mapHeight + 0.01
+            }
+        };
+        graphics.drawText(text);
+    }
+
+    function drawRemainingTime(time, left, top, mapWidth, mapHeight) {
+        let minutes = Math.floor(time / 60),
+            seconds = numberPad((time % 60), 2);
+        let text = {
+            font: '15px Arial',
+            fill: 'white',
+            text: 'Time: ' + String(minutes) + ':' + String(seconds),
+            position: {
+                x: left + mapWidth / 2,
                 y: top + mapHeight + 0.01
             }
         };
@@ -53,6 +81,9 @@ MyGame.renderer.MiniMap = (function(graphics) {
         
         // Draw the number of remaining players
         drawPlayersLeft(0, left, top, scale, scale);
+
+        // Draw the time remaining
+        drawRemainingTime(map.remainingTime, left, top, scale, scale);
     };
 
     return that;

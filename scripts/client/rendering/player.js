@@ -13,10 +13,15 @@ MyGame.renderer.Player = (function(graphics) {
     //
     // ------------------------------------------------------------------
     that.render = function(model, texture) {
+        let centerX = model.position.x - (model.size.width / 2),
+            centerY = model.position.y - (model.size.height / 2);
+
         graphics.saveContext();
-        graphics.rotateCanvas(model.position, model.direction);
-        graphics.drawImage(texture, model.position.x, model.position.y, 
-            model.size.width, model.size.height, true, true);
+        graphics.rotateCanvas(model.position, model.direction, true);
+        graphics.drawImage(texture,
+            centerX, centerY, 
+            model.size.width, model.size.height, 
+            true);
         graphics.restoreContext();
     };
 

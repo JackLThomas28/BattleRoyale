@@ -13,10 +13,15 @@ MyGame.renderer.PlayerRemote = (function(graphics) {
     //
     // ------------------------------------------------------------------
     that.render = function(model, texture) {
+        let centerX = model.state.position.x - (model.size.width / 2),
+            centerY = model.state.position.y - (model.size.height / 2);
         graphics.saveContext();
         graphics.rotateCanvas(model.state.position, model.state.direction);
-        graphics.drawImage(texture, model.state.position.x, 
-            model.state.position.y, model.size.width, model.size.height, true, false);
+        graphics.drawImage(texture, 
+            centerX, centerY, 
+            model.size.width, model.size.height, 
+            true);
+        graphics.drawFilledRectangle('white', model.state.position.x, model.state.position.y, 0.005, 0.005, true);
         graphics.restoreContext();
     };
 

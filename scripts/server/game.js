@@ -11,8 +11,7 @@ let Missile = require('./missile');
 let NetworkIds = require('../shared/network-ids');
 let Queue = require('../shared/queue.js');
 
-const SIMULATION_UPDATE_RATE_MS = 50;
-const STATE_UPDATE_RATE_MS = 100;
+const STATE_UPDATE_RATE_MS = 50;
 let lastUpdate = 0;
 let quit = false;
 let activeClients = {};
@@ -22,8 +21,8 @@ let hits = [];
 let inputQueue = Queue.create();
 let nextMissileId = 1;
 let deploymentTimer = 10;
-let updateTimer = false;
 let currTime = 0;
+let stormTimer = 300;
 
 //------------------------------------------------------------------
 //
@@ -155,19 +154,55 @@ function update(elapsedTime, currentTime) {
     activeMissiles = keepMissiles;
 }
 
+function timeUnitPassed(time, unit) {
+    if (time >= unit) {
+        time = 0;
+        return true;
+    }
+    return false;
+}
+
+function updateClientTimers(timer, networkId) {
+    for (let clientId in activeClients) {
+        let client = activeClients[clientId];
+        let update = {
+            clientId: clientId,
+            lastMessageId: client.lastMessageId,
+            direction: client.player.direction,
+            position: client.player.position,
+            updateWindow: lastUpdate
+        };
+        client.socket.emit(networkId, timer);
+    }
+}
+
 //------------------------------------------------------------------
 //
 // Send state of the game to any connected clients.
 //
 //------------------------------------------------------------------
 function updateClients(elapsedTime) {
-    // //
-    // // For demonstration purposes, network updates run at a slower rate than
-    // // the game simulation.
-    // lastUpdate += elapsedTime;
-    // if (lastUpdate < STATE_UPDATE_RATE_MS) {
-    //     return;
-    // }
+    //
+    // For demonstration purposes, network updates run at a slower rate than
+    // the game simulation.
+    lastUpdate += elapsedTime;
+    if (lastUpdate < STATE_UPDATE_RATE_MS) {
+        return;
+    }
+
+    currTime += elapsedTime;
+    if (timeUnitPassed(currTime, 1000)) {
+        currTime = 0;
+        
+        if (deploymentTimer > 0) {
+            deploymentTimer--;
+            updateClientTimers(deploymentTimer, NetworkIds.UPDATE_DEPLOY_TIMER);
+        }
+        if (stormTimer > 0) {
+            stormTimer--;
+            updateClientTimers(stormTimer, NetworkIds.UPDATE_STORM_TIMER);
+        }
+    }
 
     //
     // Build the missile messages one time, then reuse inside the loop
@@ -194,13 +229,6 @@ function updateClients(elapsedTime) {
     }
     newMissiles.length = 0;
 
-    currTime += elapsedTime;
-    if (currTime >= 1000 && deploymentTimer > 0) {
-        updateTimer = true;
-        deploymentTimer--;
-        currTime = 0;
-    }
-
     for (let clientId in activeClients) {
         let client = activeClients[clientId];
         let update = {
@@ -210,10 +238,6 @@ function updateClients(elapsedTime) {
             position: client.player.position,
             updateWindow: lastUpdate
         };
-        
-        if (updateTimer) {
-            client.socket.emit(NetworkIds.UPDATE_DEPLOY_TIMER, deploymentTimer);
-        }
         
         if (client.player.reportUpdate) {
             client.socket.emit(NetworkIds.UPDATE_SELF, update);
@@ -239,7 +263,6 @@ function updateClients(elapsedTime) {
             client.socket.emit(NetworkIds.MISSILE_HIT, hits[hit]);
         }
     }
-    updateTimer = false;
 
     for (let clientId in activeClients) {
         activeClients[clientId].player.reportUpdate = false;
@@ -248,6 +271,11 @@ function updateClients(elapsedTime) {
     //
     // Don't need these anymore, clean up
     hits.length = 0;
+
+    //
+    // Reset the elapsedt time since last update so we can know
+    // when to put out the next update.
+    lastUpdate = 0;
 }
 
 //------------------------------------------------------------------
@@ -264,7 +292,7 @@ function gameLoop(currentTime, elapsedTime) {
         setTimeout(() => {
             let now = present();
             gameLoop(now, now - currentTime);
-        }, SIMULATION_UPDATE_RATE_MS);
+        }, STATE_UPDATE_RATE_MS);
     }
 }
 

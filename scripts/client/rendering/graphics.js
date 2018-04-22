@@ -188,7 +188,7 @@ MyGame.graphics = (function() {
 
 		//
         // Figure out which version of drawImage was called and extract the correct values
-		if (arguments.length === 6 || arguments.length === 7) {
+		if (arguments.length === 5 || arguments.length === 6) {
 			sx = 0;
 			sy = 0;
 			sWidth = image.width;
@@ -197,8 +197,7 @@ MyGame.graphics = (function() {
 			dy = arguments[2];
 			dWidth = arguments[3];
 			dHeight = arguments[4];
-			model = arguments[5];
-			useViewport = arguments[6];
+			useViewport = arguments[5];
 
 		} else if (arguments.length === 9 || arguments.length === 10) {
 			sx = arguments[1];
@@ -221,8 +220,6 @@ MyGame.graphics = (function() {
 			y = Math.floor(dy * world.size + world.top),
 			width = dWidth * world.size,
 			height = dHeight * world.size;
-		x = (model ? x - width / 2 : x);
-		y = (model ? y - height / 2 : y);
 		//
 		// Convert from world to pixel coordinates on a few items.  Using
 		// floor and ceil to prevent pixel boundary rendering issues.
@@ -239,7 +236,7 @@ MyGame.graphics = (function() {
     // Draw an image out of a spritesheet into the local canvas coordinate system.
     //
     //------------------------------------------------------------------
-    function drawImageSpriteSheet(spriteSheet, spriteSize, sprite, center, size) {
+    function drawImageSpriteSheet(spriteSheet, spriteSize, sprite, center, size, useViewport) {
         let localCenter = {
             x: center.x * canvas.width,
             y: center.y * canvas.width
@@ -247,13 +244,21 @@ MyGame.graphics = (function() {
         let localSize = {
             width: size.width * canvas.width,
             height: size.height * canvas.height
-        };
+		};
+		let tempX = localCenter.x - localSize.width / 2,
+			tempY = localCenter.y - localSize.height / 2;
+		
+		let x = (useViewport ? tempX - viewport.left : tempX),
+			y = (useViewport ? tempY - viewport.top : tempY);
+
+		// if (useViewport) {
+			console.log(y);
+		// }
 
         context.drawImage(spriteSheet,
             sprite * spriteSize.width, 0,           // which sprite to render
             spriteSize.width, spriteSize.height,    // size in the spritesheet
-            localCenter.x - localSize.width / 2,
-            localCenter.y - localSize.height / 2,
+            x, y,
             localSize.width, localSize.height);
     }
 

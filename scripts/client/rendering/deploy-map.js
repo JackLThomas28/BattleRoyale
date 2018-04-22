@@ -23,25 +23,7 @@ MyGame.renderer.DeploymentMap = (function(graphics) {
         graphics.drawImage(image,
             left, top, 
             width, height, 
-            false, false);
-
-        // // Double For loop to render each map square
-        // for (let i = 0; i < image.map.data.length; i++) {
-        //     let renderPosX = 0.0;
-        //     for (let j = 0; j < image.map.data[i].length; j++) {
-        //         tilePos = getTilePosition(image.map.data[i][j], 
-        //             image.tileSize, 256, 256);
-
-        //         renderPosX += tileRenderWorldWidth;
-
-        //         graphics.drawImage(MyGame.assets[image.assetKey],
-        //             tilePos.x, tilePos.y,
-        //             image.tileSize, image.tileSize,
-        //             renderPosX, renderPosY,
-        //             tileRenderWorldWidth, tileRenderWorldHeight);
-        //     }
-        //     renderPosY += tileRenderWorldHeight;
-        // }
+            false);
     }
 
     function renderGrid(left, top, width, height) {

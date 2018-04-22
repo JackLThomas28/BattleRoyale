@@ -61,7 +61,11 @@
             writable: false
         },
         'UPDATE_DEPLOY_TIMER': {
-            value: 'update-timer',
+            value: 'update-deploy-timer',
+            writable: false
+        }, 
+        'UPDATE_STORM_TIMER': {
+            value: 'update-storm-timer',
             writable: false
         },
         'MISSILE_NEW': {

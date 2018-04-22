@@ -82,6 +82,13 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         });
     });
 
+    socket.on(NetworkIds.UPDATE_STORM_TIMER, data => {
+        networkQueue.enqueue({
+            type: NetworkIds.UPDATE_STORM_TIMER,
+            data: data
+        });
+    });
+    
     socket.on(NetworkIds.MISSILE_NEW, data => {
         networkQueue.enqueue({
             type: NetworkIds.MISSILE_NEW,
@@ -218,6 +225,10 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         }
     }
 
+    function updateStormTimer(data) {
+        miniMap.remainingTime = data;
+    }
+
     //------------------------------------------------------------------
     //
     // Handler for receiving notice of a new missile in the environment.
@@ -297,6 +308,9 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 case NetworkIds.UPDATE_DEPLOY_TIMER:
                     updateDeploymentTimer(message.data);
                     break;
+                case NetworkIds.UPDATE_STORM_TIMER:
+                    updateStormTimer(message.data);
+                    break;
                 case NetworkIds.MISSILE_NEW:
                     missileNew(message.data);
                     break;
@@ -354,7 +368,15 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 
             for (let id in playerOthers) {
                 let player = playerOthers[id];
-                renderer.PlayerRemote.render(player.model, player.texture);
+                // Make sure we are not rendering the whole map
+                // TODO: adjust for player FOV
+                if (player.model.state.position.x >= graphics.viewport.left && 
+                    player.model.state.position.x <= graphics.viewport.right && 
+                    player.model.state.position.y >= graphics.viewport.top &&
+                    player.model.state.position.y <= graphics.viewport.bottom) {
+
+                    renderer.PlayerRemote.render(player.model, player.texture);
+                }
             }
 
             for (let missile in missiles) {
@@ -534,7 +556,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     }
     function updateKeyboard(keyCode, oldKey, inputType){
         let keys = myKeyboard.getKeys();
-        console.log(keys.oldKey)
+        (keys.oldKey)
         myKeyboard.unregisterHandler(oldKey, keys[oldKey][0].id)
         myKeyboard.registerHandler(elapsedTime => {
             let message = {

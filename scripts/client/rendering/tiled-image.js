@@ -56,6 +56,8 @@ MyGame.renderer.TiledImage = (function(graphics) {
 		while (worldYRemain > RENDER_POS_EPISILON) {
 			tileLeft = Math.floor(imageWorldXPos * oneOverTileSizeWorld);
 			tileTop = Math.floor(imageWorldYPos * oneOverTileSizeWorld);
+			// TODO: eliminate the Math.min
+			tileTop = Math.min(tileTop, image.map.data.length - 1);
 			
 			if (worldXRemain === 1.0) {
 				tileRenderXStart = imageWorldXPos * oneOverTileSizeWorld - tileLeft;
