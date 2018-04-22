@@ -597,8 +597,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     }
     function remove(key) {
         delete keyMap.key
-        console.log(keyMap);
-		// localStorage['Game.H'] = JSON.stringify(keyMap);
+		localStorage['Game.H'] = JSON.stringify(keyMap);
     }
 
     function getKeyMap(){
