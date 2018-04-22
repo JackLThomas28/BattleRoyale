@@ -25,14 +25,6 @@ MyGame.renderer.AnimatedSprite = (function(graphics) {
             dx, dy, 
             dWidth, dHeight, 
             true);
-            // graphics.drawImageSpriteSheet(
-        //     sprite.spriteSheet,
-        //     { width: sprite.pixelWidth * s, height: sprite.pixelHeight },
-        //     sprite.sprite,
-        //     { x: sprite.center.x, y: sprite.center.y },
-        //     { width: sprite.width, height: sprite.height },
-        //     false
-        // );
     };
 
     return that;

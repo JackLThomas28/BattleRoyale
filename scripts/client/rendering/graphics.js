@@ -231,37 +231,6 @@ MyGame.graphics = (function() {
 			width, height);
 	}
 
-    //------------------------------------------------------------------
-    //
-    // Draw an image out of a spritesheet into the local canvas coordinate system.
-    //
-    //------------------------------------------------------------------
-    function drawImageSpriteSheet(spriteSheet, spriteSize, sprite, center, size, useViewport) {
-        let localCenter = {
-            x: center.x * canvas.width,
-            y: center.y * canvas.width
-        };
-        let localSize = {
-            width: size.width * canvas.width,
-            height: size.height * canvas.height
-		};
-		let tempX = localCenter.x - localSize.width / 2,
-			tempY = localCenter.y - localSize.height / 2;
-		
-		let x = (useViewport ? tempX - viewport.left : tempX),
-			y = (useViewport ? tempY - viewport.top : tempY);
-
-		// if (useViewport) {
-			console.log(y);
-		// }
-
-        context.drawImage(spriteSheet,
-            sprite * spriteSize.width, 0,           // which sprite to render
-            spriteSize.width, spriteSize.height,    // size in the spritesheet
-            x, y,
-            localSize.width, localSize.height);
-    }
-
 	//------------------------------------------------------------------
 	//
 	// This returns the height of the specified font, in world units.
@@ -404,7 +373,6 @@ MyGame.graphics = (function() {
         restoreContext: restoreContext,
         rotateCanvas: rotateCanvas,
         drawImage: drawImage,
-		drawImageSpriteSheet: drawImageSpriteSheet,
 		drawText: drawText,
 		drawCircle: drawCircle,
 		drawFilledCircle: drawFilledCircle,
