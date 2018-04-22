@@ -541,10 +541,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 id: messageId++,
                 elapsedTime: elapsedTime,
                 type: inputType,
+                worldBuffer: worldBuffer
             };
             socket.emit(NetworkIds.INPUT, message);
             messageHistory.enqueue(message);
-            playerSelf.model.moveForward(elapsedTime);
+            playerSelf.model.moveForward(elapsedTime, worldBuffer);
         },
         keyCode, true);
     }

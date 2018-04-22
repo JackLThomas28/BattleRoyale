@@ -47,6 +47,9 @@ MyGame.components.Player = function(viewport) {
     //
     //------------------------------------------------------------------
     that.moveForward = function(elapsedTime, worldBuffer) {
+        if (worldBuffer === undefined) {
+            return;
+        }
         let vectorX = Math.cos(direction),
             vectorY = Math.sin(direction);
 
@@ -61,6 +64,10 @@ MyGame.components.Player = function(viewport) {
     };
 
     that.moveBack = function(elapsedTime, worldBuffer) {
+        if (worldBuffer === undefined) {
+            return;
+        }
+
         let vectorX = Math.cos(direction),
             vectorY = Math.sin(direction);
 
