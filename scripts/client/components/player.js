@@ -80,6 +80,9 @@ MyGame.components.Player = function(viewport) {
     //
     //------------------------------------------------------------------
     that.rotateRight = function(elapsedTime, worldBuffer) {
+        if (worldBuffer === undefined) {
+            return;
+        }
         let vectorX = Math.cos(direction-(Math.PI/2));
         let vectorY = Math.sin(direction-(Math.PI/2));
 
@@ -99,6 +102,9 @@ MyGame.components.Player = function(viewport) {
     //
     //------------------------------------------------------------------
     that.rotateLeft = function(elapsedTime, worldBuffer) {
+        if (worldBuffer === undefined) {
+            return;
+        }
         let vectorX = Math.cos(direction-(Math.PI/2));
         let vectorY = Math.sin(direction-(Math.PI/2));
 
