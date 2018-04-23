@@ -17,6 +17,9 @@ MyGame.components.Player = function(viewport) {
     let direction = 0;
     let rotateRate = 0;
     let speed = 0;
+    let health = 100;
+    let shield = 0;
+    let boost = 100;
 
     Object.defineProperty(that, 'direction', {
         get: () => direction,
@@ -39,6 +42,21 @@ MyGame.components.Player = function(viewport) {
 
     Object.defineProperty(that, 'size', {
         get: () => size
+    });
+
+    Object.defineProperty(that, 'health', {
+        get: () => health,
+        set: value => health = value
+    });
+
+    Object.defineProperty(that, 'shield', {
+        get: () => shield,
+        set: value => shield = value
+    });
+
+    Object.defineProperty(that, 'boost', {
+        get: () => boost,
+        set: value => boost = value
     });
 
     //------------------------------------------------------------------

@@ -36,6 +36,11 @@ function createPlayer() {
     let speed = 0.0004;                  // unit distance per millisecond
     let reportUpdate = false;    // Indicates if this model was updated during the last update
 
+    let health = 100;
+    let shield = 0;
+    let boost = 100;
+
+
     Object.defineProperty(that, 'direction', {
         get: () => direction
     });
@@ -72,6 +77,21 @@ function createPlayer() {
     Object.defineProperty(that, 'password', {
         get: () => password,
         set: value => password = value
+    });
+
+    Object.defineProperty(that, 'health', {
+        get: () => health,
+        set: value => health = value
+    });
+
+    Object.defineProperty(that, 'shield', {
+        get: () => shield,
+        set: value => shield = value
+    });
+
+    Object.defineProperty(that, 'boost', {
+        get: () => boost,
+        set: value => boost = value
     });
 
     //------------------------------------------------------------------
