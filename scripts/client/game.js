@@ -616,9 +616,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             socket.emit(NetworkIds.INPUT, message);
         },
         keyMap['fire'], true,300);
-
-        console.log(playerSelf);
-    
     }
 
     function run(){
