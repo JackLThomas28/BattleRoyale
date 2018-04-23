@@ -34,6 +34,7 @@ let storm = Storm.create({
     }
 });
 
+let msgList = [];
 let players = [];
 
 
@@ -102,10 +103,13 @@ function processInput(elapsedTime) {
                 createMissile(input.clientId, client.player);
                 break;
             case NetworkIds.CREATE_USER:
-                createPlayer(input.message.user);
+                createPlayer(input.message.user,input.message.playerId);
                 break;
             case NetworkIds.LOGIN:
-                loginUser(input.message.user);
+                loginUser(input.message.user,input.message.playerId);
+                break;
+            case NetworkIds.MESSAGE:
+                sendMessage(input.message.message,input.message.playerId);
                 break;
         }
     }
@@ -406,6 +410,14 @@ function initializeSocketIO(httpServer) {
             socket: socket,
             player: newPlayer
         };
+
+        socket.on(NetworkIds.MESSAGE, data => {
+            inputQueue.enqueue({
+                clientId: socket.id,
+                message: data
+            });
+        });
+
         socket.on(NetworkIds.LOGIN, data => {
             inputQueue.enqueue({
                 clientId: socket.id,
@@ -437,29 +449,31 @@ function initializeSocketIO(httpServer) {
             position: newPlayer.position,
             size: newPlayer.size,
             rotateRate: newPlayer.rotateRate,
-            speed: newPlayer.speed
+            speed: newPlayer.speed,
+            id : socket.id
         });
 
         notifyConnect(socket, newPlayer);
     });
 }
 
-function createPlayer(spec){
+function createPlayer(spec,id){
     players.push(spec);
-
-    let newUser = JSON.stringify(spec);
+    activeClients[id].player.updateUser(spec);
+    let newUser = JSON.stringify(players);
     fs.writeFile('./assets/players.json', newUser,function(err){
         if(err){
             console.log(err);
         }
     });
+
 }
-function loginUser(user){
+function loginUser(user,id){
+    activeClients[id].player.updateUser(spec);
     for(let i=0; i<players.length; i++){
         if(user.username === players[i].username && user.password === players[i].password){
             console.log("Successful Login");
             return;
-            // io.emit()
         }
     }
     console.log("Login Failed");

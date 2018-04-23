@@ -29,10 +29,17 @@ function createPlayer() {
         height: 0.01,
         radius: 0.02
     };
+    let username = "New User";
+    let password = null;
     let direction = 2 * Math.PI;    // Angle in radians
     let rotateRate = Math.PI / 1000;    // radians per millisecond
     let speed = 0.0004;                  // unit distance per millisecond
     let reportUpdate = false;    // Indicates if this model was updated during the last update
+
+    let health = 100;
+    let shield = 0;
+    let boost = 100;
+
 
     Object.defineProperty(that, 'direction', {
         get: () => direction
@@ -63,8 +70,29 @@ function createPlayer() {
         get: () => size.radius
     });
 
-    that.username = null;
-    that.password = null;
+    Object.defineProperty(that, 'username', {
+        get: () => username,
+        set: value => username = value
+    });
+    Object.defineProperty(that, 'password', {
+        get: () => password,
+        set: value => password = value
+    });
+
+    Object.defineProperty(that, 'health', {
+        get: () => health,
+        set: value => health = value
+    });
+
+    Object.defineProperty(that, 'shield', {
+        get: () => shield,
+        set: value => shield = value
+    });
+
+    Object.defineProperty(that, 'boost', {
+        get: () => boost,
+        set: value => boost = value
+    });
 
     that.setDeployLocation = function(elapsedTime, mousePos, world, viewport) {
         let pos = {
@@ -188,9 +216,10 @@ function createPlayer() {
     };
 
     that.updateUser = function(spec){
-        that.username = spec[spec.length-1].username;
-        that.password = spec[spec.length-1].password;
+        that.username = spec.username;
+        that.password = spec.password;
     }
+    that.getUserName = function(){return that.username;}
 
 
     return that;
