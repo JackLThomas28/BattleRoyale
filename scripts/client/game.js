@@ -10,7 +10,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         myKeyboard = input.Keyboard(),
         playerSelf = {
             model: components.Player(graphics.viewport),
-            texture: MyGame.assets['player-self']
+            texture: MyGame.assets['player-self'],
+            id : null
         },
         playerOthers = {},
         missiles = {},
@@ -38,10 +39,14 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         map = null,
         exitDeploymentScreen = null,
         miniMap = null,
-        deploymentMap = null;
+        deploymentMap = null,
+        msgList = [];
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
+        if(data){
+            playerSelf.id = data.id;
+        }
         networkQueue.enqueue({
             type: NetworkIds.CONNECT_ACK,
             data: data
@@ -118,6 +123,17 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         });
     });
 
+    socket.on(NetworkIds.MESSAGE, data => {
+        if(data.message !== ""){
+            msgList = data.message;
+            console.log(data.message)
+        }
+        displayMsg();
+        networkQueue.enqueue({
+            type: NetworkIds.MESSAGE,
+            data: data
+        });
+    });
     //------------------------------------------------------------------
     //
     // Handler for when the server ack's the socket connection.  We receive
@@ -559,9 +575,9 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             };
             socket.emit(NetworkIds.INPUT, message);
         },
-        keyMap['fire'], true);
+        keyMap['fire'], true,300);
 
-    
+        console.log(playerSelf);
     
     }
 
@@ -622,8 +638,10 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             id: messageId++,
             elapsedTime: 0,
             type: NetworkIds.CREATE_USER,
-            user: user
+            user: user,
+            playerId : playerSelf.id
         };
+        console.log(message);
         socket.emit(NetworkIds.CREATE_USER, message);
     }
 
@@ -632,9 +650,30 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             id: messageId++,
             elapsedTime: 0,
             type: NetworkIds.LOGIN,
-            user: user
+            user: user,
+            playerId : playerSelf.id
         };
         socket.emit(NetworkIds.LOGIN, message);
+    }
+
+    function sendMessage(m){
+        let message = {
+            id: messageId++,
+            elapsedTime: 0,
+            type: NetworkIds.MESSAGE,
+            message: m,
+            playerId : playerSelf.id
+        };
+        socket.emit(NetworkIds.MESSAGE, message);
+    }
+
+    function displayMsg(){
+        console.log(msgList);
+        document.getElementById("messageList").innerHTML = "";
+        let display = document.getElementById("messageList");
+        for(let i=0; i<msgList.length; i++){
+            display.innerHTML += msgList[i].user + ": " + msgList[i].msg + '<br>';
+        }
     }
     
     return {
@@ -643,7 +682,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         updateKeyboard : updateKeyboard,
         getKeyMap : getKeyMap,
         createUser : createUser,
-        login : login
+        login : login,
+        sendMessage : sendMessage
     };
  
 }(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));

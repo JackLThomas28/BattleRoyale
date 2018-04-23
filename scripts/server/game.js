@@ -11,7 +11,6 @@ let Player = require('./player');
 let Missile = require('./missile');
 let NetworkIds = require('../shared/network-ids');
 let Queue = require('../shared/queue.js');
-let NewPlayer
 
 const STATE_UPDATE_RATE_MS = 50;
 let lastUpdate = 0;
@@ -25,7 +24,7 @@ let nextMissileId = 1;
 let deploymentTimer = 10;
 let currTime = 0;
 let stormTimer = 300;
-
+let msgList = [];
 let players = [];
 
 
@@ -90,10 +89,13 @@ function processInput(elapsedTime) {
                 createMissile(input.clientId, client.player);
                 break;
             case NetworkIds.CREATE_USER:
-                createPlayer(input.message.user);
+                createPlayer(input.message.user,input.message.playerId);
                 break;
             case NetworkIds.LOGIN:
-                loginUser(input.message.user);
+                loginUser(input.message.user,input.message.playerId);
+                break;
+            case NetworkIds.MESSAGE:
+                sendMessage(input.message.message,input.message.playerId);
                 break;
         }
     }
@@ -383,6 +385,14 @@ function initializeSocketIO(httpServer) {
             socket: socket,
             player: newPlayer
         };
+
+        socket.on(NetworkIds.MESSAGE, data => {
+            inputQueue.enqueue({
+                clientId: socket.id,
+                message: data
+            });
+        });
+
         socket.on(NetworkIds.LOGIN, data => {
             inputQueue.enqueue({
                 clientId: socket.id,
@@ -414,30 +424,31 @@ function initializeSocketIO(httpServer) {
             position: newPlayer.position,
             size: newPlayer.size,
             rotateRate: newPlayer.rotateRate,
-            speed: newPlayer.speed
+            speed: newPlayer.speed,
+            id : socket.id
         });
 
         notifyConnect(socket, newPlayer);
     });
 }
 
-function createPlayer(spec){
+function createPlayer(spec,id){
     players.push(spec);
-    client.player.updateUser(spec);
-
-    let newUser = JSON.stringify(spec);
+    activeClients[id].player.updateUser(spec);
+    let newUser = JSON.stringify(players);
     fs.writeFile('./assets/players.json', newUser,function(err){
         if(err){
             console.log(err);
         }
     });
+
 }
-function loginUser(user){
+function loginUser(user,id){
+    activeClients[id].player.updateUser(spec);
     for(let i=0; i<players.length; i++){
         if(user.username === players[i].username && user.password === players[i].password){
             console.log("Successful Login");
             return;
-            // io.emit()
         }
     }
     console.log("Login Failed");
@@ -446,8 +457,20 @@ function loginUser(user){
 function initPlayers(){
     let raw = fs.readFileSync('./assets/players.json');
     players = JSON.parse(raw);
-    if(players === undefined) players = [];
-    console.log("Existing Players: ", players);
+    if(players === undefined) players = []
+}
+function sendMessage(msg, playerId){
+    if(msg !== ""){
+        let temp = {user: activeClients[playerId].player.getUserName(), msg: msg}
+        msgList.push(temp);
+    }
+    for (let clientId in activeClients) {
+        let client = activeClients[clientId];
+        client.socket.emit(NetworkIds.MESSAGE, {
+            message: msgList,
+            id : playerId
+        });
+    }
 }
 
 //------------------------------------------------------------------

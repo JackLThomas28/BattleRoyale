@@ -29,6 +29,8 @@ function createPlayer() {
         height: 0.01,
         radius: 0.02
     };
+    let username = "New User";
+    let password = null;
     let direction = 2 * Math.PI;    // Angle in radians
     let rotateRate = Math.PI / 1000;    // radians per millisecond
     let speed = 0.0004;                  // unit distance per millisecond
@@ -63,8 +65,14 @@ function createPlayer() {
         get: () => size.radius
     });
 
-    that.username = null;
-    that.password = null;
+    Object.defineProperty(that, 'username', {
+        get: () => username,
+        set: value => username = value
+    });
+    Object.defineProperty(that, 'password', {
+        get: () => password,
+        set: value => password = value
+    });
 
     //------------------------------------------------------------------
     //
@@ -160,9 +168,10 @@ function createPlayer() {
     };
 
     that.updateUser = function(spec){
-        that.username = spec[spec.length-1].username;
-        that.password = spec[spec.length-1].password;
+        that.username = spec.username;
+        that.password = spec.password;
     }
+    that.getUserName = function(){return that.username;}
 
 
     return that;

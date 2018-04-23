@@ -83,6 +83,10 @@
         'LOGIN': {
             value: 'successful-login',
             writable: false
+        },
+        'MESSAGE': {
+            value: 'message-sent',
+            writable: false
         }
     });
 
