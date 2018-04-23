@@ -36,6 +36,18 @@ MyGame.components.Viewport = function(spec) {
 	//
 	// ------------------------------------------------------------------
 	that.update = function(model) {
+		if (model.position.x < spec.left) {
+			spec.left = model.position.x - spec.buffer;
+		}
+		if (model.position.x > spec.right) {
+			spec.left = model.position.x + spec.buffer;
+		}
+		if (model.position.y < spec.top) {
+			spec.top = model.position.y - spec.buffer;
+		}
+		if (model.position.y > spec.bottom) {
+			spec.top =  model.position.y + spec.buffer;
+		}
 		//
 		// Compute how close the model is to the visible edge in screen-space
 		// and move the viewport accordingly.

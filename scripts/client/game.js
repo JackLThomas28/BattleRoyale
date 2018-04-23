@@ -363,7 +363,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     updateStorm(message.data);
                     break;
                 case NetworkIds.UPDATE_LOBBY_TIMER:
-                    console.log('here');
                     updateLobbyTimer(message.data);
                     break;
                 case NetworkIds.MISSILE_NEW:
@@ -403,7 +402,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 delete explosions[id];
             }
         }
-
         graphics.viewport.update(playerSelf.model);
     }
 
@@ -519,9 +517,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             remainingTime: null});
         miniMap = components.DeploymentMap({image: assets['background-image']});
         storm = {
-            radius: null,
-            position: null
-        };
+            radius: 0,
+            position: {
+                x: world.width / 2,
+                y: world.width / 2
+            }};
 
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
             let message = {

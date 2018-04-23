@@ -18,10 +18,9 @@ function createPlayer() {
     let that = {};
 
     let position = {
-        x: (Math.random() * (33 - 1) + 1) / 10,
-        y: (Math.random() * (33 - 1) + 1) / 10
-        // x: random.nextDouble(),
-        // y: random.nextDouble()
+        // Limit the random number to the buffer of the map
+        x: (random.nextDouble() * (33 - 1) + 1) / 10,
+        y: (random.nextDouble() * (33 - 1) + 1) / 10
     };
 
     let size = {
@@ -31,7 +30,7 @@ function createPlayer() {
     };
     let username = "New User";
     let password = null;
-    let direction = 2 * Math.PI;    // Angle in radians
+    let direction = random.nextDouble() + 2 * Math.PI;    // Angle in radians
     let rotateRate = Math.PI / 1000;    // radians per millisecond
     let speed = 0.0004;                  // unit distance per millisecond
     let reportUpdate = false;    // Indicates if this model was updated during the last update
@@ -117,7 +116,8 @@ function createPlayer() {
         if (maxY === 3.2) {
             maxY -= world.buffer * world.width;
         }
-        
+       
+        reportUpdate = true;
         position.x = Math.random() * (maxX - minX) + minX;
         position.y = Math.random() * (maxY - minY) + minY;
     }
@@ -220,7 +220,6 @@ function createPlayer() {
         that.password = spec.password;
     }
     that.getUserName = function(){return that.username;}
-
 
     return that;
 }
