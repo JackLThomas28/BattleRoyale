@@ -1,91 +1,123 @@
 body {
 	margin: 0;
-}
+	font-family: monospace;
+	box-sizing: border-box;
+  }
+  
+  #countDown{
+	  display: block;
+  }
+  #countDownTime{
+	  display: block;
+  }
+  #game {
+		width: 100%;
+		max-width: 800px;
+		margin: 0 auto;
+  }
+  
+  #game .screen {
+		position: absolute;
+		top: 0%;
+		left: 0%;
+		width: 100%;
+		display: none;
+		z-index: 10;
+	}
 
-#countDown{
-	display: block;
-}
-#countDownTime{
-	display: block;
-}
-#game {
-	position: absolute;
-	margin-left: auto;
-    margin-right: auto;
-	left: 200;
-	top: 200;
-	width: 700px;
-	height: 700px;
-	/* background : url("bg.svg"); */
-	font-size: 40px;
-}
-
-#game .screen {
-	position: absolute;
+  
+  #game .screen.active {
+	  display: block;
+  }
+  
+  #main-menu {
+	  padding-top: 1em;
+	  cursor: pointer;
+	  font-size: 0.75em;
+  }
+  
+  ul.menu {
+	  text-align: center;
+	  padding: 0;
+	  margin: 0;
+	  list-style: none;
+  }
+  
+  ul.menu li {
+	  margin: 0.8em 0;
+  }
+  
+  
+  ul.menu li button:hover {
+	  background: #2E2EFE;
+  }
+  
+  ul.menu li button:active {
+	  color: #CECEF6;
+	  background: rgb(0, 0, 0);
+  }
+  
+  #game div h1 {
+	  font-size: 1em;
+	  text-align: center;
+  }
+  
+  #high-scores ol {
+	  text-align: center;
+	  padding: 0;
+	  margin: 0;
+	  list-style: none;
+  }
+  
+  #game div p {
+	  font-size: 0.5em;
+  }
+  
+  #about p {
+	  text-align: center;
+  }
+/*   
+  .layout {
 	width: 100%;
-	height: 100%;
-	display: none;
-	z-index: 10;
-}
-
-#game .screen.active {
-	display: block;
-}
-
-#main-menu {
-	padding-top: 1em;
+	float: left;
+  }
+   */
+  .better-menu {
+	width: 100%;
+	float: left
+  }
+  
+  .game-button {
+	width: calc(50% - 10px);
+	float: left;
+	padding: 20px;
+	box-sizing: border-box;
+	background: #559be1;
+	text-align: center;
+	color: white;
+	font-size: 22px;
+	margin-bottom: 20px;
+	font-weight: 300;
+	text-transform: uppercase;
+	transition: .3s;
 	cursor: pointer;
-	font-size: 0.75em;
-}
-
-ul.menu {
+	outline: none;
+  }
+  
+  .game-button:nth-child(even) {
+	float: right;
+  }
+  
+  .game-button:hover {
+	background: #F6624C;
+	border-radius: 10px;
+  }
+  
+  .title {
+	width: 100%;
+	font-size: 30px;
+	color: #F6624C;
+	margin-bottom: 30px;
 	text-align: center;
-	padding: 0;
-	margin: 0;
-	list-style: none;
-}
-
-ul.menu li {
-	margin: 0.8em 0;
-}
-
-ul.menu li button {
-	font-family: Arial, sans-serif;
-	font-size: 0.6em;
-	color: #CECEF6;
-	width: 10em;
-	height: 1.5em;
-	background: #0404B4;
-	border: 0.1em solid rgb(255, 0, 0);
-	border-radius: 0.5em;
-	box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
-}
-
-ul.menu li button:hover {
-	background: #2E2EFE;
-}
-
-ul.menu li button:active {
-	color: #CECEF6;
-	background: rgb(0, 0, 0);
-}
-
-#game div h1 {
-	font-size: 1em;
-	text-align: center;
-}
-
-#high-scores ol {
-	text-align: center;
-	padding: 0;
-	margin: 0;
-	list-style: none;
-}
-
-#game div p {
-	font-size: 0.5em;
-}
-
-#about p {
-	text-align: center;
-}
+	text-transform: uppercase;
+  }

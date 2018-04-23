@@ -7,6 +7,7 @@
 
 let random = require ('./random');
 
+
 //------------------------------------------------------------------
 //
 // Public function used to initially create a newly connected player
@@ -61,6 +62,9 @@ function createPlayer() {
     Object.defineProperty(that, 'radius', {
         get: () => size.radius
     });
+
+    that.username = null;
+    that.password = null;
 
     //------------------------------------------------------------------
     //
@@ -154,6 +158,12 @@ function createPlayer() {
     //------------------------------------------------------------------
     that.update = function(when) {
     };
+
+    that.updateUser = function(spec){
+        that.username = spec[spec.length-1].username;
+        that.password = spec[spec.length-1].password;
+    }
+
 
     return that;
 }

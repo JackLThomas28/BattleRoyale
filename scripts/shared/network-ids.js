@@ -75,6 +75,14 @@
         'MISSILE_HIT': {
             value: 'missile-hit',
             writable: false
+        },
+        'CREATE_USER': {
+            value: 'create-user',
+            writable: false
+        },
+        'LOGIN': {
+            value: 'successful-login',
+            writable: false
         }
     });
 

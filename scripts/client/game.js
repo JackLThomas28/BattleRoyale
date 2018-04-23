@@ -104,6 +104,20 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         });
     });
 
+    socket.on(NetworkIds.CREATE_USER, data => {
+        networkQueue.enqueue({
+            type: NetworkIds.CREATE_USER,
+            data: data
+        });
+    });
+
+    socket.on(NetworkIds.LOGIN, data => {
+        networkQueue.enqueue({
+            type: NetworkIds.LOGIN,
+            data: data
+        });
+    });
+
     //------------------------------------------------------------------
     //
     // Handler for when the server ack's the socket connection.  We receive
@@ -558,7 +572,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     }
     function updateKeyboard(keyCode, oldKey, inputType, moveType){
         let keys = myKeyboard.getKeys();
-        console.log('Old Key',keys, "Old key code ",oldKey, "New Key ", keyCode)
         myKeyboard.unregisterHandler(oldKey, keys[oldKey][0].id)
 
         if(moveType === "fire"){
@@ -603,12 +616,34 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function getKeyMap(){
         return keyMap;
     }
+
+    function createUser(user){
+        let message = {
+            id: messageId++,
+            elapsedTime: 0,
+            type: NetworkIds.CREATE_USER,
+            user: user
+        };
+        socket.emit(NetworkIds.CREATE_USER, message);
+    }
+
+    function login(user){
+        let message = {
+            id: messageId++,
+            elapsedTime: 0,
+            type: NetworkIds.LOGIN,
+            user: user
+        };
+        socket.emit(NetworkIds.LOGIN, message);
+    }
     
     return {
         initialize : initialize,
         run: run,
         updateKeyboard : updateKeyboard,
-        getKeyMap : getKeyMap
+        getKeyMap : getKeyMap,
+        createUser : createUser,
+        login : login
     };
  
 }(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));
