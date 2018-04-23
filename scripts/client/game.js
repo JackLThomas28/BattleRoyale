@@ -40,7 +40,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         onDeploymentScreen = null,
         miniMap = null,
         deploymentMap = null,
-        storm = null;
+        storm = null,
         msgList = [];
 
     

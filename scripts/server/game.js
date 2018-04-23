@@ -485,6 +485,21 @@ function initPlayers(){
     if(players === undefined) players = [];
 }
 
+function sendMessage(msg, playerId){
+    if(msg !== ""){
+        let temp = {user: activeClients[playerId].player.getUserName(), msg: msg}
+        msgList.push(temp);
+    }
+    for (let clientId in activeClients) {
+        let client = activeClients[clientId];
+        client.socket.emit(NetworkIds.MESSAGE, {
+            message: msgList,
+            id : playerId
+        });
+    }
+}
+    
+
 //------------------------------------------------------------------
 //
 // Entry point to get the game started.
