@@ -339,7 +339,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         // Double buffering on the queue so we don't asynchronously receive messages
         // while processing.
         let processMe = networkQueue;
-        networkQueue = networkQueue = Queue.create();
+        networkQueue = Queue.create();
         while (!processMe.empty) {
             let message = processMe.dequeue();
             switch (message.type) {
@@ -368,6 +368,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     updateStorm(message.data);
                     break;
                 case NetworkIds.UPDATE_LOBBY_TIMER:
+                    console.log('here');
                     updateLobbyTimer(message.data);
                     break;
                 case NetworkIds.MISSILE_NEW:
