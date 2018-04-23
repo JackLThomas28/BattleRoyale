@@ -2,7 +2,6 @@
 MyGame.screens['new-player'] = (function(game, assets) {
 	'use strict';
 	let playerList = {};
-	let socket = io();
 	
 	function initialize() {
 		document.getElementById('id-new-player-back').addEventListener(
