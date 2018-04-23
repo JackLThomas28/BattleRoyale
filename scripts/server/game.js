@@ -36,6 +36,7 @@ let storm = Storm.create({
 
 let msgList = [];
 let players = [];
+let lobbyTimer = 10;
 
 
 //------------------------------------------------------------------
@@ -194,13 +195,13 @@ function timeUnitPassed(time, unit) {
 function updateClientTimers(timer, networkId) {
     for (let clientId in activeClients) {
         let client = activeClients[clientId];
-        // let update = {
-        //     clientId: clientId,
-        //     lastMessageId: client.lastMessageId,
-        //     direction: client.player.direction,
-        //     position: client.player.position,
-        //     updateWindow: lastUpdate
-        // };
+        let update = {
+            clientId: clientId,
+            lastMessageId: client.lastMessageId,
+            direction: client.player.direction,
+            position: client.player.position,
+            updateWindow: lastUpdate
+        };
         client.socket.emit(networkId, timer);
     }
 }
@@ -233,8 +234,12 @@ function updateClients(elapsedTime) {
     currTime += elapsedTime;
     if (timeUnitPassed(currTime, 1000)) {
         currTime = 0;
-        
-        if (deploymentTimer > 0) {
+       
+        if(lobbyTimer > 0) {
+            lobbyTimer--;
+            updateClientTimers(lobbyTimer, NetworkIds.UPDATE_LOBBY_TIMER);
+        }
+        if (deploymentTimer > 0 && lobbyTimer === 0) {
             deploymentTimer--;
             updateClientTimers(deploymentTimer, NetworkIds.UPDATE_DEPLOY_TIMER);
         }

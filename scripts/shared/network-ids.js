@@ -68,6 +68,10 @@
             value: 'update-storm-timer',
             writable: false
         },
+        'UPDATE_LOBBY_TIMER': {
+            value: 'update-lobby-timer',
+            writable: false
+        },
         'UPDATE_STORM': {
             value: 'update-storm',
             writable: false

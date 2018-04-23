@@ -41,7 +41,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         miniMap = null,
         deploymentMap = null,
         storm = null,
-        msgList = [];
+        msgList = [],
+        lobbyTimer = null;
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
@@ -96,6 +97,13 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         });
     });
     
+    socket.on(NetworkIds.UPDATE_LOBBY_TIMER, data => {
+        networkQueue.enqueue({
+            type: NetworkIds.UPDATE_LOBBY_TIMER,
+            data: data
+        });
+    });
+    
     socket.on(NetworkIds.UPDATE_STORM, data => {
         networkQueue.enqueue({
             type: NetworkIds.UPDATE_STORM,
@@ -134,13 +142,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     socket.on(NetworkIds.MESSAGE, data => {
         if(data.message !== ""){
             msgList = data.message;
-            console.log(data.message)
         }
         displayMsg();
-        networkQueue.enqueue({
-            type: NetworkIds.MESSAGE,
-            data: data
-        });
     });
     //------------------------------------------------------------------
     //
@@ -266,6 +269,14 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         miniMap.remainingTime = data;
     }
 
+    function updateLobbyTimer(data) {
+        lobbyTimer = data;
+        console.log('here');
+        if (lobbyTimer <= 0) {
+            MyGame.main.showScreen('game-play');
+        }
+    }
+
     function updateStorm(data) {
         storm.radius = data.radius;
         storm.position = data.position;
@@ -355,6 +366,9 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     break;
                 case NetworkIds.UPDATE_STORM:
                     updateStorm(message.data);
+                    break;
+                case NetworkIds.UPDATE_LOBBY_TIMER:
+                    updateLobbyTimer(message.data);
                     break;
                 case NetworkIds.MISSILE_NEW:
                     missileNew(message.data);
@@ -679,7 +693,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             user: user,
             playerId : playerSelf.id
         };
-        console.log(message);
         socket.emit(NetworkIds.CREATE_USER, message);
     }
 
@@ -706,7 +719,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     }
 
     function displayMsg(){
-        console.log(msgList);
         document.getElementById("messageList").innerHTML = "";
         let display = document.getElementById("messageList");
         for(let i=0; i<msgList.length; i++){

@@ -13,7 +13,10 @@ MyGame.screens['lobby'] = (function() {
         MyGame.screens['game-play'].sendMessage(msg);
 		document.getElementById('msg').value = "Type a message";
     }
-    function run() {}
+
+    function run() {
+
+    }
     return {
 		initialize : initialize,
 		run : run
