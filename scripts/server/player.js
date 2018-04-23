@@ -18,8 +18,8 @@ function createPlayer() {
     let that = {};
 
     let position = {
-        x: 0.5,
-        y: 0.5
+        x: (Math.random() * (33 - 1) + 1) / 10,
+        y: (Math.random() * (33 - 1) + 1) / 10
         // x: random.nextDouble(),
         // y: random.nextDouble()
     };
@@ -65,6 +65,34 @@ function createPlayer() {
 
     that.username = null;
     that.password = null;
+
+    that.setDeployLocation = function(elapsedTime, mousePos, world, viewport) {
+        let pos = {
+            x: ((mousePos.x - world.left) / world.size) * world.width,
+            y: ((mousePos.y - world.top) / world.size) * world.height
+        };
+
+        let minX = Math.floor(pos.x * 100) / 100,
+            maxX = Math.ceil(pos.x * 100) / 100,
+            minY = Math.floor(pos.y * 100) / 100,
+            maxY = Math.floor(pos.y * 100) / 100;
+        
+        if (minX === 0.0) {
+            minX += world.buffer * world.width;
+        }
+        if (maxX === 3.2) {
+            maxX -= world.buffer * world.width;
+        }
+        if (minY === 0.1) {
+            minY += world.buffer * world.width;
+        }
+        if (maxY === 3.2) {
+            maxY -= world.buffer * world.width;
+        }
+        
+        position.x = Math.random() * (maxX - minX) + minX;
+        position.y = Math.random() * (maxY - minY) + minY;
+    }
 
     //------------------------------------------------------------------
     //

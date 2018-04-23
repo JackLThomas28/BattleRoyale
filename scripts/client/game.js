@@ -20,7 +20,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         nextExplosionId = 1,
         socket = io(),
         networkQueue = Queue.create(),
-        myMouse = input.Mouse(),
+        myMouse = null,
         background = null,
         world = {	// The size of the world must match the world-size of the background image
 			get left() { return 0; },
@@ -36,10 +36,10 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 			get bottom() { return world.height - world.bufferSize; }
         },
         map = null,
-        exitDeploymentScreen = null,
+        onDeploymentScreen = null,
         miniMap = null,
-        deploymentMap = null;
-
+        deploymentMap = null,
+        storm = null;
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
         networkQueue.enqueue({
@@ -90,6 +90,13 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         });
     });
     
+    socket.on(NetworkIds.UPDATE_STORM, data => {
+        networkQueue.enqueue({
+            type: NetworkIds.UPDATE_STORM,
+            data: data
+        });
+    });
+
     socket.on(NetworkIds.MISSILE_NEW, data => {
         networkQueue.enqueue({
             type: NetworkIds.MISSILE_NEW,
@@ -233,15 +240,18 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 
     function updateDeploymentTimer(data) {
         deploymentMap.remainingTime = data;
-        if (deploymentMap.remainingTime > 0) {
-            exitDeploymentScreen = false;
-        } else {
-            exitDeploymentScreen = true;
+        if (deploymentMap.remainingTime <= 0) {
+            onDeploymentScreen = false;
         }
     }
 
     function updateStormTimer(data) {
         miniMap.remainingTime = data;
+    }
+
+    function updateStorm(data) {
+        storm.radius = data.radius;
+        storm.position = data.position;
     }
 
     //------------------------------------------------------------------
@@ -295,7 +305,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         // while the local updating of received network messages are processed.
         myKeyboard.update(elapsedTime);
 
-        myMouse.update(elapsedTime);
+        myMouse.update(elapsedTime, onDeploymentScreen);
 
         //
         // Double buffering on the queue so we don't asynchronously receive messages
@@ -325,6 +335,9 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     break;
                 case NetworkIds.UPDATE_STORM_TIMER:
                     updateStormTimer(message.data);
+                    break;
+                case NetworkIds.UPDATE_STORM:
+                    updateStorm(message.data);
                     break;
                 case NetworkIds.MISSILE_NEW:
                     missileNew(message.data);
@@ -375,11 +388,12 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function render() {
         graphics.clear();
 
-        if (!exitDeploymentScreen) {
+        if (onDeploymentScreen) {
             renderer.DeploymentMap.render(deploymentMap);
         } else {
             renderer.TiledImage.render(background, graphics.viewport);
             renderer.Player.render(playerSelf.model, playerSelf.texture);
+            renderer.Storm.render(storm);
 
             for (let id in playerOthers) {
                 let player = playerOthers[id];
@@ -452,7 +466,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 
         var backgroundKey = 'background';
 
-        exitDeploymentScreen = false;
+        myMouse = input.Mouse();
 		//
 		// Get the intial viewport settings prepared.
 		MyGame.graphics.viewport.set(0.0, 0.0, 0.3); // The buffer can't really be any larger than world.buffer, guess I could protect against that.
@@ -475,6 +489,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             image: assets['background-image'],
             remainingTime: null});
         miniMap = components.DeploymentMap({image: assets['background-image']});
+        storm = {
+            radius: null,
+            position: null
+        };
+
         myMouse.registerHandler('mousemove', (elapsedTime, mousePosition) => {
             let message = {
                 id: messageId++,
@@ -488,6 +507,26 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             messageHistory.enqueue(message);
             playerSelf.model.rotate(elapsedTime, mousePosition, graphics.world);
         });
+
+        myMouse.registerHandler('mousedown', (elapsedTime, mousePosition) => {
+            let message = {
+                id: messageId++,
+                elapsedTime: elapsedTime,
+                type: NetworkIds.INPUT_DEPLOY_POSITION,
+                position: mousePosition,
+                world: {
+                        left: graphics.world.left,
+                        top: graphics.world.top,
+                        size: graphics.world.size,
+                        width: world.width,
+                        height: world.height,
+                        buffer: world.bufferSize
+                    }
+            };
+            socket.emit(NetworkIds.INPUT, message);
+            messageHistory.enqueue(message);
+        });
+
         if(previousOptions === null){
             add('forward', MyGame.input.KeyEvent.DOM_VK_W);
             add('back', MyGame.input.KeyEvent.DOM_VK_S);
@@ -560,22 +599,20 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             socket.emit(NetworkIds.INPUT, message);
         },
         keyMap['fire'], true);
-
-    
-    
     }
 
     function run(){
         // Get the game loop started
         MyGame.graphics.initialize();
+        onDeploymentScreen = true;
         requestAnimationFrame(gameLoop);
     }
+
     function updateKeyboard(keyCode, oldKey, inputType, moveType){
         let keys = myKeyboard.getKeys();
         myKeyboard.unregisterHandler(oldKey, keys[oldKey][0].id)
 
         if(moveType === "fire"){
-            console.log("here")
             myKeyboard.registerHandler(elapsedTime => {
                 let message = {
                     id: messageId++,

@@ -9,9 +9,9 @@ let fs = require('fs');
 let present = require('present');
 let Player = require('./player');
 let Missile = require('./missile');
+let Storm = require('./storm');
 let NetworkIds = require('../shared/network-ids');
 let Queue = require('../shared/queue.js');
-let NewPlayer
 
 const STATE_UPDATE_RATE_MS = 50;
 let lastUpdate = 0;
@@ -25,6 +25,14 @@ let nextMissileId = 1;
 let deploymentTimer = 10;
 let currTime = 0;
 let stormTimer = 300;
+let storm = Storm.create({
+    radius: 1.6 + 0.8,
+    time: stormTimer,
+    position: {
+        x: 1.6,
+        y: 1.6
+    }
+});
 
 let players = [];
 
@@ -65,6 +73,10 @@ function processInput(elapsedTime) {
         let client = activeClients[input.clientId];
         client.lastMessageId = input.message.id;
         switch (input.message.type) {
+            case NetworkIds.INPUT_DEPLOY_POSITION:
+                client.player.setDeployLocation(input.message.elapedTime,
+                    input.message.position, input.message.world);
+                break;
             case NetworkIds.INPUT_MOVE_FORWARD:
                 client.player.moveForward(input.message.elapsedTime,
                     input.message.worldBuffer);
@@ -178,14 +190,25 @@ function timeUnitPassed(time, unit) {
 function updateClientTimers(timer, networkId) {
     for (let clientId in activeClients) {
         let client = activeClients[clientId];
-        let update = {
-            clientId: clientId,
-            lastMessageId: client.lastMessageId,
-            direction: client.player.direction,
-            position: client.player.position,
-            updateWindow: lastUpdate
-        };
+        // let update = {
+        //     clientId: clientId,
+        //     lastMessageId: client.lastMessageId,
+        //     direction: client.player.direction,
+        //     position: client.player.position,
+        //     updateWindow: lastUpdate
+        // };
         client.socket.emit(networkId, timer);
+    }
+}
+
+function updateClientStorm(networkId) {
+    for (let clientId in activeClients) {
+        let client = activeClients[clientId];
+        let update = {
+            radius: storm.radius,
+            position: storm.position
+        };
+        client.socket.emit(networkId, update);
     }
 }
 
@@ -203,8 +226,6 @@ function updateClients(elapsedTime) {
         return;
     }
 
-
-
     currTime += elapsedTime;
     if (timeUnitPassed(currTime, 1000)) {
         currTime = 0;
@@ -213,9 +234,11 @@ function updateClients(elapsedTime) {
             deploymentTimer--;
             updateClientTimers(deploymentTimer, NetworkIds.UPDATE_DEPLOY_TIMER);
         }
-        if (stormTimer > 0) {
+        if (stormTimer > 0 && deploymentTimer === 0) {
             stormTimer--;
             updateClientTimers(stormTimer, NetworkIds.UPDATE_STORM_TIMER);
+            storm.update(elapsedTime);
+            updateClientStorm(NetworkIds.UPDATE_STORM);
         }
     }
 
@@ -423,7 +446,6 @@ function initializeSocketIO(httpServer) {
 
 function createPlayer(spec){
     players.push(spec);
-    client.player.updateUser(spec);
 
     let newUser = JSON.stringify(spec);
     fs.writeFile('./assets/players.json', newUser,function(err){
@@ -447,7 +469,6 @@ function initPlayers(){
     let raw = fs.readFileSync('./assets/players.json');
     players = JSON.parse(raw);
     if(players === undefined) players = [];
-    console.log("Existing Players: ", players);
 }
 
 //------------------------------------------------------------------

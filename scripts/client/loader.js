@@ -65,7 +65,7 @@ MyGame.loader = (function() {
             scripts: ['components/player', 'components/player-remote', 
                 'components/missile', 'components/animated-sprite', 
                 'components/tiled-image', 'components/deploy-map',
-                'components/mini-map'],
+                'components/mini-map', 'components/storm'],
             message: 'Game Components loaded',
             onComplete: null
         }, {
@@ -76,7 +76,7 @@ MyGame.loader = (function() {
             scripts: ['rendering/player', 'rendering/player-remote', 
                 'rendering/missile', 'rendering/animated-sprite', 
                 'rendering/tiled-image', 'rendering/deploy-map', 
-                'rendering/mini-map'],
+                'rendering/mini-map', 'rendering/storm'],
             message: 'Renderers loaded',
             onComplete: null
         }, {

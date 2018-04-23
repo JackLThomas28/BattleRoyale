@@ -68,6 +68,10 @@
             value: 'update-storm-timer',
             writable: false
         },
+        'UPDATE_STORM': {
+            value: 'update-storm',
+            writable: false
+        },
         'MISSILE_NEW': {
             value: 'missile-new',
             writable: false

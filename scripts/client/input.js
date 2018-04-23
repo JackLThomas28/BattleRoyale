@@ -21,7 +21,7 @@ MyGame.input.Mouse = function Mouse() {
 		that.mouseMove.push(e);
 	}
 	
-	that.update = function(elapsedTime) {
+	that.update = function(elapsedTime, onDeploymentScreen) {
 		let event;
 		let handler;
 
@@ -34,7 +34,9 @@ MyGame.input.Mouse = function Mouse() {
 					x: that.mouseDown[event].clientX - rect.left,
 					y: that.mouseDown[event].clientY - rect.top
 				};
-				that.handlersDown[handler](elapsedTime, position);
+				if (onDeploymentScreen) {
+					that.handlersDown[handler](elapsedTime, position);
+				}
 			}
 		}
 		
