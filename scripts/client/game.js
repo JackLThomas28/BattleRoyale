@@ -98,10 +98,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     });
     
     socket.on(NetworkIds.UPDATE_LOBBY_TIMER, data => {
-        networkQueue.enqueue({
-            type: NetworkIds.UPDATE_LOBBY_TIMER,
-            data: data
-        });
+        updateLobbyTimer(data);
     });
     
     socket.on(NetworkIds.UPDATE_STORM, data => {
@@ -271,7 +268,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 
     function updateLobbyTimer(data) {
         lobbyTimer = data;
-        console.log('here');
         if (lobbyTimer <= 0) {
             MyGame.main.showScreen('game-play');
         }
@@ -334,12 +330,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         myKeyboard.update(elapsedTime);
 
         myMouse.update(elapsedTime, onDeploymentScreen);
-
         //
         // Double buffering on the queue so we don't asynchronously receive messages
         // while processing.
         let processMe = networkQueue;
-        networkQueue = Queue.create();
+        networkQueue = networkQueue = Queue.create();
         while (!processMe.empty) {
             let message = processMe.dequeue();
             switch (message.type) {

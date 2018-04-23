@@ -405,7 +405,7 @@ function initializeSocketIO(httpServer) {
         }
     }
     
-    io.on('connection', function(socket) {
+    io.on('connection', socket => {
         console.log('Connection established: ', socket.id);
         //
         // Create an entry in our list of connected clients
