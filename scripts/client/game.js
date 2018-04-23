@@ -43,6 +43,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         storm = null,
         msgList = [],
         lobbyTimer = null;
+        let missileFire = assets['missileFire'];
+        let hit = assets['missileHit'];
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
@@ -284,6 +286,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     //
     //------------------------------------------------------------------
     function missileNew(data) {
+        missileFire = assets['missileFire'];
+        missileFire.play();
         missiles[data.id] = components.Missile({
             id: data.id,
             radius: data.radius,
@@ -303,6 +307,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     //
     //------------------------------------------------------------------
     function missileHit(data) {
+        hit = assets['missileHit'];
+        hit.play();
         explosions[nextExplosionId] = components.AnimatedSprite({
             id: nextExplosionId++,
             spriteSheet: MyGame.assets['explosion'],
