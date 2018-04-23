@@ -34,6 +34,15 @@ MyGame.renderer.MiniMap = (function(graphics) {
         graphics.drawRectangle('white', left - 0.005, top - 0.005, width + 0.005, height + 0.005);
     }
 
+    function drawStorm(storm, scale, world, left) {
+        let position = {
+                x: (storm.position.x * scale / world.width) + left,
+                y: storm.position.y * scale / world.height
+            },
+            radius = storm.radius * scale / world.width;
+        graphics.drawCircle('white', position, radius, false);
+    }
+
     function drawPlayersLeft(playersLeft, left, top, mapWidth, mapHeight) {
         let text = {
             font: '15px Arial',
@@ -62,7 +71,7 @@ MyGame.renderer.MiniMap = (function(graphics) {
         graphics.drawText(text);
     }
 
-    that.render = function(map, position, world) {
+    that.render = function(map, position, world, storm) {
         let scale = 0.3,
             left = 1 - scale,
             top = 0.0,
@@ -78,6 +87,9 @@ MyGame.renderer.MiniMap = (function(graphics) {
         // Draw the player's position on the mini map
         drawPlayerPosition(position, scale, left, 
             playerWidth, playerHeight, world);
+       
+        // Draw the storm on the mini-map
+        drawStorm(storm, scale, world, left);
         
         // Draw the number of remaining players
         drawPlayersLeft(0, left, top, scale, scale);

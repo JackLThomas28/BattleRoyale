@@ -366,6 +366,22 @@ MyGame.graphics = (function() {
 			height * world.size);
 	}
 
+	//------------------------------------------------------------------
+	//
+	// Create a clipping region for the area in which the rendering
+	// takes place.
+	//
+	//------------------------------------------------------------------
+	function clip() {
+		//
+		// The beginPath is necessary, because .rect adds to the current path.
+		// Without the beginPath, repeated calls to clip keep adding to the current
+		// path and slows things down to a crawl very, very quickly.
+		context.beginPath();
+		context.rect(world.left, world.top, world.size, world.size);
+		context.clip();
+	}
+
 	return {
         initialize: initialize,
         clear: clear,
@@ -379,6 +395,7 @@ MyGame.graphics = (function() {
 		drawRectangle: drawRectangle,
 		drawFilledRectangle: drawFilledRectangle,
 		notifyResize: notifyResize,
+		clip: clip,
         get viewport() { return viewport; },
         get world() { return world; }
     };

@@ -442,8 +442,10 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             for (let id in explosions) {
                 renderer.AnimatedSprite.render(explosions[id]);
             }
+
+            graphics.clip();
             renderer.MiniMap.render(miniMap, 
-                playerSelf.model.position, world);
+                playerSelf.model.position, world, storm);
         }
     }
 
