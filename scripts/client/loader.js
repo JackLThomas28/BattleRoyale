@@ -91,6 +91,13 @@ MyGame.loader = (function() {
         }],
         assetOrder = [
         {
+            key: 'missileFire',
+            source: 'assets/zap.mp3'
+        },{
+            key: 'missileHit',
+            source: 'assets/pow.mp3'
+        },
+        {
             key: 'background',
             source: 'assets/background/terrain_tiles24.png'
         },{
