@@ -84,7 +84,8 @@ MyGame.loader = (function() {
             message: 'Gameplay model loaded',
             onComplete: null
         }],
-        assetOrder = [{
+        assetOrder = [
+        {
             key: 'background',
             source: 'assets/background/terrain_tiles24.png'
         },{

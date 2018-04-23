@@ -5,11 +5,13 @@
 // ------------------------------------------------------------------
 'use strict';
 
+let fs = require('fs');
 let present = require('present');
 let Player = require('./player');
 let Missile = require('./missile');
 let NetworkIds = require('../shared/network-ids');
 let Queue = require('../shared/queue.js');
+let NewPlayer
 
 const STATE_UPDATE_RATE_MS = 50;
 let lastUpdate = 0;
@@ -23,6 +25,9 @@ let nextMissileId = 1;
 let deploymentTimer = 10;
 let currTime = 0;
 let stormTimer = 300;
+
+let players = [];
+
 
 //------------------------------------------------------------------
 //
@@ -55,8 +60,6 @@ function processInput(elapsedTime) {
     // Double buffering on the queue so we don't asynchronously receive inputs
     // while processing.
     let processMe = inputQueue;
-    inputQueue = Queue.create();
-
     while (!processMe.empty) {
         let input = processMe.dequeue();
         let client = activeClients[input.clientId];
@@ -86,9 +89,19 @@ function processInput(elapsedTime) {
             case NetworkIds.INPUT_FIRE:
                 createMissile(input.clientId, client.player);
                 break;
+            case NetworkIds.CREATE_USER:
+                createPlayer(input.message.user);
+                break;
+            case NetworkIds.LOGIN:
+                loginUser(input.message.user);
+                break;
         }
     }
+    inputQueue = Queue.create();
+
 }
+
+
 
 //------------------------------------------------------------------
 //
@@ -189,6 +202,8 @@ function updateClients(elapsedTime) {
     if (lastUpdate < STATE_UPDATE_RATE_MS) {
         return;
     }
+
+
 
     currTime += elapsedTime;
     if (timeUnitPassed(currTime, 1000)) {
@@ -368,12 +383,18 @@ function initializeSocketIO(httpServer) {
             socket: socket,
             player: newPlayer
         };
-        socket.emit(NetworkIds.CONNECT_ACK, {
-            direction: newPlayer.direction,
-            position: newPlayer.position,
-            size: newPlayer.size,
-            rotateRate: newPlayer.rotateRate,
-            speed: newPlayer.speed
+        socket.on(NetworkIds.LOGIN, data => {
+            inputQueue.enqueue({
+                clientId: socket.id,
+                message: data
+            });
+        });
+
+        socket.on(NetworkIds.CREATE_USER, data => {
+            inputQueue.enqueue({
+                clientId: socket.id,
+                message: data
+            });
         });
 
         socket.on(NetworkIds.INPUT, data => {
@@ -388,8 +409,45 @@ function initializeSocketIO(httpServer) {
             notifyDisconnect(socket.id);
         });
 
+        socket.emit(NetworkIds.CONNECT_ACK, {
+            direction: newPlayer.direction,
+            position: newPlayer.position,
+            size: newPlayer.size,
+            rotateRate: newPlayer.rotateRate,
+            speed: newPlayer.speed
+        });
+
         notifyConnect(socket, newPlayer);
     });
+}
+
+function createPlayer(spec){
+    players.push(spec);
+    client.player.updateUser(spec);
+
+    let newUser = JSON.stringify(spec);
+    fs.writeFile('./assets/players.json', newUser,function(err){
+        if(err){
+            console.log(err);
+        }
+    });
+}
+function loginUser(user){
+    for(let i=0; i<players.length; i++){
+        if(user.username === players[i].username && user.password === players[i].password){
+            console.log("Successful Login");
+            return;
+            // io.emit()
+        }
+    }
+    console.log("Login Failed");
+}
+
+function initPlayers(){
+    let raw = fs.readFileSync('./assets/players.json');
+    players = JSON.parse(raw);
+    if(players === undefined) players = [];
+    console.log("Existing Players: ", players);
 }
 
 //------------------------------------------------------------------
@@ -398,6 +456,7 @@ function initializeSocketIO(httpServer) {
 //
 //------------------------------------------------------------------
 function initialize(httpServer) {
+    initPlayers();
     initializeSocketIO(httpServer);
     gameLoop(present(), 0);
 }
