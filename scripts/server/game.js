@@ -33,7 +33,7 @@ let storm = Storm.create({
         y: 1.6
     }
 });
-let buildings = createBuildings(5);
+let buildings = createBuildings(15);
 
 let msgList = [];
 let players = [];
