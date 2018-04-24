@@ -151,7 +151,7 @@ MyGame.input.Keyboard = function() {
 			for (let entry = 0; entry < handlers[key].length; entry += 1) {
 				if (handlers[key][entry].id === id) {
 					handlers[key].splice(entry, 1);
-					console.log("Successfull")
+					console.log("Successful")
 					break;
 				}
 			}

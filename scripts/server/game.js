@@ -74,21 +74,24 @@ function createBuildings(count) {
     for (let i = 0; i < count; i++) {
         structures.push({
             size: { width: 0.1, height: 0.1 },
-            center: { 
+            position: { 
                 x: getRandomFloat(minX, maxX), 
-                y: getRandomFloat(minY, maxY) } 
+                y: getRandomFloat(minY, maxY) },
+            radius: 0.03
         });
         structures.push({
             size: { width: 0.1, height: 0.1 },
-            center: { 
+            position: { 
                 x: getRandomFloat(minX, maxX), 
-                y: getRandomFloat(minY, maxY) } 
+                y: getRandomFloat(minY, maxY) },
+            radius: 0.03
         });
         structures.push({
             size: { width: 0.1, height: 0.1 },
-            center: { 
+            position: { 
                 x: getRandomFloat(minX, maxX), 
-                y: getRandomFloat(minY, maxY) } 
+                y: getRandomFloat(minY, maxY) },
+            radius: 0.03
         });
     }
     return structures;
@@ -193,31 +196,52 @@ function update(elapsedTime, currentTime) {
         }
     }
     activeMissiles = keepMissiles;
+    activeMissiles = checkBuildingCollision(activeMissiles, buildings);
+    activeMissiles = checkPlayerCollision(activeMissiles, activeClients);
+}
 
-    //
-    // Check to see if any missiles collide with any players (no friendly fire)
-    keepMissiles = [];
-    for (let missile = 0; missile < activeMissiles.length; missile++) {
+function checkBuildingCollision(missiles, buildings) {
+    let keepMissiles = [];
+    for (let missile = 0; missile < missiles.length; missile++) {
         let hit = false;
-        for (let clientId in activeClients) {
-            //
-            // Don't allow a missile to hit the player it was fired from.
-            if (clientId !== activeMissiles[missile].clientId) {
-                if (collided(activeMissiles[missile], activeClients[clientId].player)) {
+        for (let build in buildings) {
+            if (collided(missiles[missile], buildings[build])) {
+                hit = true;
+                hits.push({
+                    building: buildings[build],
+                    missileId: missiles[missile].id,
+                    position: buildings[build].position
+                });
+            }
+        }
+        if (!hit) {
+            keepMissiles.push(missiles[missile]);
+        }
+    }
+    return keepMissiles;
+}
+
+function checkPlayerCollision(missiles, clients) {
+    let keepMissiles = [];
+    for (let missile = 0; missile < missiles.length; missile++) {
+        let hit = false;
+        for (let clientId in clients) {
+            if (clientId !== missiles[missile].clientId) {
+                if (collided(missiles[missile], clients[clientId].player)) {
                     hit = true;
                     hits.push({
                         clientId: clientId,
-                        missileId: activeMissiles[missile].id,
-                        position: activeClients[clientId].player.position
+                        missileId: missiles[missile].id,
+                        position: clients[clientId].player.position
                     });
                 }
             }
         }
         if (!hit) {
-            keepMissiles.push(activeMissiles[missile]);
+            keepMissiles.push(missiles[missile]);
         }
     }
-    activeMissiles = keepMissiles;
+    return keepMissiles;
 }
 
 function timeUnitPassed(time, unit) {

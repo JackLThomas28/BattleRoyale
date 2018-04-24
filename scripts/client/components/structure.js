@@ -4,7 +4,7 @@ MyGame.components.Structure = function(spec) {
         get image() { return spec.image; },
         get width() { return spec.size.width; }, 
         get height() { return spec.size.height; },
-        get center() { return spec.center; }
+        get position() { return spec.position; }
     };
 
     return that;

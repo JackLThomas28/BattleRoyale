@@ -165,7 +165,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         for (let house = 0; house < data.buildings.length / 3; house++) {
             data.buildings[house].image = assets['hut'];
             let building = data.buildings[house];
-            console.log(building.image);
             buildings.push(components.Structure(building));
         }
         for (let house = 5; house < (data.buildings.length / 3) * 2; house++) {
@@ -458,22 +457,22 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 }
             }
 
+            for (let house in buildings) {
+                if (buildings[house].position.x >= graphics.viewport.left && 
+                    buildings[house].position.x <= graphics.viewport.right && 
+                    buildings[house].position.y >= graphics.viewport.top &&
+                    buildings[house].position.y <= graphics.viewport.bottom) {
+
+                    renderer.Structure.render(buildings[house]);
+                }
+            }
+
             for (let missile in missiles) {
                 renderer.Missile.render(missiles[missile]);
             }
 
             for (let id in explosions) {
                 renderer.AnimatedSprite.render(explosions[id]);
-            }
-
-            for (let house in buildings) {
-                if (buildings[house].center.x >= graphics.viewport.left && 
-                    buildings[house].center.x <= graphics.viewport.right && 
-                    buildings[house].center.y >= graphics.viewport.top &&
-                    buildings[house].center.y <= graphics.viewport.bottom) {
-
-                    renderer.Structure.render(buildings[house]);
-                }
             }
 
             graphics.clip();

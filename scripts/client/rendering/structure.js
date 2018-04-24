@@ -3,8 +3,8 @@ MyGame.renderer.Structure = (function(graphics) {
     let that = {};
 
     that.render = function(structure) {
-        let dx = structure.center.x - structure.width / 2,
-            dy = structure.center.y - structure.height / 2;
+        let dx = structure.position.x - structure.width / 2,
+            dy = structure.position.y - structure.height / 2;
 
         graphics.drawImage(structure.image, 
             dx, dy,
