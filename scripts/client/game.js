@@ -42,7 +42,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         deploymentMap = null,
         storm = null,
         msgList = [],
-        lobbyTimer = null;
+        lobbyTimer = null,
+        buildings = [];
         let missileFire = assets['missileFire'];
         let hit = assets['missileHit'];
         let highScores = [];
@@ -162,6 +163,23 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         playerSelf.model.direction = data.direction;
         playerSelf.model.speed = data.speed;
         playerSelf.model.rotateRate = data.rotateRate;
+
+        for (let house = 0; house < data.buildings.length / 3; house++) {
+            data.buildings[house].image = assets['hut'];
+            let building = data.buildings[house];
+            console.log(building.image);
+            buildings.push(components.Structure(building));
+        }
+        for (let house = 5; house < (data.buildings.length / 3) * 2; house++) {
+            data.buildings[house].image = assets['house'];
+            let building = data.buildings[house];
+            buildings.push(components.Structure(building));
+        }
+        for (let house = 10; house < (data.buildings.length / 3) * 3; house++) {
+            data.buildings[house].image = assets['cabin'];
+            let building = data.buildings[house];
+            buildings.push(components.Structure(building));
+        }
     }
 
     //------------------------------------------------------------------
@@ -330,6 +348,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         delete missiles[data.missileId];
     }
 
+
     //------------------------------------------------------------------
     //
     // Process the registered input handlers here.
@@ -453,6 +472,16 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
 
             for (let id in explosions) {
                 renderer.AnimatedSprite.render(explosions[id]);
+            }
+
+            for (let house in buildings) {
+                if (buildings[house].center.x >= graphics.viewport.left && 
+                    buildings[house].center.x <= graphics.viewport.right && 
+                    buildings[house].center.y >= graphics.viewport.top &&
+                    buildings[house].center.y <= graphics.viewport.bottom) {
+
+                    renderer.Structure.render(buildings[house]);
+                }
             }
 
             graphics.clip();

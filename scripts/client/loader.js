@@ -46,7 +46,7 @@ MyGame.loader = (function() {
             scripts: ['components/player', 'components/player-remote', 
                 'components/missile', 'components/animated-sprite', 
                 'components/tiled-image', 'components/deploy-map',
-                'components/mini-map', 'components/storm','components/particleExplosion' ],
+                'components/mini-map', 'components/storm','components/particleExplosion','components/structure'],
             message: 'Game Components loaded',
             onComplete: null
         }, {
@@ -57,7 +57,7 @@ MyGame.loader = (function() {
             scripts: ['rendering/player', 'rendering/player-remote', 
                 'rendering/missile', 'rendering/animated-sprite', 
                 'rendering/tiled-image', 'rendering/deploy-map', 
-                'rendering/mini-map', 'rendering/storm', 'rendering/particleSystem'],
+                'rendering/mini-map', 'rendering/storm', 'rendering/particleSystem', 'rendering/structure'],
             message: 'Renderers loaded',
             onComplete: null
         }, {
@@ -65,8 +65,7 @@ MyGame.loader = (function() {
             message: 'Gameplay model loaded',
             onComplete: null
         }],
-        assetOrder = [
-        {
+        assetOrder = [{
             key: 'missileFire',
             source: 'assets/sounds/zap.mp3'
         },{
@@ -82,6 +81,15 @@ MyGame.loader = (function() {
         },{
             key: 'background-image',
             source: 'assets/background/map.png'
+        },{
+            key: 'house',
+            source: 'assets/house.png'
+        },{
+            key: 'cabin',
+            source: 'assets/cabin.png'
+        },{
+            key: 'hut',
+            source: 'assets/hut.png'
         },{
             key: 'player-self',
             source: 'assets/graphics/playerShip1_blue.png'
