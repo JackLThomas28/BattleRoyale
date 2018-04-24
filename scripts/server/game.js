@@ -13,6 +13,7 @@ let Storm = require('./storm');
 let NetworkIds = require('../shared/network-ids');
 let Queue = require('../shared/queue.js');
 
+let LOBBY_TIMER = 40;
 const STATE_UPDATE_RATE_MS = 50;
 let lastUpdate = 0;
 let quit = false;
@@ -38,7 +39,6 @@ let playerCount = 0;
 
 let msgList = [];
 let players = [];
-let lobbyTimer = 10;
 
 
 //------------------------------------------------------------------
@@ -296,11 +296,11 @@ function updateClients(elapsedTime) {
     if (timeUnitPassed(currTime, 1000)) {
         currTime = 0;
        
-        if(lobbyTimer > 0) {
-            lobbyTimer--;
-            updateClientTimers(lobbyTimer, NetworkIds.UPDATE_LOBBY_TIMER);
+        if (LOBBY_TIMER > 0) {
+            LOBBY_TIMER--;
+            updateClientTimers(LOBBY_TIMER, NetworkIds.UPDATE_LOBBY_TIMER);
         }
-        if (deploymentTimer > 0 && lobbyTimer === 0) {
+        if (deploymentTimer > 0 && LOBBY_TIMER === 0) {
             deploymentTimer--;
             updateClientTimers(deploymentTimer, NetworkIds.UPDATE_DEPLOY_TIMER);
         }
