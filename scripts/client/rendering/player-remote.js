@@ -21,7 +21,6 @@ MyGame.renderer.PlayerRemote = (function(graphics) {
             centerX, centerY, 
             model.size.width, model.size.height, 
             true);
-        graphics.drawFilledRectangle('white', model.state.position.x, model.state.position.y, 0.005, 0.005, true);
         graphics.restoreContext();
     };
 

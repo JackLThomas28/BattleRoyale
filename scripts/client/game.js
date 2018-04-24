@@ -169,12 +169,12 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             let building = data.buildings[house];
             buildings.push(components.Structure(building));
         }
-        for (let house = 5; house < (data.buildings.length / 3) * 2; house++) {
-            data.buildings[house].image = assets['house'];
+        for (let house = 15; house < (data.buildings.length / 3) * 2; house++) {
+            data.buildings[house].image = assets['tree'];
             let building = data.buildings[house];
             buildings.push(components.Structure(building));
         }
-        for (let house = 10; house < (data.buildings.length / 3) * 3; house++) {
+        for (let house = 30; house < (data.buildings.length / 3) * 3; house++) {
             data.buildings[house].image = assets['cabin'];
             let building = data.buildings[house];
             buildings.push(components.Structure(building));
@@ -328,18 +328,18 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function missileHit(data) {
         hit = assets['missileHit'];
         hit.play();
-        components.particleSystem.createEffectExplosion({
-			center: data.position,
-			howMany: 300
-        });
-        // explosions[nextExplosionId] = components.AnimatedSprite({
-        //     id: nextExplosionId++,
-        //     spriteSheet: MyGame.assets['explosion'],
-        //     spriteSize: { width: 0.07, height: 0.07 },
-        //     spriteCenter: data.position,
-        //     spriteCount: 16,
-        //     spriteTime: [ 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+        // components.particleSystem.createEffectExplosion({
+		// 	center: data.position,
+		// 	howMany: 300
         // });
+        explosions[nextExplosionId] = components.AnimatedSprite({
+            id: nextExplosionId++,
+            spriteSheet: MyGame.assets['explosion'],
+            spriteSize: { width: 0.07, height: 0.07 },
+            spriteCenter: data.position,
+            spriteCount: 16,
+            spriteTime: [ 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+        });
 
         //
         // When we receive a hit notification, go ahead and remove the

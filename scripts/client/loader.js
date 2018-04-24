@@ -82,14 +82,14 @@ MyGame.loader = (function() {
             key: 'background-image',
             source: 'assets/background/map.png'
         },{
-            key: 'house',
-            source: 'assets/graphics/house.png'
+            key: 'tree',
+            source: 'assets/graphics/tree.png'
         },{
             key: 'cabin',
             source: 'assets/graphics/cabin.png'
         },{
             key: 'hut',
-            source: 'assets/graphics/tree.png'
+            source: 'assets/graphics/hut.png'
         },{
             key: 'player-self',
             source: 'assets/graphics/Green_Tank.png'
