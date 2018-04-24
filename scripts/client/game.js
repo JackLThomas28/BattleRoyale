@@ -45,11 +45,13 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         lobbyTimer = null;
         let missileFire = assets['missileFire'];
         let hit = assets['missileHit'];
+        let highScores = [];
 
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
         if(data){
             playerSelf.id = data.id;
+            highScores = data.score;
         }
         networkQueue.enqueue({
             type: NetworkIds.CONNECT_ACK,
@@ -309,14 +311,18 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function missileHit(data) {
         hit = assets['missileHit'];
         hit.play();
-        explosions[nextExplosionId] = components.AnimatedSprite({
-            id: nextExplosionId++,
-            spriteSheet: MyGame.assets['explosion'],
-            spriteSize: { width: 0.07, height: 0.07 },
-            spriteCenter: data.position,
-            spriteCount: 16,
-            spriteTime: [ 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+        components.particleSystem.createEffectExplosion({
+			center: data.position,
+			howMany: 300
         });
+        // explosions[nextExplosionId] = components.AnimatedSprite({
+        //     id: nextExplosionId++,
+        //     spriteSheet: MyGame.assets['explosion'],
+        //     spriteSize: { width: 0.07, height: 0.07 },
+        //     spriteCenter: data.position,
+        //     spriteCount: 16,
+        //     spriteTime: [ 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+        // });
 
         //
         // When we receive a hit notification, go ahead and remove the
@@ -387,6 +393,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     //
     //------------------------------------------------------------------
     function update(elapsedTime) {
+        components.particleSystem.update(elapsedTime);
         playerSelf.model.update(elapsedTime);
         for (let id in playerOthers) {
             playerOthers[id].model.update(elapsedTime);
@@ -418,6 +425,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     //------------------------------------------------------------------
     function render() {
         graphics.clear();
+        
 
         if (onDeploymentScreen) {
             renderer.DeploymentMap.render(deploymentMap);
@@ -450,6 +458,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             graphics.clip();
             renderer.MiniMap.render(miniMap, 
                 playerSelf.model.position, world, storm);
+            renderer.particleSystem.render(MyGame.components.particleSystem);
         }
     }
 
@@ -497,6 +506,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function initialize() {
         console.log('game initializing...');
 
+        
         var backgroundKey = 'background';
 
         myMouse = input.Mouse();
@@ -688,7 +698,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function getKeyMap(){
         return keyMap;
     }
-
     function createUser(user){
         let message = {
             id: messageId++,
@@ -710,7 +719,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         };
         socket.emit(NetworkIds.LOGIN, message);
     }
-
     function sendMessage(m){
         let message = {
             id: messageId++,
@@ -721,13 +729,21 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         };
         socket.emit(NetworkIds.MESSAGE, message);
     }
-
     function displayMsg(){
         document.getElementById("messageList").innerHTML = "";
         let display = document.getElementById("messageList");
         for(let i=0; i<msgList.length; i++){
             display.innerHTML += msgList[i].user + ": " + msgList[i].msg + '<br>';
         }
+    }
+    function sortScore(x,y){
+        if(x.score < y.score)
+            return -1;
+        else return 1;
+    }
+    function readHighScore(){
+        highScores.sort(sortScore);
+        return highScores;
     }
     
     return {
@@ -737,7 +753,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         getKeyMap : getKeyMap,
         createUser : createUser,
         login : login,
-        sendMessage : sendMessage
+        sendMessage : sendMessage,
+        readHighScore: readHighScore
     };
  
 }(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));
