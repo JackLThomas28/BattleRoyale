@@ -32,7 +32,7 @@ function createPlayer() {
     let password = null;
     let direction = random.nextDouble() + 2 * Math.PI;    // Angle in radians
     let rotateRate = Math.PI / 1000;    // radians per millisecond
-    let speed = 0.0004;                  // unit distance per millisecond
+    let speed = 0.0002;                  // unit distance per millisecond
     let reportUpdate = false;    // Indicates if this model was updated during the last update
 
     let health = 100;
@@ -220,6 +220,9 @@ function createPlayer() {
         that.password = spec.password;
     }
     that.getUserName = function(){return that.username;}
+    that.health = function(dmg){
+        that.health -= dmg;
+    }
 
     return that;
 }

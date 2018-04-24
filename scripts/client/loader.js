@@ -83,19 +83,19 @@ MyGame.loader = (function() {
             source: 'assets/background/map.png'
         },{
             key: 'house',
-            source: 'assets/house.png'
+            source: 'assets/graphics/house.png'
         },{
             key: 'cabin',
-            source: 'assets/cabin.png'
+            source: 'assets/graphics/cabin.png'
         },{
             key: 'hut',
-            source: 'assets/hut.png'
+            source: 'assets/graphics/hut.png'
         },{
             key: 'player-self',
-            source: 'assets/graphics/playerShip1_blue.png'
+            source: 'assets/graphics/Green_Tank.png'
         }, {
             key: 'player-other',
-            source: 'assets/graphics/playerShip1_red.png'
+            source: 'assets/graphics/Red_Tank.png'
         }, {
             key: 'explosion',
             source: 'assets/graphics/explosion.png'

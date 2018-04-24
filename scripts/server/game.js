@@ -493,13 +493,9 @@ function initializeSocketIO(httpServer) {
             size: newPlayer.size,
             rotateRate: newPlayer.rotateRate,
             speed: newPlayer.speed,
-<<<<<<< HEAD
-            id : socket.id,
-            score : scores
-=======
+            score : scores,
             buildings: buildings,
             id : socket.id
->>>>>>> 4d14368d81b9778e7d1d2edb7c19b0c10fcc27e0
         });
 
         notifyConnect(socket, newPlayer);

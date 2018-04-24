@@ -11,8 +11,8 @@ MyGame.components.Player = function(viewport) {
         y: 0
     };
     let size = {
-        width: 0.05,
-        height: 0.05
+        width: 0.25,
+        height: 0.25
     };
     let direction = 0;
     let rotateRate = 0;
