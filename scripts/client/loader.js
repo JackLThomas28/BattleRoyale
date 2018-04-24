@@ -89,7 +89,7 @@ MyGame.loader = (function() {
             source: 'assets/graphics/cabin.png'
         },{
             key: 'hut',
-            source: 'assets/graphics/hut.png'
+            source: 'assets/graphics/tree.png'
         },{
             key: 'player-self',
             source: 'assets/graphics/Green_Tank.png'
