@@ -475,6 +475,8 @@ function initializeSocketIO(httpServer) {
             socket: socket,
             player: newPlayer
         };
+        let scores = initHighScore();
+
 
         socket.on(NetworkIds.MESSAGE, data => {
             inputQueue.enqueue({
@@ -515,6 +517,7 @@ function initializeSocketIO(httpServer) {
             size: newPlayer.size,
             rotateRate: newPlayer.rotateRate,
             speed: newPlayer.speed,
+            score : scores,
             buildings: buildings,
             id : socket.id
         });
@@ -549,6 +552,13 @@ function initPlayers(){
     let raw = fs.readFileSync('./assets/players.json');
     players = JSON.parse(raw);
     if(players === undefined) players = [];
+}
+
+function initHighScore(){
+    let raw = fs.readFileSync('./assets/highScores.json');
+    let scores = JSON.parse(raw);
+    if(scores === undefined) scores = [];
+    return scores;
 }
 
 function sendMessage(msg, playerId){

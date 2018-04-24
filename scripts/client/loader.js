@@ -19,38 +19,10 @@ MyGame.loader = (function() {
     'use strict';
     let scriptOrder = [
         {
-            scripts: ['lobby'],
-            message: 'Lobby loaded',
-            onComplete: null,
-        },
-        {
-            scripts: ['menu'],
+            scripts: ['lobby','menu', 'newPlayer', 'options', 'highscores', 'about', 'gameplay'],
             message: 'Menu loaded',
             onComplete: null,
-        }, {
-            scripts: ['newPlayer'],
-            message: 'New Player loaded',
-            onComplete: null,
-        }, {
-            scripts: ['options'],
-            message: 'Options loaded',
-            onComplete: null
-        }, {
-            scripts: ['highscores'],
-            message: 'High Scores loaded',
-            onComplete: null
         },{
-            scripts: ['about'],
-            message: 'About loaded',
-            onComplete: null
-        },{
-            scripts: ['gameplay'],
-            message: 'Game Play loaded',
-            onComplete: null
-        },
-
-
-        {
             scripts: ['../shared/network-ids'],
             message: 'Network Ids loaded',
             onComplete: null,
@@ -59,7 +31,7 @@ MyGame.loader = (function() {
             message: 'Utilities loaded',
             onComplete: null,
         }, {
-            scripts: ['input'],
+            scripts: ['input', 'Random'],
             message: 'Input loaded',
             onComplete: null
         }, {
@@ -67,10 +39,14 @@ MyGame.loader = (function() {
             message: 'Game viewport loaded',
             onComplete: null
         },{
+            scripts: ['components/particleSystem'],
+            message: 'Particle Components Loaded',
+            onComplete: null
+        },{
             scripts: ['components/player', 'components/player-remote', 
                 'components/missile', 'components/animated-sprite', 
                 'components/tiled-image', 'components/deploy-map',
-                'components/mini-map', 'components/storm', 'components/structure'],
+                'components/mini-map', 'components/storm','components/particleExplosion','components/structure'],
             message: 'Game Components loaded',
             onComplete: null
         }, {
@@ -81,7 +57,7 @@ MyGame.loader = (function() {
             scripts: ['rendering/player', 'rendering/player-remote', 
                 'rendering/missile', 'rendering/animated-sprite', 
                 'rendering/tiled-image', 'rendering/deploy-map', 
-                'rendering/mini-map', 'rendering/storm', 'rendering/structure'],
+                'rendering/mini-map', 'rendering/storm', 'rendering/particleSystem', 'rendering/structure'],
             message: 'Renderers loaded',
             onComplete: null
         }, {
@@ -91,11 +67,12 @@ MyGame.loader = (function() {
         }],
         assetOrder = [{
             key: 'missileFire',
-            source: 'assets/zap.mp3'
+            source: 'assets/sounds/zap.mp3'
         },{
             key: 'missileHit',
-            source: 'assets/pow.mp3'
-        },{
+            source: 'assets/sounds/pow.mp3'
+        },
+        {
             key: 'background',
             source: 'assets/background/terrain_tiles24.png'
         },{
@@ -106,22 +83,31 @@ MyGame.loader = (function() {
             source: 'assets/background/map.png'
         },{
             key: 'house',
-            source: 'assets/house.png'
+            source: 'assets/graphics/house.png'
         },{
             key: 'cabin',
-            source: 'assets/cabin.png'
+            source: 'assets/graphics/cabin.png'
         },{
             key: 'hut',
-            source: 'assets/hut.png'
+            source: 'assets/graphics/hut.png'
         },{
             key: 'player-self',
-            source: 'assets/playerShip1_blue.png'
+            source: 'assets/graphics/Green_Tank.png'
         }, {
             key: 'player-other',
-            source: 'assets/playerShip1_red.png'
+            source: 'assets/graphics/Red_Tank.png'
         }, {
             key: 'explosion',
-            source: 'assets/explosion.png'
+            source: 'assets/graphics/explosion.png'
+        },{
+            key: 'fireParticle',
+            source: 'assets/graphics/fire.png'
+        }, {
+            key: 'smokeParticle',
+            source: 'assets/graphics/smoke.png'
+        }, {
+            key: 'iceParticle',
+            source: 'assets/graphics/snowflake.png'
         }];
     
     //------------------------------------------------------------------
