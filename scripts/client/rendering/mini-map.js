@@ -92,7 +92,7 @@ MyGame.renderer.MiniMap = (function(graphics) {
         drawStorm(storm, scale, world, left);
         
         // Draw the number of remaining players
-        drawPlayersLeft(0, left, top, scale, scale);
+        drawPlayersLeft(map.aliveCount, left, top, scale, scale);
 
         // Draw the time remaining
         drawRemainingTime(map.remainingTime, left, top, scale, scale);

@@ -227,6 +227,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         playerSelf.model.position.y = data.position.y;
         playerSelf.model.direction = data.direction;
 
+        miniMap.aliveCount = data.playerCount;
         //
         // Remove messages from the queue up through the last one identified
         // by the server as having been processed.
@@ -444,7 +445,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function render() {
         graphics.clear();
         
-
         if (onDeploymentScreen) {
             renderer.DeploymentMap.render(deploymentMap);
         } else {
@@ -484,6 +484,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             }
 
             graphics.clip();
+
             renderer.MiniMap.render(miniMap, 
                 playerSelf.model.position, world, storm);
             renderer.particleSystem.render(MyGame.components.particleSystem);

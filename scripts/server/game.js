@@ -34,6 +34,7 @@ let storm = Storm.create({
     }
 });
 let buildings = createBuildings(15);
+let playerCount = 0;
 
 let msgList = [];
 let players = [];
@@ -343,7 +344,8 @@ function updateClients(elapsedTime) {
             lastMessageId: client.lastMessageId,
             direction: client.player.direction,
             position: client.player.position,
-            updateWindow: lastUpdate
+            updateWindow: lastUpdate,
+            playerCount: playerCount
         };
         
         if (client.player.reportUpdate) {
@@ -469,6 +471,8 @@ function initializeSocketIO(httpServer) {
         console.log('Connection established: ', socket.id);
         //
         // Create an entry in our list of connected clients
+        playerCount++;
+
         let newPlayer = Player.create()
         newPlayer.clientId = socket.id;
         activeClients[socket.id] = {
