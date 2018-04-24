@@ -5,7 +5,7 @@ MyGame.components.MiniMap = function(spec) {
         set remainingTime(time) { spec.remainingTime = time; },
         get remainingTime() { return spec.remainingTime; },
         set aliveCount(count) { spec.aliveCount = count; },
-        get aliveCount() { return spec.aliveCount; }
+        get aliveCount() { return spec.aliveCount; },
     };
 
     return that;

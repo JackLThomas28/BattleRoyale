@@ -33,6 +33,7 @@ let storm = Storm.create({
         y: 1.6
     }
 });
+let buildings = createBuildings(5);
 
 let msgList = [];
 let players = [];
@@ -58,6 +59,41 @@ function createMissile(clientId, playerModel) {
 
     newMissiles.push(missile);
 }
+
+function getRandomFloat(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function createBuildings(count) {
+    let structures = [];
+    let minX = 0.0,
+        maxX = 3.2,
+        minY = 0.0,
+        maxY = 3.2;
+
+    for (let i = 0; i < count; i++) {
+        structures.push({
+            size: { width: 0.1, height: 0.1 },
+            center: { 
+                x: getRandomFloat(minX, maxX), 
+                y: getRandomFloat(minY, maxY) } 
+        });
+        structures.push({
+            size: { width: 0.1, height: 0.1 },
+            center: { 
+                x: getRandomFloat(minX, maxX), 
+                y: getRandomFloat(minY, maxY) } 
+        });
+        structures.push({
+            size: { width: 0.1, height: 0.1 },
+            center: { 
+                x: getRandomFloat(minX, maxX), 
+                y: getRandomFloat(minY, maxY) } 
+        });
+    }
+    return structures;
+}
+
 
 //------------------------------------------------------------------
 //
@@ -455,6 +491,7 @@ function initializeSocketIO(httpServer) {
             size: newPlayer.size,
             rotateRate: newPlayer.rotateRate,
             speed: newPlayer.speed,
+            buildings: buildings,
             id : socket.id
         });
 

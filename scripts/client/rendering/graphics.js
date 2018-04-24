@@ -365,6 +365,23 @@ MyGame.graphics = (function() {
 			width * world.size,
 			height * world.size);
 	}
+	
+	//------------------------------------------------------------------
+	//
+	// Draw a line segment within the unit world.
+	//
+	//------------------------------------------------------------------
+	function drawLine(style, pt1, pt2) {
+		context.strokeStyle = style;
+		context.beginPath();
+		context.moveTo(
+			0.5 + world.left + (pt1.x * world.size),
+			0.5 + world.top + (pt1.y * world.size));
+		context.lineTo(
+			0.5 + world.left + (pt2.x * world.size),
+			0.5 + world.top + (pt2.y * world.size));
+		context.stroke();
+	}
 
 	//------------------------------------------------------------------
 	//
@@ -380,6 +397,24 @@ MyGame.graphics = (function() {
 		context.beginPath();
 		context.rect(world.left, world.top, world.size, world.size);
 		context.clip();
+	}
+
+	function clipPolygon(polygon) {
+		context.beginPath();
+		context.moveTo(
+			0.5 + world.left + (polygon.points[0] * world.size),
+			0.5 + world.top + (polygon.points[0] * world.size));
+		for (let point = 1; point < polygon.points.length; point++) {
+			context.lineTo(
+				0.5 + world.left + (polygon.points[point + 1] * world.size),
+				0.5 + world.top + (polygon.points[point + 1] * world.size));
+		}
+		// Close the polygon region
+		context.lineTo(
+			0.5 + world.left + (polygon.points[0] * world.size),
+			0.5 + world.top + (polygon.points[0] * world.size));
+		
+			context.clip();
 	}
 
 	return {
