@@ -542,7 +542,7 @@ function createPlayer(spec,id){
 
 }
 function loginUser(user,id){
-    activeClients[id].player.updateUser(spec);
+    activeClients[id].player.updateUser(user);
     for(let i=0; i<players.length; i++){
         if(user.username === players[i].username && user.password === players[i].password){
             console.log("Successful Login");
