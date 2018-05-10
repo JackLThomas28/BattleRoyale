@@ -24,7 +24,6 @@ MyGame.screens['options'] = (function(game, keyboard, input) {
 	
 	function run() {
 		let map = MyGame.screens['game-play'].getKeyMap();
-		console.log("init map: ",map);
 		up = map['forward'];
 		down = map['down'];
 		left = map['left'];

@@ -1,18 +1,16 @@
-
-MyGame.screens['new-player'] = (function(game, assets) {
+MyGame.screens['login'] = (function(game) {
 	'use strict';
-	let playerList = {};
 	
 	function initialize() {
-		document.getElementById('id-new-player-back').addEventListener(
-			'click',
-			function() { MyGame.main.showScreen('main-menu'); });
-		document.getElementById('id-login').addEventListener('click', login);
-		document.getElementById('id-create-player').addEventListener('click', createPlayer);
+        document.getElementById('id-register').addEventListener(
+            'click', 
+            createPlayer );
+        
+        document.getElementById('id-login').addEventListener(
+            'click', 
+            login );
 	}
 	
-	function run() {}
-
 	function login(){
 		let userName = document.getElementById('username').value;
 		let password = document.getElementById('password').value;
@@ -34,6 +32,8 @@ MyGame.screens['new-player'] = (function(game, assets) {
 		document.getElementById('password').value = "";
 		MyGame.main.showScreen('main-menu');
 	}
+
+    function run() {}
 	
 	return {
 		initialize : initialize,

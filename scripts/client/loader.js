@@ -19,7 +19,10 @@ MyGame.loader = (function() {
     'use strict';
     let scriptOrder = [
         {
-            scripts: ['lobby','menu', 'newPlayer', 'options', 'highscores', 'about', 'gameplay'],
+            scripts: ['navigation/lobby','navigation/menu', 
+                'navigation/options', 
+                'navigation/highscores', 'navigation/about', 
+                'navigation/gameplay', 'navigation/login'],
             message: 'Menu loaded',
             onComplete: null,
         },{
@@ -46,7 +49,8 @@ MyGame.loader = (function() {
             scripts: ['components/player', 'components/player-remote', 
                 'components/missile', 'components/animated-sprite', 
                 'components/tiled-image', 'components/deploy-map',
-                'components/mini-map', 'components/storm','components/particleExplosion','components/structure'],
+                'components/mini-map', 'components/storm',
+                'components/particleExplosion','components/structure'],
             message: 'Game Components loaded',
             onComplete: null
         }, {
@@ -57,7 +61,8 @@ MyGame.loader = (function() {
             scripts: ['rendering/player', 'rendering/player-remote', 
                 'rendering/missile', 'rendering/animated-sprite', 
                 'rendering/tiled-image', 'rendering/deploy-map', 
-                'rendering/mini-map', 'rendering/storm', 'rendering/particleSystem', 'rendering/structure'],
+                'rendering/mini-map', 'rendering/storm', 
+                'rendering/particleSystem', 'rendering/structure'],
             message: 'Renderers loaded',
             onComplete: null
         }, {
@@ -287,7 +292,6 @@ MyGame.loader = (function() {
     //
     // Start with loading the assets, then the scripts.
     console.log('Starting to dynamically load project assets');
-    // prepareTiledImage(assetOrder, '/assets/background/', 'background', 32);
     loadAssets(assetOrder,
         function(source, asset) {    // Store it on success
             MyGame.assets[source.key] = asset;

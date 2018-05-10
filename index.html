@@ -15,43 +15,45 @@
 			<div class="layout">
 				<h2 class="title">Battle Royale</h2>
 				<button class="game-button" id = "id-new-game">Join&nbsp;Lobby</button>
-				<button class="game-button" id = "id-new-player">Login/Create&nbsp;Player</button>
 				<button class="game-button" id = "id-options">Options</button>
 				<button class="game-button" id = "id-high-scores">High&nbsp;Scores</button>
 				<button class="game-button" id = "id-about" style="float: none; margin: 0 auto; display: block;">About</button>
 			</div>
 		</div>
 
+		<div id = "login" class = "screen" style="padding: 10px;">
+			<div class="layout">
+				<h2 class="title">Battle Royale</h2>
+				<ul class = "menu">
+					<li>User Name:<br><input type="text" id="username"></li>
+					<li>Password:<br><input type="text" id="password"></li>
+				</ul>
+				<button class="game-button" id = "id-login">Login</button>
+				<button class="game-button" id = "id-register">Register</button>
+			</div>
+		</div>
+		
 		<div id = "lobby" class = "screen">
-				<button  id = "id-lobby-back">Exit&nbsp;Game</button>
-				<table>
-					<tr>
-						<td id="header" colspan = "2">Game Lobby</td>
-					</tr>
-					<tr>
-						<div id="messageList">
-						</div>
-					</tr>
-					<td id="eventInput">
-						<input id = "msg" type = "text" value="Type a message">
-						<button id="sendMsg" type="button">send</button>
-					</td>
-				</table>
+			<button  id = "id-lobby-back">Exit&nbsp;Game</button>
+			<table>
+				<tr>
+					<td id="header" colspan = "2">Game Lobby</td>
+				</tr>
+				<tr>
+					<div id="messageList">
+					</div>
+				</tr>
+				<td id="eventInput">
+					<input id = "msg" type = "text" value="Type a message">
+					<button id="sendMsg" type="button">send</button>
+				</td>
+			</table>
 		</div>
 
 		<div id = "game-play" class = "screen">
 			<table>
 				<canvas id = "canvas-main" width = "600" height = "600" style = "background-color: rgb(0, 0, 0)"></canvas>
 			</table>
-		</div>
-		<div id = "new-player" class = "screen">
-			<h1>Create Player</h1>
-			
-			<ul class = "menu">
-				<li>User Name:<br><input type="text" id="username"></li>
-				<li>Password:<br><input type="text" id="password"></li>
-				<li><button id = "id-login">Login</button><button id = "id-create-player">Create</button> <button id = "id-new-player-back">Back</button></li>
-			</ul>
 		</div>
 
 		<div id = "options" class = "screen">

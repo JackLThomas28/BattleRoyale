@@ -6,10 +6,6 @@ MyGame.screens['main-menu'] = (function(game) {
 			'click',
 			function() {MyGame.main.showScreen('lobby'); });
 
-		document.getElementById('id-new-player').addEventListener(
-			'click',
-			function() {MyGame.main.showScreen('new-player'); });
-
 		document.getElementById('id-options').addEventListener(
 			'click',
 			function() {MyGame.main.showScreen('options'); });
