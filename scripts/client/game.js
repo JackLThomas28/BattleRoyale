@@ -329,10 +329,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function missileHit(data) {
         hit = assets['missileHit'];
         hit.play();
-        // components.particleSystem.createEffectExplosion({
-		// 	center: data.position,
-		// 	howMany: 300
-        // });
         explosions[nextExplosionId] = components.AnimatedSprite({
             id: nextExplosionId++,
             spriteSheet: MyGame.assets['explosion'],

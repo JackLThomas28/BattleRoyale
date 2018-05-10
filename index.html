@@ -8,7 +8,6 @@
 	<script src = "/node_modules/socket.io-client/dist/socket.io.slim.js"></script>
 </head>
 <body>
-	<!-- <canvas id = "canvas-main" width = "600" height = "600" style = "background-color: rgb(0, 0, 0)"></canvas> -->
 
 	<div id = "game">
 		<div id = "main-menu" class = "screen" style="padding: 10px;">
@@ -32,22 +31,22 @@
 				<button class="game-button" id = "id-register">Register</button>
 			</div>
 		</div>
-		
+	
 		<div id = "lobby" class = "screen">
-			<button  id = "id-lobby-back">Exit&nbsp;Game</button>
-			<table>
-				<tr>
-					<td id="header" colspan = "2">Game Lobby</td>
-				</tr>
-				<tr>
-					<div id="messageList">
-					</div>
-				</tr>
-				<td id="eventInput">
-					<input id = "msg" type = "text" value="Type a message">
-					<button id="sendMsg" type="button">send</button>
-				</td>
-			</table>
+			<div class="layout">
+				<h2 class="title">Game Lobby</h2>
+				<table>
+					<tr>
+						<div id="messageList">
+						</div>
+					</tr>
+					<td id="eventInput">
+						<input id="msg" type="text" value="Type a message">
+						<button id="sendMsg" type="button">Send</button>
+					</td>
+				</table>
+				<button class="game-button" id="id-lobby-back">Back</button>
+			</div>
 		</div>
 
 		<div id = "game-play" class = "screen">
@@ -57,34 +56,43 @@
 		</div>
 
 		<div id = "options" class = "screen">
-			<h1>Controls</h1>
-			<ul class = "menu">
-				<li>Move Forward <input id="moveForwardInput" type="text" value="W"></li>
-				<li>Move Backward <input id="moveBackwardInput" type="text" value="S"></li>
-				<li>Move Left <input id="moveLeftInput" type="text" value="A"></li>
-				<li>Move Right <input id="moveRightInput" type="text" value="D"></li>
-				<li>Fire <input id="fireInput" type="text" value="Space"></li>
-				<li>Boost <input id="boostInput" type="text" value="Shift"></li>
-				<li> <button id="map-keys">Submit Changes</button> <button id = "id-options-back">Back</button></li>
-			</ul>
+			<div class = "layout">
+				<h2 class="title">Controls</h2>
+				<ul class="menu">
+					<li>Move Forward <input id="moveForwardInput" type="text" value="W"></li>
+					<li>Move Backward <input id="moveBackwardInput" type="text" value="S"></li>
+					<li>Move Left <input id="moveLeftInput" type="text" value="A"></li>
+					<li>Move Right <input id="moveRightInput" type="text" value="D"></li>
+					<li>Fire <input id="fireInput" type="text" value="Space"></li>
+					<li>Boost <input id="boostInput" type="text" value="Shift"></li>
+					<li>
+						<button class="game-button" id="map-keys">Submit Changes</button> 
+						<button class="game-button" id="id-options-back">Back</button>
+					</li>
+				</ul>
+			</div>
 		</div>
 
 		<div id = "high-scores" class = "screen">
-			<h1>High Scores</h1>
-			<ul class = "menu">
-				<li><div id="scores"></div></li>
-				<li><button id = "id-high-scores-back">Back</button></li>
-			</ul>
+			<div class="layout">
+				<h2 class="title">High Scores</h2>
+				<ul class = "menu">
+					<li><div id="scores"></div></li>
+					<li><button class="game-button" id="id-high-scores-back">Back</button></li>
+				</ul>
+			</div>
 		</div>
 	
 		<div id = "about" class = "screen">
-			<h1>About</h1>
-			<p>Developed by</p>
-			<p>Bobby Handley</p>
-			<p>Jack Thomas</p>
-			<ul class = "menu">
-				<li><button id = "id-about-back">Back</button></li>
-			</ul>
+			<div class="layout">
+				<h2 class="title">About</h2>
+				<p>Developed by</p>
+				<p>Bobby Handley</p>
+				<p>Jack Thomas</p>
+				<ul class = "menu">
+					<li><button class="game-button" id="id-about-back">Back</button></li>
+				</ul>
+			</div>
 		</div>
 	</div>
 

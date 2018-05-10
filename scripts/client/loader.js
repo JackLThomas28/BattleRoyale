@@ -20,9 +20,9 @@ MyGame.loader = (function() {
     let scriptOrder = [
         {
             scripts: ['navigation/lobby','navigation/menu', 
-                'navigation/options', 
-                'navigation/highscores', 'navigation/about', 
-                'navigation/gameplay', 'navigation/login'],
+                'navigation/options', 'navigation/highscores', 
+                'navigation/about', 'navigation/gameplay', 
+                'navigation/login'],
             message: 'Menu loaded',
             onComplete: null,
         },{
