@@ -713,12 +713,15 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     }
 
     function joinLobby() {
-        let message = {
-            id: messageId++,
-            elapsedTime: null,
-            type: NetworkIds.JOIN_LOBBY
-        };
-        socket.emit(NetworkIds.JOIN_LOBBY, message);
+        if (!inLobby) {
+            let message = {
+                id: messageId++,
+                elapsedTime: null,
+                type: NetworkIds.JOIN_LOBBY
+            };
+            socket.emit(NetworkIds.JOIN_LOBBY, message);
+            inLobby = true;
+        }
     }
 
     function leaveLobby() {
@@ -729,6 +732,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                 type: NetworkIds.LEAVE_LOBBY
             };
             socket.emit(NetworkIds.LEAVE_LOBBY, message);
+            inLobby = false;
         }
     }
 
