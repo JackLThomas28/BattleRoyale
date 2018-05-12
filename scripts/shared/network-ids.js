@@ -95,7 +95,20 @@
         'MESSAGE': {
             value: 'message-sent',
             writable: false
+        },
+        'JOIN_LOBBY': {
+            value: 'join-lobby',
+            writable: false
+        },
+        'LEAVE_LOBBY': {
+            value: 'leave-lobby',
+            writable: false
+        },
+        'START_GAME': {
+            value: 'start-game',
+            writable: false
         }
+
     });
 
 })(typeof exports === 'undefined' ? this['NetworkIds'] = {} : exports);

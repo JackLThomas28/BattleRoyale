@@ -24,6 +24,8 @@ MyGame.screens['high-scores'] = (function(game,input) {
 	function run() {
 		let scores = read();
 		display(scores);
+		
+		MyGame.screens['game-play'].leaveLobby();
 	}
 	
 	return {

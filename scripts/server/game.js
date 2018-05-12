@@ -13,7 +13,6 @@ let Storm = require('./storm');
 let NetworkIds = require('../shared/network-ids');
 let Queue = require('../shared/queue.js');
 
-let LOBBY_TIMER = 40;
 const STATE_UPDATE_RATE_MS = 50;
 let lastUpdate = 0;
 let quit = false;
@@ -39,6 +38,11 @@ let playerCount = 0;
 
 let msgList = [];
 let players = [];
+let Lobby = {
+    requiredCount: 2,
+    count: 0
+};
+let inGame = false;
 
 
 //------------------------------------------------------------------
@@ -152,10 +156,15 @@ function processInput(elapsedTime) {
             case NetworkIds.MESSAGE:
                 sendMessage(input.message.message,input.message.playerId);
                 break;
+            case NetworkIds.JOIN_LOBBY:
+                Lobby.count++;
+                break;
+            case NetworkIds.LEAVE_LOBBY:
+                Lobby.count--;
+                break;
         }
     }
     inputQueue = Queue.create();
-
 }
 
 
@@ -278,6 +287,17 @@ function updateClientStorm(networkId) {
     }
 }
 
+function startClientGames() {
+    for (let clientId in activeClients) {
+        let client = activeClients[clientId];
+        let update = {
+            clientId: clientId,
+            lastMessageId: client.lastMessageId
+        };
+        client.socket.emit(NetworkIds.START_GAME, update);
+    }
+}
+
 //------------------------------------------------------------------
 //
 // Send state of the game to any connected clients.
@@ -295,12 +315,8 @@ function updateClients(elapsedTime) {
     currTime += elapsedTime;
     if (timeUnitPassed(currTime, 1000)) {
         currTime = 0;
-       
-        if (LOBBY_TIMER > 0) {
-            LOBBY_TIMER--;
-            updateClientTimers(LOBBY_TIMER, NetworkIds.UPDATE_LOBBY_TIMER);
-        }
-        if (deploymentTimer > 0 && LOBBY_TIMER === 0) {
+
+        if (deploymentTimer > 0) {
             deploymentTimer--;
             updateClientTimers(deploymentTimer, NetworkIds.UPDATE_DEPLOY_TIMER);
         }
@@ -394,8 +410,17 @@ function updateClients(elapsedTime) {
 //------------------------------------------------------------------
 function gameLoop(currentTime, elapsedTime) {
     processInput(elapsedTime);
-    update(elapsedTime, currentTime);
-    updateClients(elapsedTime);
+    if (Lobby.count >= Lobby.requiredCount) {
+        if (!inGame) {
+            startClientGames();
+            inGame = true;
+        }
+    }
+
+    if (inGame) {
+        update(elapsedTime, currentTime);
+        updateClients(elapsedTime);
+    }
 
     if (!quit) {
         setTimeout(() => {
@@ -489,6 +514,20 @@ function initializeSocketIO(httpServer) {
             });
         });
 
+        socket.on(NetworkIds.JOIN_LOBBY, data => {
+            inputQueue.enqueue({
+                clientId: socket.id,
+                message: data
+            });
+        });
+
+        socket.on(NetworkIds.LEAVE_LOBBY, data => {
+            inputQueue.enqueue({
+                clientId: socket.id,
+                message: data
+            });
+        });
+        
         socket.on(NetworkIds.LOGIN, data => {
             inputQueue.enqueue({
                 clientId: socket.id,

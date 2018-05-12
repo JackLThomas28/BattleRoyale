@@ -44,6 +44,8 @@ MyGame.screens['options'] = (function(game, keyboard, input) {
 		document.getElementById('moveLeftInput').innerHTML = "A";
 		document.getElementById('fireInput').innerHTML = "Space";
 		document.getElementById('boostInput').innerHTML = "Shift";
+
+		MyGame.screens['game-play'].leaveLobby();
 	}
 
 	function mapKeys(){

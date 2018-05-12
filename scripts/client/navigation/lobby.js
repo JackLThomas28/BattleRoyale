@@ -15,8 +15,9 @@ MyGame.screens['lobby'] = (function() {
     }
 
     function run() {
-
+        MyGame.screens['game-play'].joinLobby();
     }
+
     return {
 		initialize : initialize,
 		run : run

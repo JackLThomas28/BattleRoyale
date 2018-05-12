@@ -19,7 +19,9 @@ MyGame.screens['main-menu'] = (function(game) {
 			function() { MyGame.main.showScreen('about'); });
 	}
 	
-	function run() {}
+	function run() {
+		MyGame.screens['game-play'].leaveLobby();
+	}
 	
 	return {
 		initialize : initialize,

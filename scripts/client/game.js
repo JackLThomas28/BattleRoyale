@@ -46,8 +46,12 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         buildings = [];
         let missileFire = assets['missileFire'];
         let hit = assets['missileHit'];
-        let highScores = [];
+        let highScores = [],
+            inLobby = false;
 
+    socket.on(NetworkIds.START_GAME, data => {
+        startGame();
+    });
     
     socket.on(NetworkIds.CONNECT_ACK, data => {
         if(data){
@@ -101,11 +105,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             data: data
         });
     });
-    
-    socket.on(NetworkIds.UPDATE_LOBBY_TIMER, data => {
-        updateLobbyTimer(data);
-    });
-    
+
     socket.on(NetworkIds.UPDATE_STORM, data => {
         networkQueue.enqueue({
             type: NetworkIds.UPDATE_STORM,
@@ -344,6 +344,10 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         delete missiles[data.missileId];
     }
 
+    function startGame() {
+        MyGame.main.showScreen('game-play');
+    }
+
 
     //------------------------------------------------------------------
     //
@@ -388,9 +392,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     break;
                 case NetworkIds.UPDATE_STORM:
                     updateStorm(message.data);
-                    break;
-                case NetworkIds.UPDATE_LOBBY_TIMER:
-                    updateLobbyTimer(message.data);
                     break;
                 case NetworkIds.MISSILE_NEW:
                     missileNew(message.data);
@@ -711,6 +712,26 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         }
     }
 
+    function joinLobby() {
+        let message = {
+            id: messageId++,
+            elapsedTime: null,
+            type: NetworkIds.JOIN_LOBBY
+        };
+        socket.emit(NetworkIds.JOIN_LOBBY, message);
+    }
+
+    function leaveLobby() {
+        if (inLobby) {
+            let message = {
+                id: messageId++,
+                elapsedTime: null,
+                type: NetworkIds.LEAVE_LOBBY
+            };
+            socket.emit(NetworkIds.LEAVE_LOBBY, message);
+        }
+    }
+
     function add(key, value) {
 		keyMap[key] = value;
 		localStorage['Game.H'] = JSON.stringify(keyMap);
@@ -723,6 +744,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     function getKeyMap(){
         return keyMap;
     }
+
     function createUser(user){
         let message = {
             id: messageId++,
@@ -779,7 +801,9 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         createUser : createUser,
         login : login,
         sendMessage : sendMessage,
-        readHighScore: readHighScore
+        readHighScore: readHighScore,
+        joinLobby: joinLobby,
+        leaveLobby: leaveLobby
     };
  
 }(MyGame.graphics, MyGame.renderer, MyGame.input, MyGame.components, MyGame.assets));

@@ -7,7 +7,9 @@ MyGame.screens['about'] = (function(game) {
 			function() { MyGame.main.showScreen('main-menu'); });
 	}
 	
-	function run() {}
+	function run() {
+		MyGame.screens['game-play'].leaveLobby();
+	}
 	
 	return {
 		initialize : initialize,
