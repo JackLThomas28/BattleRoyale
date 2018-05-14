@@ -62,7 +62,8 @@ MyGame.loader = (function() {
                 'rendering/missile', 'rendering/animated-sprite', 
                 'rendering/tiled-image', 'rendering/deploy-map', 
                 'rendering/mini-map', 'rendering/storm', 
-                'rendering/particleSystem', 'rendering/structure'],
+                'rendering/particleSystem', 'rendering/structure',
+                'rendering/health-bar'],
             message: 'Renderers loaded',
             onComplete: null
         }, {

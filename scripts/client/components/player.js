@@ -45,8 +45,8 @@ MyGame.components.Player = function(viewport) {
     });
 
     Object.defineProperty(that, 'health', {
-        get: () => health,
-        set: value => health = value
+        get: () => health//,
+        // set: value => health = value
     });
 
     Object.defineProperty(that, 'shield', {
@@ -150,6 +150,10 @@ MyGame.components.Player = function(viewport) {
         }
         direction = Math.atan2(pos.y,pos.x);
     };
+
+    that.takeHealth = function(data) {
+        health -= data.damage;
+    }
 
     that.update = function(elapsedTime) {
     };

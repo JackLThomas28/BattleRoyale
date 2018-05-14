@@ -43,12 +43,11 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         storm = null,
         msgList = [],
         lobbyTimer = null,
-        buildings = [],
-        health = 100;
+        buildings = [];
     let missileFire = assets['missileFire'];
     let hit = assets['missileHit'];
     let highScores = [],
-            inLobby = false;
+        inLobby = false;
 
     socket.on(NetworkIds.START_GAME, data => {
         startGame();
@@ -352,10 +351,6 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
         delete missiles[data.missileId];
     }
 
-    function takeHealth(data) {
-        health -= data.damage;
-    }
-
     function startGame() {
         MyGame.main.showScreen('game-play');
     }
@@ -412,7 +407,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
                     missileHit(message.data);
                     break;
                 case NetworkIds.TAKE_HEALTH:
-                    takeHealth(message.data);
+                    playerSelf.model.takeHealth(message.data);
                     break;
             }
         }
@@ -424,7 +419,7 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
     //
     //------------------------------------------------------------------
     function update(elapsedTime) {
-        if (health <= 0) {
+        if (playerSelf.model.health <= 0) {
             // TODO: Show game over screen
         }
         components.particleSystem.update(elapsedTime);
@@ -503,6 +498,8 @@ MyGame.screens['game-play'] = (function(graphics, renderer, input, components, a
             renderer.MiniMap.render(miniMap, 
                 playerSelf.model.position, world, storm);
             renderer.particleSystem.render(MyGame.components.particleSystem);
+            
+            renderer.HealthBar.render(playerSelf.model);
         }
     }
 
