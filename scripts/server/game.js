@@ -242,7 +242,8 @@ function checkPlayerCollision(missiles, clients) {
                     hits.push({
                         clientId: clientId,
                         missileId: missiles[missile].id,
-                        position: clients[clientId].player.position
+                        position: clients[clientId].player.position,
+                        damage: 25
                     });
                 }
             }
@@ -386,6 +387,11 @@ function updateClients(elapsedTime) {
         // Report any missile hits to this client
         for (let hit = 0; hit < hits.length; hit++) {
             client.socket.emit(NetworkIds.MISSILE_HIT, hits[hit]);
+
+            // Take the health away from the player that was hit
+            if (hits[hit].clientId === client.player.clientId) {
+                client.socket.emit(NetworkIds.TAKE_HEALTH, hits[hit]);
+            }
         }
     }
 

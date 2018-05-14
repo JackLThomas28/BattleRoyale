@@ -84,6 +84,10 @@
             value: 'missile-hit',
             writable: false
         },
+        'TAKE_HEALTH': {
+            value: 'take-health',
+            writable: false
+        },
         'CREATE_USER': {
             value: 'create-user',
             writable: false
