@@ -3,6 +3,7 @@
 ## A Web based, 2D, Battle Royale Game created by Bobby Handley and Jack Thomas
 
 ![](./ScreenShot.png)
+<img src="ScreenShot.png" alt="Game play" width="50%" height="auto"/>
 
 ### To run the game:
 1. npm install the required modules
