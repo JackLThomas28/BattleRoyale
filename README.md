@@ -1,11 +1,14 @@
-Project for Spring CS5410 Game Development. 
+# Final Project for CS5410 - Game Development, Spring 2018 
 
-A Battle Royale Game created by Bobby Handley and Jack Thomas.
+## A Web based, 2D, Battle Royale Game created by Bobby Handley and Jack Thomas
 
-Location for networking requirements:
+![](./ScreenShot.png)
 
-server/game.js
-client/game.js
+### To run the game:
+1. npm install the required modules
+2. npm start
+3. Go to localhost:3000 on a browser
 
-The game begins once the lobby count down has finished. It can be changed
-in server/game.js
+### Additional Notes:
+The game begins once there is enough players in the lobby. 
+The required number can be changed in server/game.js (Default set at 2).
