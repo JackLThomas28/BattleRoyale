@@ -1,6 +1,6 @@
 # Final Project for CS5410 - Game Development, Spring 2018 
 
-# A web based, 2-dimensional, battle royale game created by Bobby Handley and Jack Thomas
+### A web based, 2-dimensional, battle royale game created by Bobby Handley and Jack Thomas
 
 <img src="ScreenShot.png" alt="Game play" width="75%" height="auto"/>
 
